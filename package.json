@@ -1,0 +1,24 @@
+{
+  "name": "license-webpack-plugin",
+  "version": "0.0.0",
+  "description": "Outputs licenses from 3rd party libraries to a file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/xz64/license-webpack-plugin.git"
+  },
+  "keywords": [
+    "license",
+    "plugin",
+    "webpack"
+  ],
+  "author": "S K (xz64)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xz64/license-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/xz64/license-webpack-plugin#readme"
+}
