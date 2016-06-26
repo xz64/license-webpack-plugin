@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/xz64/license-webpack-plugin#readme",
   "devDependencies": {
+    "sinon": "^1.17.4",
     "tape": "^4.6.0"
   }
 }
