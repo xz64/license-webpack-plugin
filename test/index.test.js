@@ -2,7 +2,11 @@
 
 var test = require('tape');
 var sinon = require('sinon');
+var mock = require('mock-fs');
+var fs = require('fs');
 var CleanWebpackPlugin = require('../index');
+
+mock();
 
 function createPlugin() {
   return new CleanWebpackPlugin();
@@ -10,7 +14,11 @@ function createPlugin() {
 
 function createCompiler() {
   return { 
-    plugin: sinon.spy()
+    plugin: sinon.spy(function(event, callback) {
+      if(event === 'done') {
+        callback();
+      }
+    })
   };
 }
 
@@ -50,5 +58,21 @@ test('the plugin provides a callback after compilation is done', function(t) {
   var compiler = createCompiler();
   plugin.apply(compiler);
   t.ok(typeof compiler.plugin.args[0][1] === 'function');
+  t.end();
+});
+
+test('the plugin outputs a file', function(t) {
+  var plugin = createPlugin();
+  var compiler = createCompiler();
+  var fileExists = true;
+  plugin.apply(compiler);
+  try {
+    fs.accessSync('3rdpartylicenses.txt');
+  }
+  catch(e) {
+    console.error(e);
+    fileExists = false;
+  }
+  t.ok(fileExists);
   t.end();
 });
