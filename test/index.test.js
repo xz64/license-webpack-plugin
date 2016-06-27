@@ -8,8 +8,8 @@ var CleanWebpackPlugin = require('../index');
 
 mock();
 
-function createPlugin() {
-  return new CleanWebpackPlugin();
+function createPlugin(opts) {
+  return new CleanWebpackPlugin(opts);
 }
 
 function createCompiler() {
@@ -61,13 +61,30 @@ test('the plugin provides a callback after compilation is done', function(t) {
   t.end();
 });
 
-test('the plugin outputs a file', function(t) {
+test('the plugin defaults output to 3rdpartylicenses.txt', function(t) {
   var plugin = createPlugin();
   var compiler = createCompiler();
   var fileExists = true;
   plugin.apply(compiler);
   try {
     fs.accessSync('3rdpartylicenses.txt');
+  }
+  catch(e) {
+    console.error(e);
+    fileExists = false;
+  }
+  t.ok(fileExists);
+  t.end();
+});
+
+test('the plugin allows you to choose an output filename', function(t) {
+  var opts = { filename: 'custom_file.txt' }
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  var fileExists = true;
+  plugin.apply(compiler);
+  try {
+    fs.accessSync(opts.filename);
   }
   catch(e) {
     console.error(e);
