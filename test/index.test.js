@@ -4,6 +4,7 @@ var test = require('tape');
 var sinon = require('sinon');
 var mock = require('mock-fs');
 var fs = require('fs');
+var path = require('path');
 var CleanWebpackPlugin = require('../index');
 
 mock();
@@ -12,13 +13,26 @@ function createPlugin(opts) {
   return new CleanWebpackPlugin(opts);
 }
 
-function createCompiler() {
+function createCompiler(stats) {
+  if(!stats) {
+    stats = createStats();
+  }
   return { 
     plugin: sinon.spy(function(event, callback) {
       if(event === 'done') {
-        callback();
+        callback(stats);
       }
     })
+  };
+}
+
+function createStats() {
+  return {
+    compilation: {
+      compiler: {
+        outputPath: '/tmp'
+      }
+    }
   };
 }
 
@@ -63,11 +77,13 @@ test('the plugin provides a callback after compilation is done', function(t) {
 
 test('the plugin defaults output to 3rdpartylicenses.txt', function(t) {
   var plugin = createPlugin();
-  var compiler = createCompiler();
+  var stats = createStats();
+  var outputPath = stats.compilation.compiler.outputPath;
+  var compiler = createCompiler(stats);
   var fileExists = true;
   plugin.apply(compiler);
   try {
-    fs.accessSync('3rdpartylicenses.txt');
+    fs.accessSync(path.join(outputPath, '3rdpartylicenses.txt'));
   }
   catch(e) {
     console.error(e);
@@ -80,11 +96,13 @@ test('the plugin defaults output to 3rdpartylicenses.txt', function(t) {
 test('the plugin allows you to choose an output filename', function(t) {
   var opts = { filename: 'custom_file.txt' }
   var plugin = createPlugin(opts);
-  var compiler = createCompiler();
+  var stats = createStats();
+  var outputPath = stats.compilation.compiler.outputPath;
+  var compiler = createCompiler(stats);
   var fileExists = true;
   plugin.apply(compiler);
   try {
-    fs.accessSync(opts.filename);
+    fs.accessSync(path.join(outputPath, opts.filename));
   }
   catch(e) {
     console.error(e);
