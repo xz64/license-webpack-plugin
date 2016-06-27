@@ -132,7 +132,7 @@ test('the plugin generates an error if no options are provided', function(t) {
   var opts = {};
   var plugin = createPlugin(opts);
   var compiler = createCompiler();
-  var result = plugin.apply(compiler);
+  plugin.apply(compiler);
   t.ok(plugin.errors.length > 0);
   t.end();
 });
@@ -141,7 +141,7 @@ test('the plugin generates an error if no regexp is provided', function(t) {
   var opts = {};
   var plugin = createPlugin(opts);
   var compiler = createCompiler();
-  var result = plugin.apply(compiler);
+  plugin.apply(compiler);
   t.ok(plugin.errors.length > 0);
   t.end();
 });
@@ -152,7 +152,7 @@ test('the plugin generates an error on invalid regexp property', function(t) {
   };
   var plugin = createPlugin(opts);
   var compiler = createCompiler();
-  var result = plugin.apply(compiler);
+  plugin.apply(compiler);
   t.ok(plugin.errors.length > 0);
   t.end();
 });
