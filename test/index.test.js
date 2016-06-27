@@ -7,7 +7,18 @@ var fs = require('fs');
 var path = require('path');
 var CleanWebpackPlugin = require('../index');
 
-mock();
+mock({
+  '/project1': {
+    'dist': {},
+    'node_modules': {
+      'lib1': {
+        'package.json': JSON.stringify({
+          license: 'ISC'
+        })
+      }
+    }
+  }
+});
 
 function createPlugin(opts) {
   if(!opts) {
@@ -25,17 +36,13 @@ function createCompiler(stats) {
       if(event === 'done') {
         callback(stats);
       }
-    })
+    }),
+    outputPath: '/project1/dist'
   };
 }
 
 function createStats() {
   return {
-    compilation: {
-      compiler: {
-        outputPath: '/tmp'
-      }
-    }
   };
 }
 
@@ -87,8 +94,8 @@ test('the plugin provides a callback after compilation is done', function(t) {
 test('the plugin defaults output to 3rdpartylicenses.txt', function(t) {
   var plugin = createPlugin();
   var stats = createStats();
-  var outputPath = stats.compilation.compiler.outputPath;
   var compiler = createCompiler(stats);
+  var outputPath = compiler.outputPath;
   var fileExists = true;
   plugin.apply(compiler);
   try {
@@ -106,8 +113,8 @@ test('the plugin allows you to choose an output filename', function(t) {
   var opts = { filename: 'custom_file.txt' }
   var plugin = createPlugin(opts);
   var stats = createStats();
-  var outputPath = stats.compilation.compiler.outputPath;
   var compiler = createCompiler(stats);
+  var outputPath = compiler.outputPath;
   var fileExists = true;
   plugin.apply(compiler);
   try {

@@ -18,7 +18,7 @@ var licensePlugin = function(opts) {
 licensePlugin.prototype.apply = function(compiler) {
   var self = this;
   compiler.plugin('done', function(stats) {
-    var outputPath = stats.compilation.compiler.outputPath;
+    var outputPath = compiler.outputPath;
     fs.writeFileSync(path.join(outputPath, self.filename));
   });
 };
