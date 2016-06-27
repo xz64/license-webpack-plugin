@@ -1,8 +1,18 @@
 var path = require('path');
 var fs = require('fs');
 
+
 var licensePlugin = function(opts) {
-  this.filename = (opts && opts.filename) || '3rdpartylicenses.txt';
+  var errorMessages = {
+    'no-pattern': 'license-webpack-plugin: Please specify a regular expression '
+                + 'as the pattern property on the plugin options.'
+  }
+  this.errors = [];
+  if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
+    this.errors.push(errorMessages['no-pattern']);
+  }
+  this.pattern = opts.pattern;
+  this.filename = opts.filename || '3rdpartylicenses.txt';
 };
 
 licensePlugin.prototype.apply = function(compiler) {

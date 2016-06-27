@@ -10,6 +10,9 @@ var CleanWebpackPlugin = require('../index');
 mock();
 
 function createPlugin(opts) {
+  if(!opts) {
+    opts = createOpts();
+  }
   return new CleanWebpackPlugin(opts);
 }
 
@@ -33,6 +36,12 @@ function createStats() {
         outputPath: '/tmp'
       }
     }
+  };
+}
+
+function createOpts() {
+  return {
+    pattern: /^(MIT|ISC)$/
   };
 }
 
@@ -111,3 +120,33 @@ test('the plugin allows you to choose an output filename', function(t) {
   t.ok(fileExists);
   t.end();
 });
+
+test('the plugin generates an error if no options are provided', function(t) {
+  var opts = {};
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  var result = plugin.apply(compiler);
+  t.ok(plugin.errors.length > 0);
+  t.end();
+});
+
+test('the plugin generates an error if no regexp is provided', function(t) {
+  var opts = {};
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  var result = plugin.apply(compiler);
+  t.ok(plugin.errors.length > 0);
+  t.end();
+});
+
+test('the plugin generates an error on invalid regexp property', function(t) {
+  var opts = {
+    pattern: 'not_a_regex'
+  };
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  var result = plugin.apply(compiler);
+  t.ok(plugin.errors.length > 0);
+  t.end();
+});
+
