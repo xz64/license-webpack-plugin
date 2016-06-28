@@ -37,12 +37,20 @@ function createCompiler(stats) {
         callback(stats);
       }
     }),
-    outputPath: '/project1/dist'
+    outputPath: '/project1/dist',
+    context: '/project1'
   };
 }
 
 function createStats() {
   return {
+    compilation: {
+      modules: [
+        {
+          resource: '/project1/node_modules/lib1/dist/lib1.js'
+        }
+      ]
+    }
   };
 }
 
@@ -157,3 +165,10 @@ test('the plugin generates an error on invalid regexp property', function(t) {
   t.end();
 });
 
+test('the plugin should pick up modules from node_modules', function(t) {
+  var plugin = createPlugin();
+  var compiler = createCompiler();
+  plugin.apply(compiler);
+  t.deepEqual(plugin.modules, ['lib1']);
+  t.end();
+});
