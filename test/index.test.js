@@ -132,7 +132,7 @@ test('the plugin defaults output to 3rdpartylicenses.txt', function(t) {
 });
 
 test('the plugin allows you to choose an output filename', function(t) {
-  var opts = { filename: 'custom_file.txt' }
+  var opts = { pattern: /^MIT|ISC*/, filename: 'custom_file.txt' }
   var plugin = createPlugin(opts);
   var stats = createStats();
   var compiler = createCompiler(stats);
@@ -152,19 +152,33 @@ test('the plugin allows you to choose an output filename', function(t) {
 
 test('the plugin generates an error if no options are provided', function(t) {
   var opts = {};
-  var plugin = createPlugin(opts);
+  var plugin;
   var compiler = createCompiler();
-  plugin.apply(compiler);
-  t.ok(plugin.errors.length > 0);
+  var failed = false;
+  try { 
+    plugin = createPlugin(opts);
+    plugin.apply(compiler);
+  }
+  catch(e) {
+    failed = true;
+  }
+  t.ok(failed);
   t.end();
 });
 
 test('the plugin generates an error if no regexp is provided', function(t) {
   var opts = {};
-  var plugin = createPlugin(opts);
+  var plugin;
   var compiler = createCompiler();
-  plugin.apply(compiler);
-  t.ok(plugin.errors.length > 0);
+  var failed = false;
+  try { 
+    plugin = createPlugin(opts);
+    plugin.apply(compiler);
+  }
+  catch(e) {
+    failed = true;
+  }
+  t.ok(failed);
   t.end();
 });
 
@@ -172,10 +186,17 @@ test('the plugin generates an error on invalid regexp property', function(t) {
   var opts = {
     pattern: 'not_a_regex'
   };
-  var plugin = createPlugin(opts);
+  var plugin;
   var compiler = createCompiler();
-  plugin.apply(compiler);
-  t.ok(plugin.errors.length > 0);
+  var failed = false;
+  try { 
+    plugin = createPlugin(opts);
+    plugin.apply(compiler);
+  }
+  catch(e) {
+    failed = true;
+  }
+  t.ok(failed);
   t.end();
 });
 
@@ -184,5 +205,14 @@ test('the plugin should pick up modules from node_modules', function(t) {
   var compiler = createCompiler();
   plugin.apply(compiler);
   t.deepEqual(plugin.modules, ['lib1', 'lib2']);
+  t.end();
+});
+
+test('the plugin should skip non-matching licenses', function(t) {
+  var opts = { pattern: /^MIT$/ };
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  plugin.apply(compiler);
+  t.deepEqual(plugin.modules, ['lib1']);
   t.end();
 });
