@@ -7,18 +7,29 @@ var fs = require('fs');
 var path = require('path');
 var LicenseWebpackPlugin = require('../index');
 
-mock({
+var fileSystem = {
   '/project1': {
     'dist': {},
-    'node_modules': {
-      'lib1': {
-        'package.json': JSON.stringify({
-          license: 'ISC'
-        })
-      }
-    }
+    'node_modules': {}
   }
-});
+};
+
+addNodeModule(fileSystem, '/project1', 'lib1', 'MIT');
+addNodeModule(fileSystem, '/project1', 'lib2', 'ISC');
+
+mock(fileSystem);
+
+function addNodeModule(fileSystem, context, name, license) {
+  fileSystem[context].node_modules[name] = createNodeModule(license);
+}
+
+function createNodeModule(license) {
+  return {
+    'package.json': JSON.stringify({
+      license: license
+    })
+  };
+}
 
 function createPlugin(opts) {
   if(!opts) {
@@ -48,6 +59,9 @@ function createStats() {
       modules: [
         {
           resource: '/project1/node_modules/lib1/dist/lib1.js'
+        },
+        {
+          resource: '/project1/node_modules/lib2/dist/lib2.js'
         }
       ]
     }
@@ -169,6 +183,6 @@ test('the plugin should pick up modules from node_modules', function(t) {
   var plugin = createPlugin();
   var compiler = createCompiler();
   plugin.apply(compiler);
-  t.deepEqual(plugin.modules, ['lib1']);
+  t.deepEqual(plugin.modules, ['lib1', 'lib2']);
   t.end();
 });
