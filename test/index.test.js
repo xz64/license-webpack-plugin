@@ -5,7 +5,7 @@ var sinon = require('sinon');
 var mock = require('mock-fs');
 var fs = require('fs');
 var path = require('path');
-var CleanWebpackPlugin = require('../index');
+var LicenseWebpackPlugin = require('../index');
 
 mock({
   '/project1': {
@@ -24,7 +24,7 @@ function createPlugin(opts) {
   if(!opts) {
     opts = createOpts();
   }
-  return new CleanWebpackPlugin(opts);
+  return new LicenseWebpackPlugin(opts);
 }
 
 function createCompiler(stats) {
@@ -61,7 +61,7 @@ function createOpts() {
 }
 
 test('the plugin exists', function(t) {
-  t.ok(CleanWebpackPlugin);
+  t.ok(LicenseWebpackPlugin);
   t.end();
 });
 
@@ -71,7 +71,7 @@ test('the plugin can be instantiated with the new operator', function(t) {
 });
 
 test('the plugin has an apply function on its prototype', function(t) {
-  t.ok(typeof CleanWebpackPlugin.prototype.apply === 'function');
+  t.ok(typeof LicenseWebpackPlugin.prototype.apply === 'function');
   t.end();
 });
 
