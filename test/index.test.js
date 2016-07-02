@@ -13,6 +13,9 @@ var fileSystem = {
     'node_modules': {},
     'license_overrides': {
       'lib1.txt': 'License Override'
+    },
+    'license_templates': {
+      'FOO.txt': 'The foo license'
     }
   }
 };
@@ -21,6 +24,7 @@ addNodeModule(fileSystem, '/project1', 'lib1', 'MIT');
 addNodeModule(fileSystem, '/project1', 'lib2', 'ISC');
 addNodeModule(fileSystem, '/project1', 'lib3', 'MIT', 'license.txt');
 addNodeModule(fileSystem, '/project1', 'lib4', 'MIT', 'LICENSE.md');
+addNodeModule(fileSystem, '/project1', 'lib5', 'FOO', 'neverfound');
 
 mock(fileSystem);
 
@@ -309,8 +313,25 @@ test('the plugin allows you to specify an array of licenses to match',
   plugin.apply(compiler);
   var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
     .toString('utf8');
-  t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC\n\nlib3@0.0.1\n\n\n'
-    + 'lib4@0.0.1\n');
+  t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC\n\nlib3@0.0.1\nMIT'
+    + '\n\nlib4@0.0.1\nMIT');
   t.ok(plugin.errors.length > 1);
+  t.end();
+})
+
+test('the plugin falls back to a license template directory', function(t) {
+  var opts = createOpts();
+  opts.licenseTemplateDir = path.join('/project1', 'license_templates');
+  opts.pattern = /^FOO$/;
+  var stats = createStats();
+  stats.compilation.modules = [{
+    resource: '/project1/node_modules/lib5/dist/lib5.js'
+  }];
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler(stats);
+  plugin.apply(compiler);
+  var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    .toString('utf8');
+  t.equal(licenseFile, 'lib5@0.0.1\nThe foo license');
   t.end();
 })

@@ -8,7 +8,8 @@ var licensePlugin = function(opts) {
   this.errorMessages = {
     'no-pattern': 'Please specify a regular expression as the pattern property'
                 + 'on the plugin options.',
-    'no-license-file': 'Could not find a license file for {1}'
+    'no-license-file': 'Could not find a license file for {0}, defaulting to '
+                     + 'license name found in package.json: {1}'
   }
   this.errors = [];
   if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
@@ -18,6 +19,7 @@ var licensePlugin = function(opts) {
   this.pattern = opts.pattern;
   this.filename = opts.filename || '3rdpartylicenses.txt';
   this.modules = [];
+  this.licenseTemplateDir = opts.licenseTemplateDir || __dirname;
   this.licenseOverrides = opts.licenseOverrides || {};
   this.licenseFilenames = opts.licenseFilenames || [
     'LICENSE',
@@ -36,6 +38,7 @@ licensePlugin.prototype.apply = function(compiler) {
     var context = compiler.context;
     var moduleMap = {};
     var moduleCache = {};
+    var licenseTemplateCache = {};
     var licenseCompilation = '';
     var moduleSuffix = new RegExp(path.sep + '.*$');
 
@@ -64,7 +67,8 @@ licensePlugin.prototype.apply = function(compiler) {
       })
       .map(function(mod) {
         return parseModuleInfo(context, mod, moduleCache[mod],
-          self.licenseOverrides, self.licenseFilenames, self);
+          self.licenseOverrides, self.licenseFilenames, self,
+          licenseTemplateCache);
       });
 
     licenseCompilation = self.modules
@@ -86,8 +90,8 @@ function formatLicenseOutput(mod) {
   return mod.name + '@' + mod.version + '\n' + mod.licenseText;
 }
 
-function getLicenseText(context, mod, licenseOverrides, licenseFilenames,
-  plugin) {
+function getLicenseText(context, mod, license, licenseOverrides,
+  licenseFilenames, plugin, templateCache) {
   var file;
   var fileFound;
   var licenseText = '';
@@ -110,10 +114,29 @@ function getLicenseText(context, mod, licenseOverrides, licenseFilenames,
     licenseText =  fs.readFileSync(file).toString('utf8');
   }
   else {
-    plugin.errors.push(plugin.errorMessages['no-license-file'].replace('{1}',
-      mod));
+    licenseText = readLicenseTemplate(plugin.licenseTemplateDir,
+      templateCache, license);
+    if(!licenseText) {
+      licenseText = license;
+      plugin.errors.push(
+        plugin.errorMessages['no-license-file']
+          .replace('{0}', mod)
+          .replace('{1}', license)
+      );
+    }
   }
   return licenseText;
+}
+
+function readLicenseTemplate(templateDir, templateCache, license) {
+  var filename;
+  if(!templateCache[license]) {
+    filename = path.join(templateDir, license + '.txt');
+    if(IsThere(filename)) {
+      templateCache[license] = fs.readFileSync(filename).toString('utf8');
+    }
+  }
+  return templateCache[license];
 }
 
 function readPackageJson(context, mod) {
@@ -123,13 +146,13 @@ function readPackageJson(context, mod) {
 }
 
 function parseModuleInfo(context, mod, packagejson, licenseOverrides,
-  licenseFilenames, plugin) {
+  licenseFilenames, plugin, templateCache) {
   return {
     name: mod,
     version: packagejson.version,
     license: packagejson.license,
-    licenseText: getLicenseText(context, mod, licenseOverrides,
-      licenseFilenames, plugin)
+    licenseText: getLicenseText(context, mod, packagejson.license,
+      licenseOverrides, licenseFilenames, plugin, templateCache)
   };
 }
 
