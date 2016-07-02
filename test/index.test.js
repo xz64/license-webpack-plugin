@@ -10,7 +10,10 @@ var LicenseWebpackPlugin = require('../index');
 var fileSystem = {
   '/project1': {
     'dist': {},
-    'node_modules': {}
+    'node_modules': {},
+    'license_overrides': {
+      'lib1.txt': 'License Override'
+    }
   }
 };
 
@@ -251,5 +254,28 @@ test('the plugin\'s output should contain all licenses', function(t) {
   var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
     .toString('utf8');
   t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC');
+  t.end();
+});
+
+test('the plugin allows overriding license file per module', function(t) {
+  var opts = createOpts();
+  opts.licenseOverrides = {
+    lib1: path.join('/project1', 'license_overrides', 'lib1.txt')
+  }
+  var stats = {
+    compilation: {
+      modules: [
+        {
+          resource: '/project1/node_modules/lib1/dist/lib1.js'
+        }
+      ]
+    }
+  }
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler(stats);
+  plugin.apply(compiler);
+  var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    .toString('utf8');
+  t.equal(licenseFile, 'lib1@0.0.1\nLicense Override');
   t.end();
 });

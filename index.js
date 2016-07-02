@@ -16,6 +16,7 @@ var licensePlugin = function(opts) {
   this.pattern = opts.pattern;
   this.filename = opts.filename || '3rdpartylicenses.txt';
   this.modules = [];
+  this.licenseOverrides = opts.licenseOverrides || {};
 };
 
 licensePlugin.prototype.apply = function(compiler) {
@@ -43,7 +44,8 @@ licensePlugin.prototype.apply = function(compiler) {
         return isMatching;
       })
       .map(function(mod) {
-        return parseModuleInfo(context, mod, moduleCache[mod]);
+        return parseModuleInfo(context, mod, moduleCache[mod],
+          self.licenseOverrides);
       });
     licenseCompilation = self.modules
       .reduce(function(prev, curr) {
@@ -59,8 +61,9 @@ function formatLicenseOutput(mod) {
   return mod.name + '@' + mod.version + '\n' + mod.licenseText;
 }
 
-function getLicenseText(context, mod) {
-  var file = path.join(context, MODULE_DIR, mod, 'LICENSE');
+function getLicenseText(context, mod, licenseOverrides) {
+  var file = licenseOverrides[mod]
+    || path.join(context, MODULE_DIR, mod, 'LICENSE');
   return fs.readFileSync(file).toString('utf8');
 }
 
@@ -70,12 +73,12 @@ function readPackageJson(context, mod) {
   return JSON.parse(file);
 }
 
-function parseModuleInfo(context, mod, packagejson) {
+function parseModuleInfo(context, mod, packagejson, licenseOverrides) {
   return {
     name: mod,
     version: packagejson.version,
     license: packagejson.license,
-    licenseText: getLicenseText(context, mod)
+    licenseText: getLicenseText(context, mod, licenseOverrides)
   };
 }
 
