@@ -1,4 +1,7 @@
 # License Webpack Plugin
+
+[![Build Status](https://api.travis-ci.org/xz64/license-webpack-plugin.svg?branch=master)](https://travis-ci.org/xz64/timestamp-microservice)
+
 This webpack plugin finds all 3rd party libraries used in a webpack build whose
 licenses match a given regex, and outputs the licenses for each package in your
 webpack build directory.
