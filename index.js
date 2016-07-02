@@ -38,6 +38,7 @@ licensePlugin.prototype.apply = function(compiler) {
     var moduleCache = {};
     var licenseCompilation = '';
     var moduleSuffix = new RegExp(path.sep + '.*$');
+
     stats.compilation.modules
       .filter(function(mod) {
         return !!mod.resource;
@@ -48,6 +49,7 @@ licensePlugin.prototype.apply = function(compiler) {
           .replace(moduleSuffix, '');
         moduleMap[moduleName] = {};
       });
+
     self.modules = Object.keys(moduleMap)
       .filter(function(mod) {
         if(mod.trim() === '') {
@@ -64,13 +66,16 @@ licensePlugin.prototype.apply = function(compiler) {
         return parseModuleInfo(context, mod, moduleCache[mod],
           self.licenseOverrides, self.licenseFilenames, self);
       });
+
     licenseCompilation = self.modules
       .reduce(function(prev, curr) {
         return prev + '\n\n' + formatLicenseOutput(curr);
       }, '')
       .replace('\n\n', '');
+
     fs.writeFileSync(path.join(outputPath, self.filename),
       licenseCompilation);
+
     self.errors.forEach(function(error) {
       console.error('license-webpack-plugin: ' + error);
     });
