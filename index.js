@@ -5,12 +5,6 @@ var IsThere = require('is-there');
 var MODULE_DIR = 'node_modules';
 
 var licensePlugin = function(opts) {
-  this.errorMessages = {
-    'no-pattern': 'Please specify a regular expression as the pattern property'
-                + 'on the plugin options.',
-    'no-license-file': 'Could not find a license file for {0}, defaulting to '
-                     + 'license name found in package.json: {1}'
-  }
   this.errors = [];
   if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
     this.errors.push(this.errorMessages['no-pattern']);
@@ -30,6 +24,13 @@ var licensePlugin = function(opts) {
     'license.txt'
   ];
 };
+
+licensePlugin.prototype.errorMessages = {
+  'no-pattern': 'Please specify a regular expression as the pattern property'
+              + 'on the plugin options.',
+  'no-license-file': 'Could not find a license file for {0}, defaulting to '
+                   + 'license name found in package.json: {1}'
+}
 
 licensePlugin.prototype.apply = function(compiler) {
   var self = this;
