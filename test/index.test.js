@@ -19,21 +19,25 @@ var fileSystem = {
 
 addNodeModule(fileSystem, '/project1', 'lib1', 'MIT');
 addNodeModule(fileSystem, '/project1', 'lib2', 'ISC');
+addNodeModule(fileSystem, '/project1', 'lib3', 'MIT', 'license.txt');
+addNodeModule(fileSystem, '/project1', 'lib4', 'MIT', 'LICENSE.md');
 
 mock(fileSystem);
 
-function addNodeModule(fileSystem, context, name, license) {
-  fileSystem[context].node_modules[name] = createNodeModule(license);
+function addNodeModule(fileSystem, context, name, license, licenseFilename) {
+  fileSystem[context].node_modules[name] = createNodeModule(license,
+    licenseFilename);
 }
 
-function createNodeModule(license) {
-  return {
+function createNodeModule(license, licenseFilename) {
+  var mod = {
     'package.json': JSON.stringify({
       license: license,
       version: '0.0.1'
-    }),
-    'LICENSE': license,
+    })
   };
+  mod[licenseFilename || 'LICENSE'] = license;
+  return mod;
 }
 
 function createPlugin(opts) {
@@ -67,6 +71,12 @@ function createStats() {
         },
         {
           resource: '/project1/node_modules/lib2/dist/lib2.js'
+        },
+        {
+          resource: '/project1/node_modules/lib3/dist/lib3.js'
+        },
+        {
+          resource: '/project1/node_modules/lib4/dist/lib4.js'
         }
       ]
     }
@@ -211,7 +221,7 @@ test('the plugin should pick up modules from node_modules', function(t) {
   var libs;
   plugin.apply(compiler);
   libs = plugin.modules.map(function(mod) { return mod.name; });
-  t.deepEqual(libs, ['lib1', 'lib2']);
+  t.deepEqual(libs, ['lib1', 'lib2', 'lib3', 'lib4']);
   t.end();
 });
 
@@ -222,7 +232,7 @@ test('the plugin should skip non-matching licenses', function(t) {
   var libs;
   plugin.apply(compiler);
   libs = plugin.modules.map(function(mod) { return mod.name; });
-  t.deepEqual(libs, ['lib1']);
+  t.deepEqual(libs, ['lib1', 'lib3', 'lib4']);
   t.end();
 });
 
@@ -279,3 +289,28 @@ test('the plugin allows overriding license file per module', function(t) {
   t.equal(licenseFile, 'lib1@0.0.1\nLicense Override');
   t.end();
 });
+
+test('the plugin matches license.txt', function(t) {
+  var plugin = createPlugin();
+  var compiler = createCompiler();
+  var libs;
+  plugin.apply(compiler);
+  libs = plugin.modules.map(function(mod) { return mod.name; });
+  t.ok(libs.indexOf('lib3') > -1);
+  t.end();
+})
+
+test('the plugin allows you to specify an array of licenses to match',
+  function(t) {
+  var opts = createOpts();
+  opts.licenseFilenames = ['LICENSE'];
+  var plugin = createPlugin(opts);
+  var compiler = createCompiler();
+  plugin.apply(compiler);
+  var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    .toString('utf8');
+  t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC\n\nlib3@0.0.1\n\n\n'
+    + 'lib4@0.0.1\n');
+  t.ok(plugin.errors.length > 1);
+  t.end();
+})

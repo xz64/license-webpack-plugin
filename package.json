@@ -25,5 +25,8 @@
     "mock-fs": "^3.9.0",
     "sinon": "^1.17.4",
     "tape": "^4.6.0"
+  },
+  "dependencies": {
+    "is-there": "^4.3.3"
   }
 }
