@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Outputs licenses from 3rd party libraries to a file",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "scripts": {
     "test": "node test/*.js"
   },
