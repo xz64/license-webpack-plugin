@@ -38,14 +38,21 @@ licensePlugin.prototype.apply = function(compiler) {
     var moduleCache = {};
     var licenseCompilation = '';
     var moduleSuffix = new RegExp(path.sep + '.*$');
-    stats.compilation.modules.forEach(function(mod) {
-      var moduleName = mod.resource
-        .replace(path.join(context, MODULE_DIR) + path.sep, '')
-        .replace(moduleSuffix, '');
-      moduleMap[moduleName] = {};
-    });
+    stats.compilation.modules
+      .filter(function(mod) {
+        return !!mod.resource;
+      })
+      .forEach(function(mod) {
+        var moduleName = mod.resource
+          .replace(path.join(context, MODULE_DIR) + path.sep, '')
+          .replace(moduleSuffix, '');
+        moduleMap[moduleName] = {};
+      });
     self.modules = Object.keys(moduleMap)
       .filter(function(mod) {
+        if(mod.trim() === '') {
+          return false;
+        }
         var moduleInfo = getModuleInfo(context, mod, moduleCache);
         var isMatching = self.pattern.test(moduleInfo.license);
         if(isMatching) {
