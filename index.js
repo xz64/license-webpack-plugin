@@ -24,6 +24,8 @@ licensePlugin.prototype.apply = function(compiler) {
     var outputPath = compiler.outputPath;
     var context = compiler.context;
     var moduleMap = {};
+    var moduleCache = {};
+    var licenseCompilation = '';
     var moduleSuffix = new RegExp(path.sep + '.*$');
     stats.compilation.modules.forEach(function(mod) {
       var moduleName = mod.resource
@@ -33,16 +35,53 @@ licensePlugin.prototype.apply = function(compiler) {
     });
     self.modules = Object.keys(moduleMap)
       .filter(function(mod) {
-        return self.pattern.test(getLicense(context, mod));
+        var moduleInfo = getModuleInfo(context, mod, moduleCache);
+        var isMatching = self.pattern.test(moduleInfo.license);
+        if(isMatching) {
+          moduleCache[mod] = moduleInfo;
+        }
+        return isMatching;
+      })
+      .map(function(mod) {
+        return parseModuleInfo(context, mod, moduleCache[mod]);
       });
-    fs.writeFileSync(path.join(outputPath, self.filename));
+    licenseCompilation = self.modules
+      .reduce(function(prev, curr) {
+        return prev + '\n\n' + formatLicenseOutput(curr);
+      }, '')
+      .replace('\n\n', '');
+    fs.writeFileSync(path.join(outputPath, self.filename),
+      licenseCompilation);
   });
 };
 
-function getLicense(context, mod) {
-  var loc = path.join(context, MODULE_DIR, mod, 'package.json');
-  var packagejson = JSON.parse(fs.readFileSync(loc));
-  return packagejson.license || 'No license specified!';
+function formatLicenseOutput(mod) {
+  return mod.name + '@' + mod.version + '\n' + mod.licenseText;
+}
+
+function getLicenseText(context, mod) {
+  var file = path.join(context, MODULE_DIR, mod, 'LICENSE');
+  return fs.readFileSync(file).toString('utf8');
+}
+
+function readPackageJson(context, mod) {
+  var pathName = path.join(context, MODULE_DIR, mod, 'package.json');
+  var file = fs.readFileSync(pathName);
+  return JSON.parse(file);
+}
+
+function parseModuleInfo(context, mod, packagejson) {
+  return {
+    name: mod,
+    version: packagejson.version,
+    license: packagejson.license,
+    licenseText: getLicenseText(context, mod)
+  };
+}
+
+function getModuleInfo(context, mod, moduleCache) {
+  var packagejson = readPackageJson(context, mod);
+  return packagejson;
 }
 
 module.exports = licensePlugin;

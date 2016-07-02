@@ -26,8 +26,10 @@ function addNodeModule(fileSystem, context, name, license) {
 function createNodeModule(license) {
   return {
     'package.json': JSON.stringify({
-      license: license
-    })
+      license: license,
+      version: '0.0.1'
+    }),
+    'LICENSE': license,
   };
 }
 
@@ -203,8 +205,10 @@ test('the plugin generates an error on invalid regexp property', function(t) {
 test('the plugin should pick up modules from node_modules', function(t) {
   var plugin = createPlugin();
   var compiler = createCompiler();
+  var libs;
   plugin.apply(compiler);
-  t.deepEqual(plugin.modules, ['lib1', 'lib2']);
+  libs = plugin.modules.map(function(mod) { return mod.name; });
+  t.deepEqual(libs, ['lib1', 'lib2']);
   t.end();
 });
 
@@ -212,7 +216,40 @@ test('the plugin should skip non-matching licenses', function(t) {
   var opts = { pattern: /^MIT$/ };
   var plugin = createPlugin(opts);
   var compiler = createCompiler();
+  var libs;
   plugin.apply(compiler);
-  t.deepEqual(plugin.modules, ['lib1']);
+  libs = plugin.modules.map(function(mod) { return mod.name; });
+  t.deepEqual(libs, ['lib1']);
+  t.end();
+});
+
+test('the plugin should match a file named LICENSE', function(t) {
+  var plugin = createPlugin();
+  var compiler = createCompiler();
+  var libs;
+  plugin.apply(compiler);
+  t.equal(plugin.modules[0].licenseText, 'MIT');
+  t.end();
+});
+
+test('the plugin\'s output should contain all licenses', function(t) {
+  var stats = {
+    compilation: {
+      modules: [
+        {
+          resource: '/project1/node_modules/lib1/dist/lib1.js'
+        },
+        {
+          resource: '/project1/node_modules/lib2/dist/lib2.js'
+        }
+      ]
+    }
+  }
+  var plugin = createPlugin();
+  var compiler = createCompiler(stats);
+  plugin.apply(compiler);
+  var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    .toString('utf8');
+  t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC');
   t.end();
 });
