@@ -48,9 +48,7 @@ licensePlugin.prototype.apply = function(compiler) {
         return !!mod.resource;
       })
       .forEach(function(mod) {
-        var moduleName = mod.resource
-          .replace(path.join(context, MODULE_DIR) + path.sep, '')
-          .replace(moduleSuffix, '');
+        var moduleName = findPackageName(context, mod.resource);
         moduleMap[moduleName] = {};
       });
 
@@ -77,7 +75,6 @@ licensePlugin.prototype.apply = function(compiler) {
         return prev + '\n\n' + formatLicenseOutput(curr);
       }, '')
       .replace('\n\n', '');
-
     fs.writeFileSync(path.join(outputPath, self.filename),
       licenseCompilation);
 
@@ -86,6 +83,18 @@ licensePlugin.prototype.apply = function(compiler) {
     });
   });
 };
+
+function findPackageName(context, jsFilePath) {
+  return jsFilePath
+    .replace(path.join(context, MODULE_DIR) + path.sep, '')
+    .split(path.sep)
+    .filter(function(value, index, arr) {
+      return value.charAt(0) === '@'
+        || (index === 0 && value.charAt(0) !== '@')
+        || (index > 0 && arr[index-1].charAt(0) === '@'); 
+    })
+    .join('/');
+}
 
 function formatLicenseOutput(mod) {
   return mod.name + '@' + mod.version + '\n' + mod.licenseText;

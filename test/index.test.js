@@ -30,15 +30,23 @@ addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib4',
   license: 'MIT', licenseFilename: 'LICENSE.md'});
 addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib5',
   license: 'FOO', licenseFilename: 'neverfound'});
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib6',
+  license: 'MIT', licenseFilename: 'LICENSE.md', scope: '@foo'});
 
 mock(fileSystem);
 
 function addNodeModule(opts) {
-  fileSystem[opts.context].node_modules[opts.name] = createNodeModule(opts.license,
-    opts.licenseFilename);
+  if(opts.scope) {
+    fileSystem[opts.context].node_modules[opts.scope] = {};
+    fileSystem[opts.context].node_modules[opts.scope][opts.name]
+      = createNodeModule(opts.license, opts.licenseFilename);
+  } else {
+    fileSystem[opts.context].node_modules[opts.name] = createNodeModule(
+      opts.license, opts.licenseFilename);
+  }
 }
 
-function createNodeModule(license, licenseFilename) {
+function createNodeModule(license, licenseFilename, scope) {
   var mod = {
     'package.json': JSON.stringify({
       license: license,
@@ -340,3 +348,17 @@ test('the plugin falls back to a license template directory', function(t) {
   t.equal(licenseFile, 'lib5@0.0.1\nThe foo license');
   t.end();
 })
+
+test('the plugin should handle scoped packages properly', function(t) {
+  var stats = createStats();
+  stats.compilation.modules = [{
+    resource: '/project1/node_modules/@foo/lib6/dist/lib6.js'
+  }];
+  var plugin = createPlugin();
+  var compiler = createCompiler(stats);
+  plugin.apply(compiler);
+  var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    .toString('utf8');
+  t.equal(licenseFile, '@foo/lib6@0.0.1\nMIT');
+  t.end();
+});
