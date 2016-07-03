@@ -20,17 +20,22 @@ var fileSystem = {
   }
 };
 
-addNodeModule(fileSystem, '/project1', 'lib1', 'MIT');
-addNodeModule(fileSystem, '/project1', 'lib2', 'ISC');
-addNodeModule(fileSystem, '/project1', 'lib3', 'MIT', 'license.txt');
-addNodeModule(fileSystem, '/project1', 'lib4', 'MIT', 'LICENSE.md');
-addNodeModule(fileSystem, '/project1', 'lib5', 'FOO', 'neverfound');
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib1',
+  license: 'MIT'});
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib2',
+  license: 'ISC'});
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib3',
+  license: 'MIT', licenseFilename: 'license.txt'});
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib4',
+  license: 'MIT', licenseFilename: 'LICENSE.md'});
+addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib5',
+  license: 'FOO', licenseFilename: 'neverfound'});
 
 mock(fileSystem);
 
-function addNodeModule(fileSystem, context, name, license, licenseFilename) {
-  fileSystem[context].node_modules[name] = createNodeModule(license,
-    licenseFilename);
+function addNodeModule(opts) {
+  fileSystem[opts.context].node_modules[opts.name] = createNodeModule(opts.license,
+    opts.licenseFilename);
 }
 
 function createNodeModule(license, licenseFilename) {
