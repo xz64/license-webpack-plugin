@@ -68,7 +68,7 @@ function createCompiler(stats) {
   if(!stats) {
     stats = createStats();
   }
-  return { 
+  return {
     plugin: sinon.spy(function(event, callback) {
       if(event === 'done') {
         callback(stats);
@@ -187,7 +187,7 @@ test('the plugin generates an error if no options are provided', function(t) {
   var plugin;
   var compiler = createCompiler();
   var failed = false;
-  try { 
+  try {
     plugin = createPlugin(opts);
     plugin.apply(compiler);
   }
@@ -203,7 +203,7 @@ test('the plugin generates an error if no regexp is provided', function(t) {
   var plugin;
   var compiler = createCompiler();
   var failed = false;
-  try { 
+  try {
     plugin = createPlugin(opts);
     plugin.apply(compiler);
   }
@@ -221,7 +221,7 @@ test('the plugin generates an error on invalid regexp property', function(t) {
   var plugin;
   var compiler = createCompiler();
   var failed = false;
-  try { 
+  try {
     plugin = createPlugin(opts);
     plugin.apply(compiler);
   }
