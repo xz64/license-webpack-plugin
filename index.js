@@ -1,174 +1,194 @@
 var path = require('path');
 var fs = require('fs');
 var IsThere = require('is-there');
+var objectAssign = require('object-assign');
 
 var MODULE_DIR = 'node_modules';
 
-var licensePlugin = function(opts) {
-  this.errors = [];
-  if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
-    this.errors.push(this.errorMessages['no-pattern']);
-    throw this.errorMessages['no-pattern'];
-  }
-  this.pattern = opts.pattern;
-  this.filename = opts.filename || '3rdpartylicenses.txt';
-  this.modules = [];
-  this.licenseTemplateDir = opts.licenseTemplateDir || __dirname;
-  this.licenseOverrides = opts.licenseOverrides || {};
-  this.licenseFilenames = opts.licenseFilenames || [
-    'LICENSE',
-    'LICENSE.md',
-    'LICENSE.txt',
-    'license',
-    'license.md',
-    'license.txt'
-  ];
-};
-
-licensePlugin.prototype.errorMessages = {
-  'no-pattern': 'Please specify a regular expression as the pattern property'
-              + 'on the plugin options.',
-  'no-license-file': 'Could not find a license file for {0}, defaulting to '
-                   + 'license name found in package.json: {1}'
-}
-
-licensePlugin.prototype.apply = function(compiler) {
-  var self = this;
-  compiler.plugin('done', function(stats) {
-    var outputPath = compiler.outputPath;
-    var context = compiler.context;
-    var moduleMap = {};
-    var moduleCache = {};
-    var licenseTemplateCache = {};
-    var licenseCompilation = '';
-    var moduleSuffix = new RegExp(path.sep + '.*$');
-
-    stats.compilation.modules
-      .filter(function(mod) {
-        return !!mod.resource;
+var moduleReader = {
+  readPackageJson: function(mod) {
+    var pathName = path.join(this.context, MODULE_DIR, mod, 'package.json');
+    var file = fs.readFileSync(pathName);
+    return JSON.parse(file);
+  },
+  getModuleInfo: function(mod) {
+    var packagejson = this.readPackageJson(mod);
+    return packagejson;
+  },
+  parseModuleInfo: function(mod) {
+    var packagejson = this.moduleCache[mod];
+    return {
+      name: mod,
+      version: packagejson.version,
+      license: packagejson.license,
+      licenseText: this.getLicenseText(mod, packagejson.license)
+    };
+  },
+  findPackageName: function(jsFilePath) {
+    return jsFilePath
+      .replace(path.join(this.context, MODULE_DIR) + path.sep, '')
+      .split(path.sep)
+      .filter(function(value, index, arr) {
+        return value.charAt(0) === '@'
+          || (index === 0 && value.charAt(0) !== '@')
+          || (index > 0 && arr[index-1].charAt(0) === '@');
       })
-      .forEach(function(mod) {
-        var moduleName = findPackageName(context, mod.resource);
-        moduleMap[moduleName] = {};
-      });
-
-    self.modules = Object.keys(moduleMap)
+      .join('/');
+  },
+  writeModuleInfo: function() {
+    this.modules = Object.keys(this.moduleMap)
       .filter(function(mod) {
         if(mod.trim() === '') {
           return false;
         }
-        var moduleInfo = getModuleInfo(context, mod, moduleCache);
-        var isMatching = self.pattern.test(moduleInfo.license);
+        var moduleInfo = this.getModuleInfo(mod);
+        var isMatching = this.pattern.test(moduleInfo.license);
         if(isMatching) {
-          moduleCache[mod] = moduleInfo;
+          this.moduleCache[mod] = moduleInfo;
         }
         return isMatching;
+      }.bind(this))
+      .map(this.parseModuleInfo.bind(this));
+  },
+  gatherModuleInfo: function(moduleStats) {
+    var moduleMap = {};
+    moduleStats
+      .filter(function(mod) {
+        return !!mod.resource;
       })
-      .map(function(mod) {
-        return parseModuleInfo(context, mod, moduleCache[mod],
-          self.licenseOverrides, self.licenseFilenames, self,
-          licenseTemplateCache);
-      });
-
-    licenseCompilation = self.modules
-      .reduce(function(prev, curr) {
-        return prev + '\n\n' + formatLicenseOutput(curr);
-      }, '')
-      .replace('\n\n', '');
-    fs.writeFileSync(path.join(outputPath, self.filename),
-      licenseCompilation);
-
-    self.errors.forEach(function(error) {
-      console.error('license-webpack-plugin: ' + error);
-    });
-  });
+      .forEach(function(mod) {
+        var moduleName = this.findPackageName(mod.resource);
+        moduleMap[moduleName] = {};
+      }.bind(this));
+    this.moduleMap = moduleMap;
+    this.writeModuleInfo();
+  }
 };
 
-function findPackageName(context, jsFilePath) {
-  return jsFilePath
-    .replace(path.join(context, MODULE_DIR) + path.sep, '')
-    .split(path.sep)
-    .filter(function(value, index, arr) {
-      return value.charAt(0) === '@'
-        || (index === 0 && value.charAt(0) !== '@')
-        || (index > 0 && arr[index-1].charAt(0) === '@'); 
-    })
-    .join('/');
-}
+var licenseReader = {
+  getLicenseText: function(mod, license) {
+    var licenseText = '';
+    var file =
+      (this.licenseOverrides[mod] && IsThere(this.licenseOverrides[mod])) ?
+      file = this.licenseOverrides[mod] : file = this.findLicenseFile(mod);
 
-function formatLicenseOutput(mod) {
-  return mod.name + '@' + mod.version + '\n' + mod.licenseText;
-}
+    if(file) {
+      licenseText = fs.readFileSync(file).toString('utf8');
+    }
+    else {
+      licenseText = this.readLicenseTemplate(license);
+      if(!licenseText) {
+        licenseText = license;
+        this.errors.push(
+          this.errorMessages['no-license-file']
+            .replace('{0}', mod)
+            .replace('{1}', license)
+        );
+      }
+    }
 
-function getLicenseText(context, mod, license, licenseOverrides,
-  licenseFilenames, plugin, templateCache) {
-  var file;
-  var fileFound;
-  var licenseText = '';
-  if(licenseOverrides[mod] && IsThere(licenseOverrides[mod])) {
-    fileFound = true;
-    file = licenseOverrides[mod];
-  }
-  else {
-    for(var i = 0; i < licenseFilenames.length; i++) {
-      var licenseFile = path.join(context, MODULE_DIR, mod,
-        licenseFilenames[i]);
+    return licenseText;
+  },
+  findLicenseFile: function(mod) {
+    var file;
+    for(var i = 0; i < this.licenseFilenames.length; i++) {
+      var licenseFile = path.join(this.context, MODULE_DIR, mod,
+        this.licenseFilenames[i]);
       if(IsThere(licenseFile)) {
         file = licenseFile;
-        fileFound = true;
         break;
       }
-    };
-  }
-  if(fileFound) { 
-    licenseText =  fs.readFileSync(file).toString('utf8');
-  }
-  else {
-    licenseText = readLicenseTemplate(plugin.licenseTemplateDir,
-      templateCache, license);
-    if(!licenseText) {
-      licenseText = license;
-      plugin.errors.push(
-        plugin.errorMessages['no-license-file']
-          .replace('{0}', mod)
-          .replace('{1}', license)
-      );
     }
-  }
-  return licenseText;
-}
-
-function readLicenseTemplate(templateDir, templateCache, license) {
-  var filename;
-  if(!templateCache[license]) {
-    filename = path.join(templateDir, license + '.txt');
-    if(IsThere(filename)) {
-      templateCache[license] = fs.readFileSync(filename).toString('utf8');
+    return file;
+  },
+  readLicenseTemplate: function(license) {
+    var filename;
+    if(!this.licenseTemplateCache[license]) {
+      filename = path.join(this.licenseTemplateDir, license + '.txt');
+      if(IsThere(filename)) {
+        this.licenseTemplateCache[license] =
+          fs.readFileSync(filename).toString('utf8');
+      }
     }
+    return this.licenseTemplateCache[license];
   }
-  return templateCache[license];
+};
+
+var licenseWriter = {
+  format: function(mod) {
+    return mod.name + '@' + mod.version + '\n' + mod.licenseText;
+  },
+  compile: function() {
+    return this.modules
+      .reduce(function(prev, curr) {
+        return prev + '\n\n' + this.format(curr);
+      }.bind(this), '')
+      .replace('\n\n', '');
+  },
+  write: function() {
+    var outputText = this.compile();
+    var destFile = path.join(this.outputPath, this.filename);
+    fs.writeFileSync(destFile, outputText);
+  }
 }
 
-function readPackageJson(context, mod) {
-  var pathName = path.join(context, MODULE_DIR, mod, 'package.json');
-  var file = fs.readFileSync(pathName);
-  return JSON.parse(file);
-}
+var plugin = {
+  errorMessages: {
+    'no-pattern': 'Please specify a regular expression as the pattern property'
+                + 'on the plugin options.',
+    'no-license-file': 'Could not find a license file for {0}, defaulting to '
+                     + 'license name found in package.json: {1}'
+  },
+  apply: function(compiler) {
+    compiler.plugin('done', function(stats) {
+      this.outputPath = compiler.outputPath;
+      this.context = compiler.context;
 
-function parseModuleInfo(context, mod, packagejson, licenseOverrides,
-  licenseFilenames, plugin, templateCache) {
+      this.gatherModuleInfo(stats.compilation.modules);
+      this.write();
+
+      this.errors.forEach(function(error) {
+        console.error('license-webpack-plugin: ' + error);
+      });
+    }.bind(this));
+  }
+};
+
+var composedPlugin = objectAssign(
+  {},
+  plugin,
+  moduleReader,
+  licenseReader,
+  licenseWriter
+);
+
+var instance = function() {
   return {
-    name: mod,
-    version: packagejson.version,
-    license: packagejson.license,
-    licenseText: getLicenseText(context, mod, packagejson.license,
-      licenseOverrides, licenseFilenames, plugin, templateCache)
+    modules: [],
+    errors: [],
+    filename: '3rdpartylicenses.txt',
+    moduleCache: {},
+    licenseTemplateDir: __dirname,
+    licenseTemplateCache: {},
+    licenseOverrides: {},
+    licenseFilenames: [
+      'LICENSE',
+      'LICENSE.md',
+      'LICENSE.txt',
+      'license',
+      'license.md',
+      'license.txt'
+    ]
   };
-}
+};
 
-function getModuleInfo(context, mod, moduleCache) {
-  var packagejson = readPackageJson(context, mod);
-  return packagejson;
-}
+var licensePlugin = function(opts) {
+  if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
+    this.errors.push(plugin.errorMessages['no-pattern']);
+    throw plugin.errorMessages['no-pattern'];
+  }
+  objectAssign(this, composedPlugin, instance(), opts);
+  this.apply = this.apply.bind(this);
+};
 
 module.exports = licensePlugin;

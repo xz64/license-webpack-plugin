@@ -106,6 +106,10 @@ function createOpts() {
   };
 }
 
+function getModuleList(plugin) {
+  return plugin.modules.map(function(mod) { return mod.name; });
+}
+
 test('the plugin exists', function(t) {
   t.ok(LicenseWebpackPlugin);
   t.end();
@@ -116,8 +120,8 @@ test('the plugin can be instantiated with the new operator', function(t) {
   t.end();
 });
 
-test('the plugin has an apply function on its prototype', function(t) {
-  t.ok(typeof LicenseWebpackPlugin.prototype.apply === 'function');
+test('the plugin has an apply function', function(t) {
+  t.ok(typeof createPlugin().apply === 'function');
   t.end();
 });
 
@@ -237,7 +241,7 @@ test('the plugin should pick up modules from node_modules', function(t) {
   var compiler = createCompiler();
   var libs;
   plugin.apply(compiler);
-  libs = plugin.modules.map(function(mod) { return mod.name; });
+  libs = getModuleList(plugin);
   t.deepEqual(libs, ['lib1', 'lib2', 'lib3', 'lib4']);
   t.end();
 });
@@ -248,7 +252,7 @@ test('the plugin should skip non-matching licenses', function(t) {
   var compiler = createCompiler();
   var libs;
   plugin.apply(compiler);
-  libs = plugin.modules.map(function(mod) { return mod.name; });
+  libs = getModuleList(plugin);
   t.deepEqual(libs, ['lib1', 'lib3', 'lib4']);
   t.end();
 });
@@ -258,6 +262,7 @@ test('the plugin should match a file named LICENSE', function(t) {
   var compiler = createCompiler();
   var libs;
   plugin.apply(compiler);
+  libs = getModuleList(plugin);
   t.equal(plugin.modules[0].licenseText, 'MIT');
   t.end();
 });
@@ -274,7 +279,7 @@ test('the plugin\'s output should contain all licenses', function(t) {
         }
       ]
     }
-  }
+  };
   var plugin = createPlugin();
   var compiler = createCompiler(stats);
   plugin.apply(compiler);
@@ -312,7 +317,7 @@ test('the plugin matches license.txt', function(t) {
   var compiler = createCompiler();
   var libs;
   plugin.apply(compiler);
-  libs = plugin.modules.map(function(mod) { return mod.name; });
+  libs = getModuleList(plugin);
   t.ok(libs.indexOf('lib3') > -1);
   t.end();
 })
