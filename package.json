@@ -26,6 +26,7 @@
   "homepage": "https://github.com/xz64/license-webpack-plugin#readme",
   "devDependencies": {
     "mock-fs": "^3.9.0",
+    "rimraf": "^2.5.3",
     "sinon": "^1.17.4",
     "tape": "^4.6.0"
   },

@@ -1,10 +1,11 @@
 'use strict';
 
-var test = require('tape');
+var _test = require('tape');
 var sinon = require('sinon');
 var mock = require('mock-fs');
 var fs = require('fs');
 var path = require('path');
+var rimraf = require('rimraf');
 var LicenseWebpackPlugin = require('../index');
 
 var fileSystem = {
@@ -34,6 +35,23 @@ addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib6',
   license: 'MIT', licenseFilename: 'LICENSE.md', scope: '@foo'});
 
 mock(fileSystem);
+
+function cleanup() {
+  rimraf.sync('/project1/dist/*')
+}
+
+function beforeTest() {
+  cleanup();
+}
+
+function afterTest() {
+}
+
+function test(name, cb) {
+  beforeTest();
+  _test(name, cb);
+  afterTest();
+}
 
 function addNodeModule(opts) {
   if(opts.scope) {
