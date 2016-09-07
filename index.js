@@ -42,8 +42,8 @@ var moduleReader = {
           return false;
         }
         var moduleInfo = this.getModuleInfo(mod);
-        var isMatching = this.pattern.test(moduleInfo.license);
-        if(isMatching) {
+        var isMatching = this.pattern.test(moduleInfo.license) || !moduleInfo.license && this.undefined;
+        if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
         }
         return isMatching;
