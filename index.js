@@ -116,7 +116,11 @@ var licenseReader = {
 
 var licenseWriter = {
   format: function(mod) {
-    return mod.name + '@' + mod.version + '\n' + mod.licenseText;
+    var formatted = mod.name + '@' + mod.version;
+    if (this.addLicense) {
+      formatted += '\n' + mod.licenseText
+    }
+    return formatted;
   },
   compile: function() {
     return this.modules
