@@ -117,7 +117,7 @@ var licenseReader = {
 var licenseWriter = {
   format: function(mod) {
     var formatted = mod.name + '@' + mod.version;
-    if (this.addLicense) {
+    if (this.addLicenseText) {
       formatted += '\n' + mod.licenseText
     }
     return formatted;
@@ -172,6 +172,8 @@ var instance = function() {
     errors: [],
     filename: '3rdpartylicenses.txt',
     moduleCache: {},
+    addLicenseText: true,
+    undefined: false,
     licenseTemplateDir: __dirname,
     licenseTemplateCache: {},
     licenseOverrides: {},
