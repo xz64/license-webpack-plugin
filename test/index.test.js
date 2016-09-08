@@ -65,7 +65,7 @@ function addNodeModule(opts) {
   }
 }
 
-function createNodeModule(license, licenseFilename, scope) {
+function createNodeModule(license, licenseFilename) {
   var mod = {
     'package.json': JSON.stringify({
       license: license,
@@ -73,7 +73,7 @@ function createNodeModule(license, licenseFilename, scope) {
     })
   };
   if (license) {
-    mod[licenseFilename || 'LICENSE'] = license;
+    mod[licenseFilename || 'LICENSE'] = 'text: ' + license;
   }
   return mod;
 }
@@ -295,7 +295,7 @@ test('plugin', function (t) {
     var libs;
     plugin.apply(compiler);
     libs = getModuleList(plugin);
-    t.equal(plugin.modules[0].licenseText, 'MIT');
+    t.equal(plugin.modules[0].licenseText, 'text: MIT');
     t.end();
   });
 
@@ -317,7 +317,7 @@ test('plugin', function (t) {
     plugin.apply(compiler);
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
-    t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT\n\nlib2@0.0.1 ISC\ntext: ISC');
     t.end();
   });
 
@@ -325,7 +325,7 @@ test('plugin', function (t) {
     var opts = createOpts();
     opts.licenseOverrides = {
       lib1: path.join('/project1', 'license_overrides', 'lib1.txt')
-    }
+    };
     var stats = {
       compilation: {
         modules: [
@@ -334,13 +334,13 @@ test('plugin', function (t) {
           }
         ]
       }
-    }
+    };
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
-    t.equal(licenseFile, 'lib1@0.0.1\nLicense Override');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT\nLicense Override');
     t.end();
   });
 
@@ -352,8 +352,8 @@ test('plugin', function (t) {
     libs = getModuleList(plugin);
     t.ok(libs.indexOf('lib3') > -1);
     t.end();
-  })
-
+  });
+ 
   test('the plugin allows you to specify an array of licenses to match',
     function (t) {
       var opts = createOpts();
@@ -363,11 +363,11 @@ test('plugin', function (t) {
       plugin.apply(compiler);
       var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
         .toString('utf8');
-      t.equal(licenseFile, 'lib1@0.0.1\nMIT\n\nlib2@0.0.1\nISC\n\nlib3@0.0.1\nMIT'
-        + '\n\nlib4@0.0.1\nMIT');
+      t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT\n\nlib2@0.0.1 ISC\ntext: ISC\n\nlib3@0.0.1 MIT'
+        + '\n\nlib4@0.0.1 MIT');
       t.ok(plugin.errors.length > 1);
       t.end();
-    })
+    });
 
   test('the plugin should include packages without license if undefined property is set', function (t) {
     var opts = {pattern: /^MIT$/, undefined: true};
@@ -405,7 +405,7 @@ test('plugin', function (t) {
     plugin.apply(compiler);
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
-    t.equal(licenseFile, 'lib1@0.0.1\n\nlib2@0.0.1');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT\n\nlib2@0.0.1 ISC');
     t.end();
   });
 
@@ -422,7 +422,7 @@ test('plugin', function (t) {
     plugin.apply(compiler);
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
-    t.equal(licenseFile, 'lib5@0.0.1\nThe foo license');
+    t.equal(licenseFile, 'lib5@0.0.1 FOO\nThe foo license');
     t.end();
   })
 
@@ -436,7 +436,7 @@ test('plugin', function (t) {
     plugin.apply(compiler);
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
-    t.equal(licenseFile, '@foo/lib6@0.0.1\nMIT');
+    t.equal(licenseFile, '@foo/lib6@0.0.1 MIT\ntext: MIT');
     t.end();
   });
 

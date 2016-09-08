@@ -70,15 +70,14 @@ var licenseReader = {
     var licenseText = '';
     var file =
       (this.licenseOverrides[mod] && IsThere(this.licenseOverrides[mod])) ?
-      file = this.licenseOverrides[mod] : file = this.findLicenseFile(mod);
-
+      this.licenseOverrides[mod] : this.findLicenseFile(mod);
+    
     if(file) {
       licenseText = fs.readFileSync(file).toString('utf8');
     }
     else {
       licenseText = this.readLicenseTemplate(license);
       if(!licenseText) {
-        licenseText = license;
         this.errors.push(
           this.errorMessages['no-license-file']
             .replace('{0}', mod)
@@ -116,8 +115,8 @@ var licenseReader = {
 
 var licenseWriter = {
   format: function(mod) {
-    var formatted = mod.name + '@' + mod.version;
-    if (this.addLicenseText) {
+    var formatted = mod.name + '@' + mod.version + ' ' + mod.license;
+    if (this.addLicenseText && !!mod.licenseText) {
       formatted += '\n' + mod.licenseText
     }
     return formatted;
@@ -134,7 +133,7 @@ var licenseWriter = {
     var destFile = path.join(this.outputPath, this.filename);
     fs.writeFileSync(destFile, outputText);
   }
-}
+};
 
 var plugin = {
   errorMessages: {
