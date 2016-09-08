@@ -72,7 +72,9 @@ function createNodeModule(license, licenseFilename, scope) {
       version: '0.0.1'
     })
   };
-  mod[licenseFilename || 'LICENSE'] = license;
+  if (license) {
+    mod[licenseFilename || 'LICENSE'] = license;
+  }
   return mod;
 }
 
@@ -134,7 +136,7 @@ function getModuleList(plugin) {
 test('plugin', function (t) {
 
   t.beforeEach(function (t) {
-    rimraf.sync('/project1/dist/*')
+    rimraf.sync('/project1/dist/*');
     t.end();
   });
 
@@ -196,7 +198,7 @@ test('plugin', function (t) {
   });
 
   test('the plugin allows you to choose an output filename', function (t) {
-    var opts = {pattern: /^MIT|ISC*/, filename: 'custom_file.txt'};
+    var opts = {pattern: /^MIT|ISC/, filename: 'custom_file.txt'};
     var plugin = createPlugin(opts);
     var stats = createStats();
     var compiler = createCompiler(stats);
@@ -284,7 +286,9 @@ test('plugin', function (t) {
     t.deepEqual(libs, ['lib1', 'lib3', 'lib4']);
     t.end();
   });
-  
+
+
+
   test('the plugin should match a file named LICENSE', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
@@ -365,6 +369,46 @@ test('plugin', function (t) {
       t.end();
     })
 
+  test('the plugin should include packages without license if undefined property is set', function (t) {
+    var opts = {pattern: /^MIT$/, undefined: true};
+    var stats = createStats();
+    stats.compilation.modules.push({
+      resource: '/project1/node_modules/lib7/dist/lib7.js'
+    });
+    var plugin = createPlugin(opts);
+    var compiler = createCompiler(stats);
+    var libs;
+    plugin.apply(compiler);
+    libs = getModuleList(plugin);
+    t.deepEqual(libs, ['lib1', 'lib3', 'lib4', 'lib7']);
+    t.end();
+  });
+
+
+  test('the plugin\'s output should bot contain if addLicenseText is set to false', function (t) {
+    var stats = {
+      compilation: {
+        modules: [
+          {
+            resource: '/project1/node_modules/lib1/dist/lib1.js'
+          },
+          {
+            resource: '/project1/node_modules/lib2/dist/lib2.js'
+          }
+        ]
+      }
+    };
+    var opts = createOpts();
+    opts.addLicenseText = false;
+    var plugin = createPlugin(opts);
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib1@0.0.1\n\nlib2@0.0.1');
+    t.end();
+  });
+
   test('the plugin falls back to a license template directory', function (t) {
     var opts = createOpts();
     opts.licenseTemplateDir = path.join('/project1', 'license_templates');
@@ -395,5 +439,6 @@ test('plugin', function (t) {
     t.equal(licenseFile, '@foo/lib6@0.0.1\nMIT');
     t.end();
   });
+
   t.end();
 });
