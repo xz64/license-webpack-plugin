@@ -7,7 +7,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "node test/*.js"
+    "test": "tape test/*.js | tap-diff"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,9 @@
     "mock-fs": "^3.9.0",
     "rimraf": "^2.5.3",
     "sinon": "^1.17.4",
-    "tape": "^4.6.0"
+    "tap-diff": "^0.1.1",
+    "tape": "^4.6.0",
+    "tapes": "^4.1.0"
   },
   "dependencies": {
     "is-there": "^4.3.3",
