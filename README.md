@@ -39,6 +39,7 @@ Below are all options that can be passed to the plugin:
   directory. The default is `3rdpartylicenses.txt`.
 * `undefined` whether include packages without license or not. The default is `false`
 * `addLicenseText` whether include license text to output file or not. The default is `true`
+* `addUrl` whether include url to repository to output file or not. The default is `false`
 * `licenseFilenames` A list of license filenames to match, in order of priority.
   The default is `['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license',
   'license.md', 'license.txt']`

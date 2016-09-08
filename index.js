@@ -19,6 +19,7 @@ var moduleReader = {
     var packagejson = this.moduleCache[mod];
     return {
       name: mod,
+      url: packagejson.repository && packagejson.repository.url,
       version: packagejson.version,
       license: packagejson.license,
       licenseText: this.getLicenseText(mod, packagejson.license)
@@ -116,6 +117,9 @@ var licenseReader = {
 var licenseWriter = {
   format: function(mod) {
     var formatted = mod.name + '@' + mod.version + ' ' + mod.license;
+    if (this.addUrl && !!mod.url) {
+      formatted += ' ' + mod.url;
+    }
     if (this.addLicenseText && !!mod.licenseText) {
       formatted += '\n' + mod.licenseText
     }
@@ -171,6 +175,7 @@ var instance = function() {
     errors: [],
     filename: '3rdpartylicenses.txt',
     moduleCache: {},
+    addUrl: false,
     addLicenseText: true,
     undefined: false,
     licenseTemplateDir: __dirname,

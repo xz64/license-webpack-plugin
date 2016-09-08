@@ -27,6 +27,7 @@ var fileSystem = {
 
 addNodeModule({
   fileSystem: fileSystem, context: '/project1', name: 'lib1',
+  url: 'lib1.com',
   license: 'MIT'
 });
 addNodeModule({
@@ -35,6 +36,7 @@ addNodeModule({
 });
 addNodeModule({
   fileSystem: fileSystem, context: '/project1', name: 'lib3',
+  url: 'lib3.ru',
   license: 'MIT', licenseFilename: 'license.txt'
 });
 addNodeModule({
@@ -58,17 +60,20 @@ function addNodeModule(opts) {
   if (opts.scope) {
     fileSystem[opts.context].node_modules[opts.scope] = {};
     fileSystem[opts.context].node_modules[opts.scope][opts.name]
-      = createNodeModule(opts.license, opts.licenseFilename);
+      = createNodeModule(opts.license, opts.licenseFilename, opts.url);
   } else {
     fileSystem[opts.context].node_modules[opts.name] = createNodeModule(
-      opts.license, opts.licenseFilename);
+      opts.license, opts.licenseFilename, opts.url);
   }
 }
 
-function createNodeModule(license, licenseFilename) {
+function createNodeModule(license, licenseFilename, url) {
   var mod = {
     'package.json': JSON.stringify({
       license: license,
+      repository: {
+        url: url
+      },
       version: '0.0.1'
     })
   };
@@ -385,7 +390,22 @@ test('plugin', function (t) {
   });
 
 
-  test('the plugin\'s output should bot contain if addLicenseText is set to false', function (t) {
+  test('the plugin should include packages url if addUrl property is set', function (t) {
+    var opts = createOpts();
+    opts.addUrl = true;
+    opts.addLicenseText = false;
+    var stats = createStats();
+    var plugin = createPlugin(opts);
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT lib1.com\n\nlib2@0.0.1 ISC\n\nlib3@0.0.1 MIT lib3.ru\n\nlib4@0.0.1 MIT');
+    t.end();
+  });
+
+
+  test('the plugin\'s output should not contain if addLicenseText is set to false', function (t) {
     var stats = {
       compilation: {
         modules: [
@@ -424,7 +444,7 @@ test('plugin', function (t) {
       .toString('utf8');
     t.equal(licenseFile, 'lib5@0.0.1 FOO\nThe foo license');
     t.end();
-  })
+  });
 
   test('the plugin should handle scoped packages properly', function (t) {
     var stats = createStats();
