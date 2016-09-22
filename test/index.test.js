@@ -374,8 +374,8 @@ test('plugin', function (t) {
       t.end();
     });
 
-  test('the plugin should include packages without license if undefined property is set', function (t) {
-    var opts = {pattern: /^MIT$/, undefined: true};
+  test('the plugin should include packages without license if includeUndefined property is set', function (t) {
+    var opts = {pattern: /^MIT$/, includeUndefined: true};
     var stats = createStats();
     stats.compilation.modules.push({
       resource: '/project1/node_modules/lib7/dist/lib7.js'

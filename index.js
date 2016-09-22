@@ -43,7 +43,7 @@ var moduleReader = {
           return false;
         }
         var moduleInfo = this.getModuleInfo(mod);
-        var isMatching = this.pattern.test(moduleInfo.license) || !moduleInfo.license && this.undefined;
+        var isMatching = this.pattern.test(moduleInfo.license) || !moduleInfo.license && this.includeUndefined;
         if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
         }
@@ -177,7 +177,7 @@ var instance = function() {
     moduleCache: {},
     addUrl: false,
     addLicenseText: true,
-    undefined: false,
+    includeUndefined: false,
     licenseTemplateDir: __dirname,
     licenseTemplateCache: {},
     licenseOverrides: {},
