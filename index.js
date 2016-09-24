@@ -19,6 +19,7 @@ var moduleReader = {
     var packagejson = this.moduleCache[mod];
     return {
       name: mod,
+      url: packagejson.repository && packagejson.repository.url,
       version: packagejson.version,
       license: packagejson.license,
       licenseText: this.getLicenseText(mod, packagejson.license)
@@ -42,8 +43,8 @@ var moduleReader = {
           return false;
         }
         var moduleInfo = this.getModuleInfo(mod);
-        var isMatching = this.pattern.test(moduleInfo.license);
-        if(isMatching) {
+        var isMatching = this.pattern.test(moduleInfo.license) || !moduleInfo.license && this.includeUndefined;
+        if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
         }
         return isMatching;
@@ -70,15 +71,14 @@ var licenseReader = {
     var licenseText = '';
     var file =
       (this.licenseOverrides[mod] && IsThere(this.licenseOverrides[mod])) ?
-      file = this.licenseOverrides[mod] : file = this.findLicenseFile(mod);
-
+      this.licenseOverrides[mod] : this.findLicenseFile(mod);
+    
     if(file) {
       licenseText = fs.readFileSync(file).toString('utf8');
     }
     else {
       licenseText = this.readLicenseTemplate(license);
       if(!licenseText) {
-        licenseText = license;
         this.errors.push(
           this.errorMessages['no-license-file']
             .replace('{0}', mod)
@@ -116,7 +116,14 @@ var licenseReader = {
 
 var licenseWriter = {
   format: function(mod) {
-    return mod.name + '@' + mod.version + '\n' + mod.licenseText;
+    var formatted = mod.name + '@' + mod.version + ' ' + mod.license;
+    if (this.addUrl && !!mod.url) {
+      formatted += ' ' + mod.url;
+    }
+    if (this.addLicenseText && !!mod.licenseText) {
+      formatted += '\n' + mod.licenseText
+    }
+    return formatted;
   },
   compile: function() {
     return this.modules
@@ -130,7 +137,7 @@ var licenseWriter = {
     var destFile = path.join(this.outputPath, this.filename);
     fs.writeFileSync(destFile, outputText);
   }
-}
+};
 
 var plugin = {
   errorMessages: {
@@ -168,6 +175,9 @@ var instance = function() {
     errors: [],
     filename: '3rdpartylicenses.txt',
     moduleCache: {},
+    addUrl: false,
+    addLicenseText: true,
+    includeUndefined: false,
     licenseTemplateDir: __dirname,
     licenseTemplateCache: {},
     licenseOverrides: {},

@@ -37,6 +37,9 @@ Below are all options that can be passed to the plugin:
   webpack output.
 * `filename` This is the output filename which gets written your webpack build
   directory. The default is `3rdpartylicenses.txt`.
+* `includeUndefined` whether include packages without license or not. The default is `false`
+* `addLicenseText` whether include license text to output file or not. The default is `true`
+* `addUrl` whether include url to repository to output file or not. The default is `false`
 * `licenseFilenames` A list of license filenames to match, in order of priority.
   The default is `['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license',
   'license.md', 'license.txt']`
@@ -52,8 +55,8 @@ Below are all options that can be passed to the plugin:
   filenames to use for the license file. Used when you want to override a
   license file for a particular module.
 
-If a license file cannot be found, the plugin will write whatever the `license`
-property contains in the module's `package.json` and print an error.
+If a license file cannot be found and `includeUndefined` property is set to `false`,
+the plugin will write whatever the `license` property contains in the module's `package.json` and print an error.
 
 ## License
 [ISC](https://opensource.org/licenses/ISC)
