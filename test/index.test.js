@@ -52,9 +52,31 @@ addNodeModule({
   license: 'MIT', licenseFilename: 'LICENSE.md', scope: '@foo'
 });
 addNodeModule({fileSystem: fileSystem, context: '/project1', name: 'lib7'});
+addArrayLicenseNodeModule({
+  fileSystem: fileSystem, context: '/project1', name: 'lib8',
+  licenses: [
+    {
+      type: 'MIT',
+      url: 'https://example.com/'
+    }
+  ]
+});
+addLicenseTypeModule({
+  fileSystem: fileSystem, context: '/project1', name: 'lib9', license: 'MIT',
+  url: 'https://example.com/'
+});
 
 mock(fileSystem);
 
+function addLicenseTypeModule(opts) {
+  fileSystem[opts.context].node_modules[opts.name]
+    = createLicenseTypeModule(opts.license, opts.url);
+}
+
+function addArrayLicenseNodeModule(opts) {
+  fileSystem[opts.context].node_modules[opts.name]
+    = createArrayLicenseNodeModule(opts.licenses, opts.url);
+}
 
 function addNodeModule(opts) {
   if (opts.scope) {
@@ -65,6 +87,34 @@ function addNodeModule(opts) {
     fileSystem[opts.context].node_modules[opts.name] = createNodeModule(
       opts.license, opts.licenseFilename, opts.url);
   }
+}
+
+function createLicenseTypeModule(license, url) {
+  var mod = {
+    'package.json': JSON.stringify({
+      license: {
+        type: license
+      },
+      repository: {
+        url: url
+      },
+      version: '0.0.1'
+    })
+  };
+  return mod;
+}
+
+function createArrayLicenseNodeModule(licenses, url) {
+  var mod = {
+    'package.json': JSON.stringify({
+      licenses: licenses,
+      repository: {
+        url: url
+      },
+      version: '0.0.1'
+    })
+  };
+  return mod;
 }
 
 function createNodeModule(license, licenseFilename, url) {
@@ -358,7 +408,7 @@ test('plugin', function (t) {
     t.ok(libs.indexOf('lib3') > -1);
     t.end();
   });
- 
+
   test('the plugin allows you to specify an array of licenses to match',
     function (t) {
       var opts = createOpts();
@@ -457,6 +507,35 @@ test('plugin', function (t) {
     var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, '@foo/lib6@0.0.1 MIT\ntext: MIT');
+    t.end();
+  });
+
+  test('the plugin handles the licenses array in package.json as long as only '
+    + 'one license is specified in the array', function(t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/lib8/dist/lib8.js'
+    }];
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib8@0.0.1 MIT');
+    t.end();
+  });
+
+  test('the plugin handles license.type in package.json', function(t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/lib9/dist/lib9.js'
+    }];
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib9@0.0.1 MIT');
     t.end();
   });
 

@@ -20,14 +20,30 @@ var moduleReader = {
     var packagejson = this.readPackageJson(mod);
     return packagejson;
   },
+  extractLicense: function(packagejson) {
+    var license = packagejson.license;
+    // add support license like `{type: '...', url: '...'}`
+    if (license && license.type) {
+      license = license.type;
+    }
+    // add support licenses like `[{type: '...', url: '...'}]`
+    if (!license) {
+      var licenses = packagejson.licenses;
+      if (Array.isArray(licenses) && licenses.length === 1 && licenses[0].type) {
+        license = licenses[0].type;
+      }
+    }
+    return license;
+  },
   parseModuleInfo: function(mod) {
     var packagejson = this.moduleCache[mod];
+    var license = this.extractLicense(packagejson);
     return {
       name: mod,
       url: packagejson.repository && packagejson.repository.url,
       version: packagejson.version,
-      license: packagejson.license,
-      licenseText: this.getLicenseText(mod, packagejson.license)
+      license: license,
+      licenseText: this.getLicenseText(mod, license)
     };
   },
   findPackageName: function(jsFilePath) {
@@ -48,7 +64,9 @@ var moduleReader = {
           return false;
         }
         var moduleInfo = this.getModuleInfo(mod);
-        var isMatching = this.pattern.test(moduleInfo.license) || !moduleInfo.license && this.includeUndefined;
+        var license = this.extractLicense(moduleInfo);
+        var isMatching = this.pattern.test(license) || !license
+          && this.includeUndefined;
         if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
         }
