@@ -6,6 +6,11 @@ var objectAssign = require('object-assign');
 var MODULE_DIR = 'node_modules';
 
 var moduleReader = {
+  isFromNodeModules: function(mod) {
+    var jsFilePath = mod.resource;
+    var modulePrefix = path.join(this.context, MODULE_DIR);
+    return !!jsFilePath && jsFilePath.startsWith(modulePrefix);
+  },
   readPackageJson: function(mod) {
     var pathName = path.join(this.context, MODULE_DIR, mod, 'package.json');
     var file = fs.readFileSync(pathName);
@@ -54,9 +59,7 @@ var moduleReader = {
   gatherModuleInfo: function(moduleStats) {
     var moduleMap = {};
     moduleStats
-      .filter(function(mod) {
-        return !!mod.resource;
-      })
+      .filter(this.isFromNodeModules.bind(this))
       .forEach(function(mod) {
         var moduleName = this.findPackageName(mod.resource);
         moduleMap[moduleName] = {};
