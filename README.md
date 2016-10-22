@@ -54,6 +54,7 @@ Below are all options that can be passed to the plugin:
 * `licenseOverrides` An object whose keys are module names and values are
   filenames to use for the license file. Used when you want to override a
   license file for a particular module.
+* `suppressErrors` (default: `false`) Set to `true` to avoid having the plugin write error messages to the console
 
 If a license file cannot be found and `includeUndefined` property is set to `false`,
 the plugin will write whatever the `license` property contains in the module's `package.json` and print an error.

@@ -158,8 +158,10 @@ var plugin = {
       this.write();
 
       this.errors.forEach(function(error) {
-        console.error('license-webpack-plugin: ' + error);
-      });
+        if (!this.suppressErrors) {
+          console.error('license-webpack-plugin: ' + error);
+        }
+      }, this);
     }.bind(this));
   }
 };
@@ -181,6 +183,7 @@ var instance = function() {
     addUrl: false,
     addLicenseText: true,
     includeUndefined: false,
+    suppressErrors: false,
     licenseTemplateDir: __dirname,
     licenseTemplateCache: {},
     licenseOverrides: {},
