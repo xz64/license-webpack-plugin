@@ -58,6 +58,10 @@ addArrayLicenseNodeModule({
     {
       type: 'MIT',
       url: 'https://example.com/'
+    },
+    {
+      type: 'ISC',
+      url: 'https://example.com/'
     }
   ]
 });
@@ -510,8 +514,27 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin handles the licenses array in package.json as long as only '
-    + 'one license is specified in the array', function(t) {
+  test('the plugin allows you to override a license for a module',
+    function(t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/lib8/dist/lib8.js'
+    }];
+    var opts = createOpts();
+    opts.licenseTypeOverrides = {
+      lib8: 'ISC'
+    };
+    var plugin = createPlugin(opts);
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib8@0.0.1 ISC');
+    t.end();
+  });
+
+  test('the plugin defaults to the first license when encountering a license '
+    + 'array', function(t) {
     var stats = createStats();
     stats.compilation.modules = [{
       resource: '/project1/node_modules/lib8/dist/lib8.js'

@@ -54,6 +54,9 @@ Below are all options that can be passed to the plugin:
 * `licenseOverrides` An object whose keys are module names and values are
   filenames to use for the license file. Used when you want to override a
   license file for a particular module.
+* `licenseTypeOverrides` An object whose keys are module names and values are
+  SPDX license identifier strings (e.g. `'MIT'`). Allows you to override the
+  license type for any module.
 * `suppressErrors` (default: `false`) Set to `true` to avoid having the plugin write error messages to the console
 
 If a license file cannot be found and `includeUndefined` property is set to `false`,

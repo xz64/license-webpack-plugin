@@ -20,7 +20,11 @@ var moduleReader = {
     var packagejson = this.readPackageJson(mod);
     return packagejson;
   },
-  extractLicense: function(packagejson) {
+  extractLicense: function(packagejson, mod) {
+    var overriddenLicense = this.licenseTypeOverrides[mod];
+    if (overriddenLicense) {
+      return overriddenLicense;
+    }
     var license = packagejson.license;
     // add support license like `{type: '...', url: '...'}`
     if (license && license.type) {
@@ -29,15 +33,20 @@ var moduleReader = {
     // add support licenses like `[{type: '...', url: '...'}]`
     if (!license) {
       var licenses = packagejson.licenses;
-      if (Array.isArray(licenses) && licenses.length === 1 && licenses[0].type) {
+      if (Array.isArray(licenses) && licenses[0].type) {
         license = licenses[0].type;
+        this.errors.push(
+          this.errorMessages['multiple-license-ambiguity']
+          .replace('{0}', mod)
+          .replace('{1}', license)
+        );
       }
     }
     return license;
   },
   parseModuleInfo: function(mod) {
     var packagejson = this.moduleCache[mod];
-    var license = this.extractLicense(packagejson);
+    var license = this.licenseTypeCache[mod];
     return {
       name: mod,
       url: packagejson.repository && packagejson.repository.url,
@@ -64,11 +73,12 @@ var moduleReader = {
           return false;
         }
         var moduleInfo = this.getModuleInfo(mod);
-        var license = this.extractLicense(moduleInfo);
+        var license = this.extractLicense(moduleInfo, mod);
         var isMatching = this.pattern.test(license) || !license
           && this.includeUndefined;
         if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
+          this.licenseTypeCache[mod] = license;
         }
         return isMatching;
       }.bind(this))
@@ -162,10 +172,13 @@ var licenseWriter = {
 
 var plugin = {
   errorMessages: {
-    'no-pattern': 'Please specify a regular expression as the pattern property'
+    'no-pattern': 'Please specify a regular expression as the pattern property '
                 + 'on the plugin options.',
     'no-license-file': 'Could not find a license file for {0}, defaulting to '
-                     + 'license name found in package.json: {1}'
+                     + 'license name found in package.json: {1}',
+    'multiple-license-ambiguity': 'Package {0} contains multiple licenses, '
+      + 'defaulting to first one: {1}. Use the licenseTypeOverrides option to '
+      + 'specify a specific license for this module.'
   },
   apply: function(compiler) {
     compiler.plugin('done', function(stats) {
@@ -198,12 +211,14 @@ var instance = function() {
     errors: [],
     filename: '3rdpartylicenses.txt',
     moduleCache: {},
+    licenseTypeCache: {},
     addUrl: false,
     addLicenseText: true,
     includeUndefined: false,
     suppressErrors: false,
     licenseTemplateDir: __dirname,
     licenseTemplateCache: {},
+    licenseTypeOverrides: {},
     licenseOverrides: {},
     licenseFilenames: [
       'LICENSE',
