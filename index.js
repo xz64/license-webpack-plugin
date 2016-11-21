@@ -1,9 +1,19 @@
 var path = require('path');
 var fs = require('fs');
-var IsThere = require('is-there');
 var objectAssign = require('object-assign');
 
 var MODULE_DIR = 'node_modules';
+
+function isThere(file) {
+  var exists = true;
+  try {
+    fs.accessSync(file);
+  }
+  catch (e) {
+    exists = false;
+  }
+  return exists;
+}
 
 var moduleReader = {
   isFromNodeModules: function(mod) {
@@ -101,7 +111,7 @@ var licenseReader = {
   getLicenseText: function(mod, license) {
     var licenseText = '';
     var file =
-      (this.licenseOverrides[mod] && IsThere(this.licenseOverrides[mod])) ?
+      (this.licenseOverrides[mod] && isThere(this.licenseOverrides[mod])) ?
       this.licenseOverrides[mod] : this.findLicenseFile(mod);
     
     if(file) {
@@ -117,7 +127,6 @@ var licenseReader = {
         );
       }
     }
-
     return licenseText;
   },
   findLicenseFile: function(mod) {
@@ -125,7 +134,7 @@ var licenseReader = {
     for(var i = 0; i < this.licenseFilenames.length; i++) {
       var licenseFile = path.join(this.context, MODULE_DIR, mod,
         this.licenseFilenames[i]);
-      if(IsThere(licenseFile)) {
+      if(isThere(licenseFile)) {
         file = licenseFile;
         break;
       }
@@ -136,7 +145,7 @@ var licenseReader = {
     var filename;
     if(!this.licenseTemplateCache[license]) {
       filename = path.join(this.licenseTemplateDir, license + '.txt');
-      if(IsThere(filename)) {
+      if(isThere(filename)) {
         this.licenseTemplateCache[license] =
           fs.readFileSync(filename).toString('utf8');
       }

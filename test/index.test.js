@@ -5,12 +5,12 @@ var tape = require('tape');
 var tapes = require('tapes');
 var test = tapes(tape);
 
+var proxyquire = require('proxyquire');
 var sinon = require('sinon');
 var mock = require('mock-fs');
-var fs = require('fs');
 var path = require('path');
+var pathjoin = require('path.join');
 var rimraf = require('rimraf');
-var LicenseWebpackPlugin = require('../index');
 
 var fileSystem = {
   '/project1': {
@@ -70,7 +70,15 @@ addLicenseTypeModule({
   url: 'https://example.com/'
 });
 
-mock(fileSystem);
+var mockfs = mock.fs(fileSystem);
+
+var LicenseWebpackPlugin = proxyquire('../index', {
+  path: {
+    sep: '/',
+    join: pathjoin
+  },
+  fs: mockfs
+});
 
 function addLicenseTypeModule(opts) {
   fileSystem[opts.context].node_modules[opts.name]
@@ -194,27 +202,27 @@ function getModuleList(plugin) {
 
 test('plugin', function (t) {
 
-  t.beforeEach(function (t) {
-    rimraf.sync('/project1/dist/*');
+  t.afterEach(function (t) {
+    rimraf.sync('/project1/dist/*', mockfs);
     t.end();
   });
 
-  test('the plugin exists', function (t) {
+  t.test('the plugin exists', function (t) {
     t.ok(LicenseWebpackPlugin);
     t.end();
   });
 
-  test('the plugin can be instantiated with the new operator', function (t) {
+  t.test('the plugin can be instantiated with the new operator', function (t) {
     t.ok(createPlugin());
     t.end();
   });
 
-  test('the plugin has an apply function', function (t) {
+  t.test('the plugin has an apply function', function (t) {
     t.ok(typeof createPlugin().apply === 'function');
     t.end();
   });
 
-  test('the plugin should invoke compiler.plugin', function (t) {
+  t.test('the plugin should invoke compiler.plugin', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     plugin.apply(compiler);
@@ -222,7 +230,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin should invoke compiler.plugin when done', function (t) {
+  t.test('the plugin should invoke compiler.plugin when done', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     plugin.apply(compiler);
@@ -230,7 +238,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin provides a callback after compilation is done', function (t) {
+  t.test('the plugin provides a callback after compilation is done', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     plugin.apply(compiler);
@@ -238,7 +246,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin defaults output to 3rdpartylicenses.txt', function (t) {
+  t.test('the plugin defaults output to 3rdpartylicenses.txt', function (t) {
     var plugin = createPlugin();
     var stats = createStats();
     var compiler = createCompiler(stats);
@@ -246,7 +254,7 @@ test('plugin', function (t) {
     var fileExists = true;
     plugin.apply(compiler);
     try {
-      fs.accessSync(path.join(outputPath, '3rdpartylicenses.txt'));
+      mockfs.accessSync(pathjoin(outputPath, '3rdpartylicenses.txt'));
     }
     catch (e) {
       console.error(e);
@@ -256,7 +264,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin allows you to choose an output filename', function (t) {
+  t.test('the plugin allows you to choose an output filename', function (t) {
     var opts = {pattern: /^MIT|ISC/, filename: 'custom_file.txt'};
     var plugin = createPlugin(opts);
     var stats = createStats();
@@ -265,7 +273,7 @@ test('plugin', function (t) {
     var fileExists = true;
     plugin.apply(compiler);
     try {
-      fs.accessSync(path.join(outputPath, opts.filename));
+      mockfs.accessSync(pathjoin(outputPath, opts.filename));
     }
     catch (e) {
       console.error(e);
@@ -275,7 +283,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin generates an error if no options are provided', function (t) {
+  t.test('the plugin generates an error if no options are provided', function (t) {
     var opts = {};
     var plugin;
     var compiler = createCompiler();
@@ -291,7 +299,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin generates an error if no regexp is provided', function (t) {
+  t.test('the plugin generates an error if no regexp is provided', function (t) {
     var opts = {};
     var plugin;
     var compiler = createCompiler();
@@ -307,7 +315,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin generates an error on invalid regexp property', function (t) {
+  t.test('the plugin generates an error on invalid regexp property', function (t) {
     var opts = {
       pattern: 'not_a_regex'
     };
@@ -325,7 +333,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin should pick up modules from node_modules', function (t) {
+  t.test('the plugin should pick up modules from node_modules', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     var libs;
@@ -335,7 +343,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin should skip non-matching licenses', function (t) {
+  t.test('the plugin should skip non-matching licenses', function (t) {
     var opts = {pattern: /^MIT$/};
     var plugin = createPlugin(opts);
     var compiler = createCompiler();
@@ -346,9 +354,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-
-
-  test('the plugin should match a file named LICENSE', function (t) {
+  t.test('the plugin should match a file named LICENSE', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     var libs;
@@ -358,7 +364,7 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin\'s output should contain all licenses', function (t) {
+  t.test('the plugin\'s output should contain all licenses', function (t) {
     var stats = {
       compilation: {
         modules: [
@@ -374,16 +380,16 @@ test('plugin', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT\n\nlib2@0.0.1 ISC\ntext: ISC');
     t.end();
   });
 
-  test('the plugin allows overriding license file per module', function (t) {
+  t.test('the plugin allows overriding license file per module', function (t) {
     var opts = createOpts();
     opts.licenseOverrides = {
-      lib1: path.join('/project1', 'license_overrides', 'lib1.txt')
+      lib1: pathjoin('/project1', 'license_overrides', 'lib1.txt')
     };
     var stats = {
       compilation: {
@@ -397,13 +403,13 @@ test('plugin', function (t) {
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib1@0.0.1 MIT\nLicense Override');
     t.end();
   });
 
-  test('the plugin matches license.txt', function (t) {
+  t.test('the plugin matches license.txt', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler();
     var libs;
@@ -413,14 +419,14 @@ test('plugin', function (t) {
     t.end();
   });
 
-  test('the plugin allows you to specify an array of licenses to match',
+  t.test('the plugin allows you to specify an array of licenses to match',
     function (t) {
       var opts = createOpts();
       opts.licenseFilenames = ['LICENSE'];
       var plugin = createPlugin(opts);
       var compiler = createCompiler();
       plugin.apply(compiler);
-      var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
         .toString('utf8');
       t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT\n\nlib2@0.0.1 ISC\ntext: ISC\n\nlib3@0.0.1 MIT'
         + '\n\nlib4@0.0.1 MIT');
@@ -428,7 +434,7 @@ test('plugin', function (t) {
       t.end();
     });
 
-  test('the plugin should include packages without license if includeUndefined property is set', function (t) {
+  t.test('the plugin should include packages without license if includeUndefined property is set', function (t) {
     var opts = {pattern: /^MIT$/, includeUndefined: true};
     var stats = createStats();
     stats.compilation.modules.push({
@@ -444,7 +450,7 @@ test('plugin', function (t) {
   });
 
 
-  test('the plugin should include packages url if addUrl property is set', function (t) {
+  t.test('the plugin should include packages url if addUrl property is set', function (t) {
     var opts = createOpts();
     opts.addUrl = true;
     opts.addLicenseText = false;
@@ -452,14 +458,14 @@ test('plugin', function (t) {
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib1@0.0.1 MIT lib1.com\n\nlib2@0.0.1 ISC\n\nlib3@0.0.1 MIT lib3.ru\n\nlib4@0.0.1 MIT');
     t.end();
   });
 
 
-  test('the plugin\'s output should not contain if addLicenseText is set to false', function (t) {
+  t.test('the plugin\'s output should not contain if addLicenseText is set to false', function (t) {
     var stats = {
       compilation: {
         modules: [
@@ -477,15 +483,15 @@ test('plugin', function (t) {
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib1@0.0.1 MIT\n\nlib2@0.0.1 ISC');
     t.end();
   });
 
-  test('the plugin falls back to a license template directory', function (t) {
+  t.test('the plugin falls back to a license template directory', function (t) {
     var opts = createOpts();
-    opts.licenseTemplateDir = path.join('/project1', 'license_templates');
+    opts.licenseTemplateDir = pathjoin('/project1', 'license_templates');
     opts.pattern = /^FOO$/;
     var stats = createStats();
     stats.compilation.modules = [{
@@ -494,13 +500,13 @@ test('plugin', function (t) {
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib5@0.0.1 FOO\nThe foo license');
     t.end();
   });
 
-  test('the plugin should handle scoped packages properly', function (t) {
+  t.test('the plugin should handle scoped packages properly', function (t) {
     var stats = createStats();
     stats.compilation.modules = [{
       resource: '/project1/node_modules/@foo/lib6/dist/lib6.js'
@@ -508,13 +514,13 @@ test('plugin', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, '@foo/lib6@0.0.1 MIT\ntext: MIT');
     t.end();
   });
 
-  test('the plugin allows you to override a license for a module',
+  t.test('the plugin allows you to override a license for a module',
     function(t) {
     var stats = createStats();
     stats.compilation.modules = [{
@@ -527,13 +533,13 @@ test('plugin', function (t) {
     var plugin = createPlugin(opts);
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib8@0.0.1 ISC');
     t.end();
   });
 
-  test('the plugin defaults to the first license when encountering a license '
+  t.test('the plugin defaults to the first license when encountering a license '
     + 'array', function(t) {
     var stats = createStats();
     stats.compilation.modules = [{
@@ -542,13 +548,13 @@ test('plugin', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib8@0.0.1 MIT');
     t.end();
   });
 
-  test('the plugin handles license.type in package.json', function(t) {
+  t.test('the plugin handles license.type in package.json', function(t) {
     var stats = createStats();
     stats.compilation.modules = [{
       resource: '/project1/node_modules/lib9/dist/lib9.js'
@@ -556,7 +562,7 @@ test('plugin', function (t) {
     var plugin = createPlugin();
     var compiler = createCompiler(stats);
     plugin.apply(compiler);
-    var licenseFile = fs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
       .toString('utf8');
     t.equal(licenseFile, 'lib9@0.0.1 MIT');
     t.end();

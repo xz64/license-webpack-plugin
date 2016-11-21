@@ -7,7 +7,7 @@
     "index.js"
   ],
   "scripts": {
-    "test": "tape test/*.js | tap-diff"
+    "test": "tapes test/*.js | tap-diff"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,8 @@
   "homepage": "https://github.com/xz64/license-webpack-plugin#readme",
   "devDependencies": {
     "mock-fs": "^3.9.0",
+    "path.join": "^1.0.0",
+    "proxyquire": "^1.7.10",
     "rimraf": "^2.5.3",
     "sinon": "^1.17.4",
     "tap-diff": "^0.1.1",
@@ -33,7 +35,6 @@
     "tapes": "^4.1.0"
   },
   "dependencies": {
-    "is-there": "^4.3.3",
     "object-assign": "^4.1.0"
   }
 }
