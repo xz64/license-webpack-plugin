@@ -566,5 +566,11 @@ test('plugin', function (t) {
     t.end();
   });
 
+  t.test('the plugin throws a descriptive error when no pattern is specified',
+    function(t) {
+    t.throws(createPlugin.bind(null, {}));
+    t.end();
+  });
+
   t.end();
 });

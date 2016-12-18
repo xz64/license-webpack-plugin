@@ -242,8 +242,7 @@ var instance = function() {
 
 var licensePlugin = function(opts) {
   if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
-    this.errors.push(plugin.errorMessages['no-pattern']);
-    throw plugin.errorMessages['no-pattern'];
+    throw new Error(plugin.errorMessages['no-pattern']);
   }
   objectAssign(this, composedPlugin, instance(), opts);
   this.apply = this.apply.bind(this);
