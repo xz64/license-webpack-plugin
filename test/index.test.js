@@ -257,7 +257,6 @@ test('plugin', function (t) {
       mockfs.accessSync(pathjoin(outputPath, '3rdpartylicenses.txt'));
     }
     catch (e) {
-      console.error(e);
       fileExists = false;
     }
     t.ok(fileExists);
@@ -276,7 +275,6 @@ test('plugin', function (t) {
       mockfs.accessSync(pathjoin(outputPath, opts.filename));
     }
     catch (e) {
-      console.error(e);
       fileExists = false;
     }
     t.ok(fileExists);
