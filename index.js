@@ -175,6 +175,11 @@ var licenseWriter = {
   write: function() {
     var outputText = this.compile();
     var destFile = path.join(this.outputPath, this.filename);
+
+    if (!fs.existsSync(this.outputPath)) {
+      fs.mkdirSync(this.outputPath);
+    }
+
     fs.writeFileSync(destFile, outputText);
   }
 };
