@@ -1,6 +1,6 @@
 {
   "name": "license-webpack-plugin",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Outputs licenses from 3rd party libraries to a file",
   "main": "index.js",
   "files": [
