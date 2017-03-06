@@ -23,7 +23,11 @@ var moduleReader = {
   },
   readPackageJson: function(mod) {
     var pathName = path.join(this.context, MODULE_DIR, mod, 'package.json');
-    var file = fs.readFileSync(pathName);
+    // If file exists return the license from package.json else return empty object
+    var file = '{}';
+    if (isThere(pathName)) {
+      file = fs.readFileSync(pathName);
+    }
     return JSON.parse(file);
   },
   getModuleInfo: function(mod) {
