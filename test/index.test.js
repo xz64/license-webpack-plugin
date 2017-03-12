@@ -518,6 +518,21 @@ test('plugin', function (t) {
     t.end();
   });
 
+  t.test('the plugin should handle scoped packages properly even when there are two @ signs in the'
+    + ' path to the library file', function (t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/@foo/lib6/@foo/lib6/dist/lib6.js'
+    }];
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, '@foo/lib6@0.0.1 MIT\ntext: MIT');
+    t.end();
+  });
+
   t.test('the plugin allows you to override a license for a module',
     function(t) {
     var stats = createStats();

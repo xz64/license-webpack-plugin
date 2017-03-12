@@ -66,15 +66,11 @@ var moduleReader = {
     };
   },
   findPackageName: function(jsFilePath) {
-    return jsFilePath
+    var tokens = jsFilePath
       .replace(path.join(this.context, MODULE_DIR) + path.sep, '')
-      .split(path.sep)
-      .filter(function(value, index, arr) {
-        return value.charAt(0) === '@'
-          || (index === 0 && value.charAt(0) !== '@')
-          || (index > 0 && arr[index-1].charAt(0) === '@');
-      })
-      .join('/');
+      .split(path.sep);
+
+    return (tokens[0].charAt(0) === '@') ? tokens.slice(0, 2).join('/') : tokens[0];
   },
   writeModuleInfo: function() {
     this.modules = Object.keys(this.moduleMap)
