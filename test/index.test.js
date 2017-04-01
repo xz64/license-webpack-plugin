@@ -587,5 +587,41 @@ test('plugin', function (t) {
     t.end();
   });
 
+  t.test('the plugin throws when an unacceptable license pattern is not a ' +
+    'regex',
+    function(t) {
+    var opts = {
+      pattern: /^MIT|ISC/,
+      filename: 'custom_file.txt',
+      unacceptablePattern: 0
+    };
+    t.throws(createPlugin.bind(createPlugin, opts));
+    t.end();
+  });
+
+  t.test('the plugin throws when an unacceptable license is given and the ' +
+    'abort option is given',
+    function(t) {
+    var stats = createStats();
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    plugin.unacceptablePattern = /^MIT$/;
+    plugin.abortOnUnacceptableLicense = true;
+    t.throws(plugin.apply.bind(plugin, compiler));
+    t.end();
+  });
+
+  t.test('the plugin adds an error when an unacceptable license is found and ' +
+    'the abort option is not given',
+    function(t) {
+    var stats = createStats();
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    plugin.unacceptablePattern = /^MIT$/;
+    plugin.apply(compiler);
+    t.ok(plugin.errors.length > 1);
+    t.end();
+  });
+
   t.end();
 });

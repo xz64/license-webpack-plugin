@@ -80,8 +80,23 @@ var moduleReader = {
         }
         var moduleInfo = this.getModuleInfo(mod);
         var license = this.extractLicense(moduleInfo, mod);
+
+        var isUnacceptable = this.unacceptablePattern
+          && this.unacceptablePattern.test(license);
+        if (isUnacceptable) {
+          var errorMessage = plugin.errorMessages['unacceptable-license']
+            .replace('{0}', mod)
+            .replace('{1}', license);
+          if (this.abortOnUnacceptableLicense) {
+            throw new Error(errorMessage);
+          } else {
+            this.errors.push(errorMessage);
+          }
+        }
+
         var isMatching = this.pattern.test(license) || !license
           && this.includeUndefined;
+
         if (isMatching) {
           this.moduleCache[mod] = moduleInfo;
           this.licenseTypeCache[mod] = license;
@@ -188,7 +203,10 @@ var plugin = {
                      + 'license name found in package.json: {1}',
     'multiple-license-ambiguity': 'Package {0} contains multiple licenses, '
       + 'defaulting to first one: {1}. Use the licenseTypeOverrides option to '
-      + 'specify a specific license for this module.'
+      + 'specify a specific license for this module.',
+    'unacceptable-pattern-not-regex': 'The unacceptablePattern should be a ' +
+      'regular expression',
+    'unacceptable-license': 'Package {0} contains an unacceptable license: {1}'
   },
   apply: function(compiler) {
     compiler.plugin('done', function(stats) {
@@ -244,6 +262,10 @@ var instance = function() {
 var licensePlugin = function(opts) {
   if(!opts || !opts.pattern || !(opts.pattern instanceof RegExp)) {
     throw new Error(plugin.errorMessages['no-pattern']);
+  }
+  if(opts.unacceptablePattern !== undefined && opts.unacceptablePattern !== null
+    && !(opts.unacceptablePattern instanceof RegExp)) {
+    throw new Error(plugin.errorMessages['unacceptable-pattern-not-regex']);
   }
   objectAssign(this, composedPlugin, instance(), opts);
   this.apply = this.apply.bind(this);
