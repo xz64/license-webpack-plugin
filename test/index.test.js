@@ -15,6 +15,7 @@ var rimraf = require('rimraf');
 var fileSystem = {
   '/project1': {
     'dist': {},
+    'build': {},
     'node_modules': {},
     'license_overrides': {
       'lib1.txt': 'License Override'
@@ -22,7 +23,8 @@ var fileSystem = {
     'license_templates': {
       'FOO.txt': 'The foo license'
     }
-  }
+  },
+  '/project2': {}
 };
 
 addNodeModule({
@@ -620,6 +622,46 @@ test('plugin', function (t) {
     plugin.unacceptablePattern = /^MIT$/;
     plugin.apply(compiler);
     t.ok(plugin.errors.length > 1);
+    t.end();
+  });
+
+  t.test('the plugin works when the context is outside of project root', function(t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/lib1/dist/lib1.js'
+    }];
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    compiler.context = pathjoin(compiler.context, 'build');
+    plugin.apply(compiler);
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT');
+    t.end();
+  });
+
+  t.test('the plugin works when the context is inside node_modules', function(t) {
+    var stats = createStats();
+    stats.compilation.modules = [{
+      resource: '/project1/node_modules/lib1/dist/lib1.js'
+    }];
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    compiler.context = pathjoin(compiler.context, 'node_modules', 'lib1', 'dist');
+    plugin.apply(compiler);
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib1@0.0.1 MIT\ntext: MIT');
+    t.end();
+  });
+
+  t.test('the plugin throws an error if the context is outside the project',
+    function(t) {
+    var stats = createStats();
+    var plugin = createPlugin();
+    var compiler = createCompiler(stats);
+    compiler.context = pathjoin('/project2');
+    t.throws(plugin.apply.bind(plugin, compiler));
     t.end();
   });
 

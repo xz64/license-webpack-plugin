@@ -18,11 +18,11 @@ function isThere(file) {
 var moduleReader = {
   isFromNodeModules: function(mod) {
     var jsFilePath = mod.resource;
-    var modulePrefix = path.join(this.context, MODULE_DIR);
+    var modulePrefix = path.join(this.buildRoot, MODULE_DIR);
     return !!jsFilePath && jsFilePath.startsWith(modulePrefix);
   },
   readPackageJson: function(mod) {
-    var pathName = path.join(this.context, MODULE_DIR, mod, 'package.json');
+    var pathName = path.join(this.buildRoot, MODULE_DIR, mod, 'package.json');
     var file = fs.readFileSync(pathName);
     return JSON.parse(file);
   },
@@ -67,7 +67,7 @@ var moduleReader = {
   },
   findPackageName: function(jsFilePath) {
     var tokens = jsFilePath
-      .replace(path.join(this.context, MODULE_DIR) + path.sep, '')
+      .replace(path.join(this.buildRoot, MODULE_DIR) + path.sep, '')
       .split(path.sep);
 
     return (tokens[0].charAt(0) === '@') ? tokens.slice(0, 2).join('/') : tokens[0];
@@ -143,7 +143,7 @@ var licenseReader = {
   findLicenseFile: function(mod) {
     var file;
     for(var i = 0; i < this.licenseFilenames.length; i++) {
-      var licenseFile = path.join(this.context, MODULE_DIR, mod,
+      var licenseFile = path.join(this.buildRoot, MODULE_DIR, mod,
         this.licenseFilenames[i]);
       if(isThere(licenseFile)) {
         file = licenseFile;
@@ -206,12 +206,29 @@ var plugin = {
       + 'specify a specific license for this module.',
     'unacceptable-pattern-not-regex': 'The unacceptablePattern should be a ' +
       'regular expression',
-    'unacceptable-license': 'Package {0} contains an unacceptable license: {1}'
+    'unacceptable-license': 'Package {0} contains an unacceptable license: {1}',
+    'no-project-root': 'No project root found! Is your webpack config located '
+      + 'located underneath the same directory as your project?'
   },
   apply: function(compiler) {
     compiler.plugin('done', function(stats) {
       this.outputPath = compiler.outputPath;
-      this.context = compiler.context;
+      var buildRoot = compiler.context;
+      var lastPathSepIndex;
+
+      if (buildRoot.indexOf(MODULE_DIR) > -1) {
+        buildRoot = buildRoot.substring(0, buildRoot.indexOf(MODULE_DIR) - 1);
+      } else {
+        while (!isThere(path.join(buildRoot, MODULE_DIR))) {
+          lastPathSepIndex = buildRoot.lastIndexOf(path.sep);
+          if (lastPathSepIndex <= 0) {
+            throw new Error(this.errorMessages['no-project-root']);
+          }
+          buildRoot = buildRoot.substring(0, buildRoot.lastIndexOf(path.sep));
+        }
+      }
+
+      this.buildRoot = buildRoot;
 
       this.gatherModuleInfo(stats.compilation.modules);
       this.write();
