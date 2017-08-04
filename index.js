@@ -167,7 +167,11 @@ var licenseReader = {
 
 var licenseWriter = {
   format: function(mod) {
-    var formatted = mod.name + '@' + mod.version + ' ' + mod.license;
+    var formatted = mod.name;
+    if (this.addVersion) {
+      formatted += '@' + mod.version;
+    }
+    formatted += ' ' + mod.license;
     if (this.addUrl && !!mod.url) {
       formatted += ' ' + mod.url;
     }
@@ -258,6 +262,7 @@ var instance = function() {
     moduleCache: {},
     licenseTypeCache: {},
     addUrl: false,
+    addVersion: true,
     addLicenseText: true,
     includeUndefined: false,
     suppressErrors: false,

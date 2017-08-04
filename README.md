@@ -47,6 +47,7 @@ Below are all options that can be passed to the plugin:
 * `filename` This is the output filename which gets written your webpack build
   directory. The default is `3rdpartylicenses.txt`.
 * `includeUndefined` whether include packages without license or not. The default is `false`
+* `addVersion` whether include version string to output file or not. The default is `true`
 * `addLicenseText` whether include license text to output file or not. The default is `true`
 * `addUrl` whether include url to repository to output file or not. The default is `false`
 * `licenseFilenames` A list of license filenames to match, in order of priority.

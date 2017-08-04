@@ -464,6 +464,19 @@ test('plugin', function (t) {
     t.end();
   });
 
+  t.test('the plugin should exclude packages version if addVersion property is set to false', function (t) {
+    var opts = createOpts();
+    opts.addVersion = false;
+    opts.addLicenseText = false;
+    var stats = createStats();
+    var plugin = createPlugin(opts);
+    var compiler = createCompiler(stats);
+    plugin.apply(compiler);
+    var licenseFile = mockfs.readFileSync('/project1/dist/3rdpartylicenses.txt')
+      .toString('utf8');
+    t.equal(licenseFile, 'lib1 MIT\n\nlib2 ISC\n\nlib3 MIT\n\nlib4 MIT');
+    t.end();
+  });
 
   t.test('the plugin\'s output should not contain if addLicenseText is set to false', function (t) {
     var stats = {
