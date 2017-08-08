@@ -51,7 +51,7 @@ class LicenseWebpackPlugin {
         abortOnUnacceptableLicense: false,
         addBanner: false,
         bannerTemplate:
-          '/*! 3rd party license information is available at <%= filename %> */',
+          '/*! 3rd party license information is available at <%- filename %> */',
         includedChunks: [],
         excludedChunks: []
       },

@@ -149,6 +149,12 @@ function twoChunkProject() {
   return fixture;
 }
 
+function licenseWithQuotationMarkProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/project1/node_modules/lib1/LICENSE'] = '"MIT License"';
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -163,5 +169,6 @@ module.exports = {
   nonRootContextProject: nonRootContextProject,
   licenseArrayProject: licenseArrayProject,
   licenseTypeProject: licenseTypeProject,
-  twoChunkProject: twoChunkProject
+  twoChunkProject: twoChunkProject,
+  licenseWithQuotationMarkProject: licenseWithQuotationMarkProject
 };

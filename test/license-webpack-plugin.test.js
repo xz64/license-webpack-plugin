@@ -453,3 +453,17 @@ test('the plugin excluded chunks overrides included chunks', function(t) {
   teardown();
   t.end();
 });
+
+test('the plugin leaves quotation marks as is', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.licenseWithQuotationMarkProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\n"MIT License"'
+  );
+  teardown();
+  t.end();
+});
