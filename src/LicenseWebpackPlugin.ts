@@ -114,25 +114,28 @@ class LicenseWebpackPlugin {
               chunk.modules.forEach(moduleCallback);
             }
 
-            if (this.options.addBanner) {
-              chunk.files
-                .filter((file: string) => /\.js$/.test(file))
-                .forEach((file: string) => {
-                  compilation.assets[file] = new ConcatSource(
-                    ejs.render(this.options.bannerTemplate, {
-                      filename: outputPath
-                    }),
-                    '\n',
-                    compilation.assets[file]
-                  );
-                });
-            }
-
             const renderedFile = this.renderLicenseFile(
               Object.keys(chunkModuleMap)
             );
+            
+            // Only write license file if there is something to write.
+            if (renderedFile.trim() !== '') {
+              if (this.options.addBanner) {
+                chunk.files
+                  .filter((file: string) => /\.js$/.test(file))
+                  .forEach((file: string) => {
+                    compilation.assets[file] = new ConcatSource(
+                      ejs.render(this.options.bannerTemplate, {
+                        filename: outputPath
+                      }),
+                      '\n',
+                      compilation.assets[file]
+                    );
+                  });
+              }
 
-            compilation.assets[outputPath] = new RawSource(renderedFile);
+              compilation.assets[outputPath] = new RawSource(renderedFile);
+            }
           });
           callback();
         }
