@@ -2,8 +2,8 @@
   "name": "license-webpack-plugin",
   "version": "0.6.0",
   "description": "Outputs licenses from 3rd party libraries to a file",
-  "main": "dist/LicenseWebpackPlugin.js",
-  "typings": "dist/LicenseWebpackPlugin.d.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist",
     "output.template.ejs"
