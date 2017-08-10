@@ -155,6 +155,14 @@ function licenseWithQuotationMarkProject() {
   return fixture;
 }
 
+function no3rdPartyLicenseProject() {
+  var fixture = oneLibProject();
+  fixture.compiler.compilation.chunks[0].modules = [
+    { resource: '/project1/myfile.js' }
+  ];
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -170,5 +178,6 @@ module.exports = {
   licenseArrayProject: licenseArrayProject,
   licenseTypeProject: licenseTypeProject,
   twoChunkProject: twoChunkProject,
-  licenseWithQuotationMarkProject: licenseWithQuotationMarkProject
+  licenseWithQuotationMarkProject: licenseWithQuotationMarkProject,
+  no3rdPartyLicenseProject: no3rdPartyLicenseProject
 };

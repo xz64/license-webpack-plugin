@@ -6,11 +6,8 @@ function FakeCompiler(context, compilation) {
 }
 
 FakeCompiler.prototype.plugin = function(phase, callback) {
-  if (phase === 'compilation') {
-    callback(this.compilation);
-  }
-  if (phase === 'done') {
-    callback();
+  if (phase === 'emit') {
+    callback(this.compilation, Function.prototype);
   }
 };
 

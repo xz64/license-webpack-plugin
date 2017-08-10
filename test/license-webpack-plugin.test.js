@@ -467,3 +467,46 @@ test('the plugin leaves quotation marks as is', function(t) {
   teardown();
   t.end();
 });
+
+test('the plugin does not write output for a chunk with no licenses', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.no3rdPartyLicenseProject());
+  plugin.apply(compiler);
+  t.notOk(compiler.compilation.assets['main.licenses.txt']);
+  teardown();
+  t.end();
+});
+
+test('the plugin does not write a banner to a chunk with no referenced licenses', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    addBanner: true
+  });
+  var compiler = setup(fixtures.no3rdPartyLicenseProject());
+  plugin.apply(compiler);
+  t.equal(compiler.compilation.assets['output.abcd.js'].text, 'some test file');
+  teardown();
+  t.end();
+});
+
+test('the plugin writes a master file when the option is set', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    perChunkOutput: false
+  });
+  var compiler = setup(fixtures.oneLibProject());
+  plugin.apply(compiler);
+  t.notOk(compiler.compilation.assets['main.licenses.txt']);
+  t.equal(
+    compiler.compilation.assets['licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});

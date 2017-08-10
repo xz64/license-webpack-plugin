@@ -10,16 +10,10 @@ function FakeCompilation(assets, chunks) {
   this.chunks = chunks;
 }
 
-FakeCompilation.prototype.plugin = function(phase, callback) {
-  if (phase === 'optimize-chunk-assets') {
-    callback(this.chunks, Function.prototype);
-  }
-};
-
 FakeCompilation.prototype.getPath = function(template, opts) {
   return template
-    .replace(/\[name\]/g, opts.chunk.name)
-    .replace(/\[hash\]/g, opts.chunk.hash);
+    .replace(/\[name\]/g, opts.chunk && opts.chunk.name)
+    .replace(/\[hash\]/g, opts.chunk && opts.chunk.hash);
 };
 
 module.exports = FakeCompilation;

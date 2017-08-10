@@ -44,8 +44,12 @@ class LicenseWebpackPlugin {
           'license.md',
           'license.txt'
         ],
+        perChunkOutput: true,
         outputTemplate: path.resolve(__dirname, '../output.template.ejs'),
-        outputFilename: '[name].licenses.txt',
+        outputFilename:
+          options.perChunkOutput === false
+            ? 'licenses.txt'
+            : '[name].licenses.txt',
         suppressErrors: false,
         includePackagesWithoutLicense: false,
         abortOnUnacceptableLicense: false,
@@ -77,75 +81,86 @@ class LicenseWebpackPlugin {
       this.errors
     );
 
-    compiler.plugin('compilation', (compilation: any) => {
-      compilation.plugin(
-        'optimize-chunk-assets',
-        (chunks: [any], callback: Function) => {
-          chunks.forEach((chunk: any) => {
-            if (this.options.excludedChunks.indexOf(chunk.name) > -1) {
-              return;
-            }
-            if (
-              this.options.includedChunks.length > 0 &&
-              this.options.includedChunks.indexOf(chunk.name) === -1
-            ) {
-              return;
-            }
-            const outputPath = compilation.getPath(
-              this.options.outputFilename,
-              { chunk }
-            );
-            const chunkModuleMap: { [key: string]: boolean } = {};
-
-            const moduleCallback = (chunkModule: any) => {
-              const packageName = this.moduleProcessor.processFile(
-                chunkModule.resource
-              );
-              if (packageName) {
-                chunkModuleMap[packageName] = true;
-              }
-            };
-
-            // scan all files used in compilation for this chunk
-            if (typeof chunk.forEachModule === 'function') {
-              chunk.forEachModule(moduleCallback);
-            } else {
-              // chunk.modules is needed for compatibility with webpack < 3.x but is deprecated in webpack 3.x
-              chunk.modules.forEach(moduleCallback);
-            }
-
-            const renderedFile = this.renderLicenseFile(
-              Object.keys(chunkModuleMap)
-            );
-            
-            // Only write license file if there is something to write.
-            if (renderedFile.trim() !== '') {
-              if (this.options.addBanner) {
-                chunk.files
-                  .filter((file: string) => /\.js$/.test(file))
-                  .forEach((file: string) => {
-                    compilation.assets[file] = new ConcatSource(
-                      ejs.render(this.options.bannerTemplate, {
-                        filename: outputPath
-                      }),
-                      '\n',
-                      compilation.assets[file]
-                    );
-                  });
-              }
-
-              compilation.assets[outputPath] = new RawSource(renderedFile);
-            }
-          });
-          callback();
+    compiler.plugin('emit', (compilation: any, callback: Function) => {
+      const totalChunkModuleMap: { [key: string]: boolean } = {};
+      compilation.chunks.forEach((chunk: any) => {
+        if (this.options.excludedChunks.indexOf(chunk.name) > -1) {
+          return;
         }
-      );
-    });
+        if (
+          this.options.includedChunks.length > 0 &&
+          this.options.includedChunks.indexOf(chunk.name) === -1
+        ) {
+          return;
+        }
+        const outputPath = compilation.getPath(this.options.outputFilename, {
+          chunk
+        });
+        const chunkModuleMap: { [key: string]: boolean } = {};
 
-    compiler.plugin('done', () => {
+        const moduleCallback = (chunkModule: any) => {
+          const packageName = this.moduleProcessor.processFile(
+            chunkModule.resource
+          );
+          if (packageName) {
+            chunkModuleMap[packageName] = true;
+            totalChunkModuleMap[packageName] = true;
+          }
+        };
+
+        // scan all files used in compilation for this chunk
+        if (typeof chunk.forEachModule === 'function') {
+          chunk.forEachModule(moduleCallback);
+        } else {
+          // chunk.modules is needed for compatibility with webpack < 3.x but is deprecated in webpack 3.x
+          chunk.modules.forEach(moduleCallback);
+        }
+
+        const renderedFile = this.renderLicenseFile(
+          Object.keys(chunkModuleMap)
+        );
+
+        // Only write license file if there is something to write.
+        if (renderedFile.trim() !== '') {
+          if (this.options.addBanner) {
+            chunk.files
+              .filter((file: string) => /\.js$/.test(file))
+              .forEach((file: string) => {
+                compilation.assets[file] = new ConcatSource(
+                  ejs.render(this.options.bannerTemplate, {
+                    filename: outputPath
+                  }),
+                  '\n',
+                  compilation.assets[file]
+                );
+              });
+          }
+          if (this.options.perChunkOutput) {
+            compilation.assets[outputPath] = new RawSource(renderedFile);
+          }
+        }
+      });
+
+      if (!this.options.perChunkOutput) {
+        // produce master licenses file
+        const outputPath = compilation.getPath(
+          this.options.outputFilename,
+          compilation
+        );
+        const renderedFile = this.renderLicenseFile(
+          Object.keys(totalChunkModuleMap)
+        );
+
+        if (renderedFile.trim() !== '') {
+          compilation.assets[outputPath] = new RawSource(renderedFile);
+        }
+      }
+
       if (!this.options.suppressErrors) {
         this.errors.forEach(error => console.error(error.message));
       }
+
+      callback();
     });
   }
 

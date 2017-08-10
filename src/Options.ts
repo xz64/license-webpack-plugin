@@ -2,6 +2,7 @@ interface Options {
   pattern: RegExp;
   unacceptablePattern?: RegExp;
   abortOnUnacceptableLicense?: boolean;
+  perChunkOutput?: boolean;
   licenseFilenames?: string[];
   licenseTemplateDir?: string;
   licenseFileOverrides?: { [key: string]: string };
