@@ -115,7 +115,11 @@ class LicenseWebpackPlugin {
         };
 
         // scan all files used in compilation for this chunk
-        chunk.forEachModule(moduleCallback);
+        if (typeof chunk.forEachModule === 'function') {
+          chunk.forEachModule(moduleCallback);
+        } else {
+          chunk.modules.forEach(moduleCallback); // chunk.modules was deprecated in webpack v3
+        }
 
         this.options.additionalPackages.forEach((packageName: string) => {
           this.moduleProcessor.processPackage(packageName);
