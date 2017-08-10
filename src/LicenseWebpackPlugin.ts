@@ -94,9 +94,14 @@ class LicenseWebpackPlugin {
         ) {
           return;
         }
-        const outputPath = compilation.getPath(this.options.outputFilename, {
-          chunk
-        });
+        const outputPath = compilation.getPath(
+          this.options.outputFilename,
+          this.options.perChunkOutput
+            ? {
+                chunk
+              }
+            : compilation
+        );
         const chunkModuleMap: { [key: string]: boolean } = {};
 
         const moduleCallback = (chunkModule: any) => {
