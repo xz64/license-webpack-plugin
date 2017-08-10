@@ -33,6 +33,10 @@ class ModuleProcessor {
     }
 
     const packageName: string = this.extractPackageName(filename);
+    return this.processPackage(packageName);
+  }
+
+  processPackage(packageName: string): string | null {
     const isParsed: boolean = this.licenseExtractor.parsePackage(packageName);
     return isParsed ? packageName : null;
   }

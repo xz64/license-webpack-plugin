@@ -57,7 +57,8 @@ class LicenseWebpackPlugin {
         bannerTemplate:
           '/*! 3rd party license information is available at <%- filename %> */',
         includedChunks: [],
-        excludedChunks: []
+        excludedChunks: [],
+        additionalPackages: []
       },
       ...options
     };
@@ -109,12 +110,13 @@ class LicenseWebpackPlugin {
         };
 
         // scan all files used in compilation for this chunk
-        if (typeof chunk.forEachModule === 'function') {
-          chunk.forEachModule(moduleCallback);
-        } else {
-          // chunk.modules is needed for compatibility with webpack < 3.x but is deprecated in webpack 3.x
-          chunk.modules.forEach(moduleCallback);
-        }
+        chunk.forEachModule(moduleCallback);
+
+        this.options.additionalPackages.forEach((packageName: string) => {
+          this.moduleProcessor.processPackage(packageName);
+          chunkModuleMap[packageName] = true;
+          totalChunkModuleMap[packageName] = true;
+        });
 
         const renderedFile = this.renderLicenseFile(
           Object.keys(chunkModuleMap)

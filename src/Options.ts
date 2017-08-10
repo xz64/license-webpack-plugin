@@ -15,6 +15,7 @@ interface Options {
   bannerTemplate?: string;
   includedChunks?: string[];
   excludedChunks?: string[];
+  additionalPackages?: string[];
 }
 
 export { Options };

@@ -510,3 +510,18 @@ test('the plugin writes a master file when the option is set', function(t) {
   teardown();
   t.end();
 });
+
+test('the plugin can force certain packages to be in the output', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    additionalPackages: ['lib1']
+  });
+  var compiler = setup(fixtures.no3rdPartyLicenseProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
