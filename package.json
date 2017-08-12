@@ -36,6 +36,7 @@
     "@types/webpack-sources": "^0.1.2",
     "mock-fs": "^4.4.1",
     "object-assign": "^4.1.1",
+    "path.join": "^1.0.0",
     "prettier": "^1.5.3",
     "proxyquire": "^1.8.0",
     "rimraf": "^2.6.1",

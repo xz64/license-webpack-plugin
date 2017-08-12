@@ -2,6 +2,7 @@
 
 var test = require('tape');
 var proxyquire = require('proxyquire').noCallThru();
+var pathjoin = require('path.join');
 
 var fixtures = require('./fixtures');
 var helpers = require('./helpers');
@@ -9,7 +10,13 @@ var setup = helpers.setup;
 var teardown = helpers.teardown;
 var FakeWebpackSources = require('./FakeWebpackSources');
 var LicenseWebpackPlugin = proxyquire('../dist/LicenseWebpackPlugin', {
-  'webpack-sources': FakeWebpackSources
+  'webpack-sources': FakeWebpackSources,
+  path: {
+    sep: '/',
+    join: pathjoin,
+    resolve: pathjoin,
+    '@global': true
+  }
 }).LicenseWebpackPlugin;
 
 test('the plugin exists', function(t) {

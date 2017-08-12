@@ -6,10 +6,6 @@ var FakeCompiler = require('./FakeCompiler');
 var FakeCompilation = require('./FakeCompilation');
 var FakeChunk = require('./FakeChunk');
 
-/*
-example options:
-
-*/
 function createCompiler(compilerSetup) {
   var compilationSetup = compilerSetup.compilation;
   var chunks = compilationSetup.chunks.map(function(chunk) {
@@ -18,12 +14,6 @@ function createCompiler(compilerSetup) {
   var compilation = new FakeCompilation(compilationSetup.assets, chunks);
   var compiler = new FakeCompiler(compilerSetup.context, compilation);
   return compiler;
-}
-
-function mockfs() {
-  mockfs({
-    '/project1': {}
-  });
 }
 
 function unmockfs() {

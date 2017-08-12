@@ -193,11 +193,13 @@ class LicenseWebpackPlugin {
         buildRoot.indexOf(FileUtils.MODULE_DIR) - 1
       );
     } else {
+      let oldBuildRoot: string | null = null;
       while (!FileUtils.isThere(path.join(buildRoot, FileUtils.MODULE_DIR))) {
         lastPathSepIndex = buildRoot.lastIndexOf(path.sep);
-        if (lastPathSepIndex <= 0) {
+        if (lastPathSepIndex === -1 || oldBuildRoot === buildRoot) {
           throw new LicenseWebpackPluginError(ErrorMessage.NO_PROJECT_ROOT);
         }
+        oldBuildRoot = buildRoot;
         buildRoot = buildRoot.substring(0, buildRoot.lastIndexOf(path.sep));
       }
     }
