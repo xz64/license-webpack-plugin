@@ -1,6 +1,6 @@
 # Migration Guide
 
-## 0.6.x to 0.7.x
+## 0.6.x to 1.x
 
 * Change `require('license-webpack-plugin')` to `require('license-webpack-plugin').LicenseWebpackPlugin`.
 * Change `includeUndefined` in the plugin options to `includePackagesWithoutLicense`.
