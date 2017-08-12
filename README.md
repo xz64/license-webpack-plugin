@@ -63,6 +63,8 @@ Below is an annotated list of options that can be passed along with their defaul
 }
 ```
 
+WARNING: If you are importing css from node_modules indirectly via something like a sass `@import`, the package will not appear in your list. This is because libsass processes all `@import` statements before the css is provided to webpack. Thus webpack (and this plugin) will have no way to tell what css files were imported. You can work around this by directly importing css from node_modules inside a javascript file. Alternatively, you can force a particular module to be in the output for all chunks by using the `additionalPackages` option.
+
 ## Build Instructions
 
 ```
