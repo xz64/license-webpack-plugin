@@ -532,3 +532,16 @@ test('the plugin can force certain packages to be in the output', function(t) {
   teardown();
   t.end();
 });
+
+test('the plugin ignores stray files inside node_modules such as node_modules/foo.js', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.strayJsFileInNodeModulesProject());
+  plugin.apply(compiler);
+  t.notOk(compiler.compilation.assets['main.licenses.txt']);
+  teardown();
+  t.end();
+});

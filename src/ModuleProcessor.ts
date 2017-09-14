@@ -56,7 +56,12 @@ class ModuleProcessor {
   }
 
   private isFromNodeModules(filename: string): boolean {
-    return !!filename && filename.startsWith(this.modulePrefix);
+    return (
+      !!filename &&
+      filename.startsWith(this.modulePrefix) &&
+      // files such as node_modules/foo.js are not considered to be from a module inside node_modules
+      filename.replace(this.modulePrefix + path.sep, '').indexOf(path.sep) > -1
+    );
   }
 }
 

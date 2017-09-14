@@ -163,6 +163,15 @@ function no3rdPartyLicenseProject() {
   return fixture;
 }
 
+function strayJsFileInNodeModulesProject() {
+  var fixture = no3rdPartyLicenseProject();
+  fixture.fs['/project1/node_modules/foo.js'] = 'void 0;';
+  fixture.compiler.compilation.chunks[0].modules.push({
+    resource: '/project1/node_modules/foo.js'
+  });
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -179,5 +188,6 @@ module.exports = {
   licenseTypeProject: licenseTypeProject,
   twoChunkProject: twoChunkProject,
   licenseWithQuotationMarkProject: licenseWithQuotationMarkProject,
-  no3rdPartyLicenseProject: no3rdPartyLicenseProject
+  no3rdPartyLicenseProject: no3rdPartyLicenseProject,
+  strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject
 };
