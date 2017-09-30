@@ -545,3 +545,19 @@ test('the plugin ignores stray files inside node_modules such as node_modules/fo
   teardown();
   t.end();
 });
+
+test('the plugin handles rootModule when module.resource is not found', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.rootModuleProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});

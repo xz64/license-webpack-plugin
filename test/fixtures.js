@@ -172,6 +172,14 @@ function strayJsFileInNodeModulesProject() {
   return fixture;
 }
 
+function rootModuleProject() {
+  var fixture = oneLibProject();
+  fixture.compiler.compilation.chunks[0].modules = [
+    { rootModule: { resource: '/project1/node_modules/lib1/3rd_party_lib.js' } }
+  ];
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -189,5 +197,6 @@ module.exports = {
   twoChunkProject: twoChunkProject,
   licenseWithQuotationMarkProject: licenseWithQuotationMarkProject,
   no3rdPartyLicenseProject: no3rdPartyLicenseProject,
-  strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject
+  strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject,
+  rootModuleProject: rootModuleProject
 };

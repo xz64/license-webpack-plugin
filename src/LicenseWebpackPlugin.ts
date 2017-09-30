@@ -106,7 +106,8 @@ class LicenseWebpackPlugin {
 
         const moduleCallback = (chunkModule: any) => {
           const packageName = this.moduleProcessor.processFile(
-            chunkModule.resource
+            chunkModule.resource ||
+              (chunkModule.rootModule && chunkModule.rootModule.resource)
           );
           if (packageName) {
             chunkModuleMap[packageName] = true;
