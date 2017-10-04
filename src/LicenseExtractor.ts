@@ -180,7 +180,10 @@ class LicenseExtractor {
       return licenseName;
     }
 
-    return fs.readFileSync(licenseFilename, 'utf8').trim();
+    return fs
+      .readFileSync(licenseFilename, 'utf8')
+      .trim()
+      .replace(/\r\n/g, '\n');
   }
 
   private readPackageJson(packageName: string) {

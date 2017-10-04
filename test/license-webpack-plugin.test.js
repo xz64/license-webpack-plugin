@@ -561,3 +561,19 @@ test('the plugin handles rootModule when module.resource is not found', function
   teardown();
   t.end();
 });
+
+test('the plugin normalizes line endings from license files to LF format', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.oneLibCRLFProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT\nLicense\ntest'
+  );
+  teardown();
+  t.end();
+});

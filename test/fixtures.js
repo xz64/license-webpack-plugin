@@ -180,6 +180,12 @@ function rootModuleProject() {
   return fixture;
 }
 
+function oneLibCRLFProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/project1/node_modules/lib1/LICENSE'] = 'MIT\r\nLicense\r\ntest';
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -198,5 +204,6 @@ module.exports = {
   licenseWithQuotationMarkProject: licenseWithQuotationMarkProject,
   no3rdPartyLicenseProject: no3rdPartyLicenseProject,
   strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject,
-  rootModuleProject: rootModuleProject
+  rootModuleProject: rootModuleProject,
+  oneLibCRLFProject: oneLibCRLFProject
 };
