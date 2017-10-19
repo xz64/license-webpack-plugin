@@ -47,7 +47,7 @@
     "typescript": "^2.4.2"
   },
   "peerDependencies": {
-    "webpack-sources": ">= 1.0.0"
+    "webpack-sources": ">=1.0.0"
   },
   "dependencies": {
     "ejs": "^2.5.7"
