@@ -1,13 +1,12 @@
 import * as path from 'path';
 
-import { FileUtils } from './FileUtils';
 import { ConstructedOptions } from './ConstructedOptions';
 import { Module } from './Module';
 import { LicenseExtractor } from './LicenseExtractor';
 import { LicenseWebpackPluginError } from './LicenseWebpackPluginError';
 
 class ModuleProcessor {
-  private modulePrefix: string;
+  private moduleDirectory: string;
   private licenseExtractor: LicenseExtractor;
 
   constructor(
@@ -15,7 +14,8 @@ class ModuleProcessor {
     private options: ConstructedOptions,
     private errors: LicenseWebpackPluginError[]
   ) {
-    this.modulePrefix = path.join(this.context, FileUtils.MODULE_DIR);
+    this.moduleDirectory = this.options.moduleDirectory;
+
     this.licenseExtractor = new LicenseExtractor(
       this.context,
       this.options,
@@ -27,7 +27,7 @@ class ModuleProcessor {
     if (
       !filename ||
       filename.trim() === '' ||
-      !this.isFromNodeModules(filename)
+      !this.isFromModuleDirectory(filename)
     ) {
       return null;
     }
@@ -47,7 +47,7 @@ class ModuleProcessor {
 
   private extractPackageName(filename: string): string {
     const tokens: string[] = filename
-      .replace(path.join(this.context, FileUtils.MODULE_DIR) + path.sep, '')
+      .split(this.moduleDirectory + path.sep)[1]
       .split(path.sep);
 
     return tokens[0].charAt(0) === '@'
@@ -55,12 +55,13 @@ class ModuleProcessor {
       : tokens[0];
   }
 
-  private isFromNodeModules(filename: string): boolean {
+  private isFromModuleDirectory(filename: string): boolean {
     return (
       !!filename &&
-      filename.startsWith(this.modulePrefix) &&
+      filename.startsWith(this.moduleDirectory) &&
       // files such as node_modules/foo.js are not considered to be from a module inside node_modules
-      filename.replace(this.modulePrefix + path.sep, '').indexOf(path.sep) > -1
+      filename.replace(this.moduleDirectory + path.sep, '').indexOf(path.sep) >
+        -1
     );
   }
 }

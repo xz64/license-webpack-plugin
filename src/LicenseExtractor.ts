@@ -10,16 +10,14 @@ import { ErrorMessage } from './ErrorMessage';
 
 class LicenseExtractor {
   static UNKNOWN_LICENSE: string = 'Unknown license';
-  private modulePrefix: string;
+  private moduleDirectory: string;
   private moduleCache: ModuleCache = {};
 
   constructor(
     private context: string,
     private options: ConstructedOptions,
     private errors: LicenseWebpackPluginError[]
-  ) {
-    this.modulePrefix = path.join(this.context, FileUtils.MODULE_DIR);
-  }
+  ) {}
 
   // returns true if the package is included as part of license report
   parsePackage(packageName: string): boolean {
@@ -27,6 +25,10 @@ class LicenseExtractor {
       return true;
     }
 
+    this.moduleDirectory = path.join(
+      this.context,
+      this.options.moduleDirectory
+    );
     const packageJson = this.readPackageJson(packageName);
     const licenseName = this.getLicenseName(packageJson);
 
@@ -140,7 +142,7 @@ class LicenseExtractor {
 
     for (let i = 0; i < this.options.licenseFilenames.length; i = i + 1) {
       const licenseFile = path.join(
-        this.modulePrefix,
+        this.moduleDirectory,
         packageName,
         this.options.licenseFilenames[i]
       );
@@ -187,7 +189,11 @@ class LicenseExtractor {
   }
 
   private readPackageJson(packageName: string) {
-    const pathName = path.join(this.modulePrefix, packageName, 'package.json');
+    const pathName = path.join(
+      this.moduleDirectory,
+      packageName,
+      'package.json'
+    );
     const file = fs.readFileSync(pathName, 'utf8');
     return JSON.parse(file);
   }

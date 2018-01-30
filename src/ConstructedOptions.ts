@@ -16,6 +16,8 @@ interface ConstructedOptions {
   includedChunks: string[];
   excludedChunks: string[];
   additionalPackages: string[];
+  moduleDirectory: string;
+  buildRoot: string | null;
 }
 
 export { ConstructedOptions };
