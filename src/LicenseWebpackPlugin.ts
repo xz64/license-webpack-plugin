@@ -58,7 +58,9 @@ class LicenseWebpackPlugin {
           '/*! 3rd party license information is available at <%- filename %> */',
         includedChunks: [],
         excludedChunks: [],
-        additionalPackages: []
+        additionalPackages: [],
+        moduleDirectory: FileUtils.MODULE_DIR,
+        buildRoot: null
       },
       ...options
     };
@@ -75,7 +77,8 @@ class LicenseWebpackPlugin {
   }
 
   apply(compiler: any) {
-    this.buildRoot = this.findBuildRoot(compiler.context);
+    this.buildRoot =
+      this.options.buildRoot || this.findBuildRoot(compiler.context);
     this.moduleProcessor = new ModuleProcessor(
       this.buildRoot,
       this.options,
