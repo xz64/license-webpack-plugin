@@ -104,14 +104,22 @@ class LicenseWebpackPlugin {
         );
         const chunkModuleMap: { [key: string]: boolean } = {};
 
-        const moduleCallback = (chunkModule: any) => {
-          const packageName = this.moduleProcessor.processFile(
-            chunkModule.resource ||
-              (chunkModule.rootModule && chunkModule.rootModule.resource)
-          );
+        const fileCallback = (filename: string) => {
+          const packageName = this.moduleProcessor.processFile(filename);
           if (packageName) {
             chunkModuleMap[packageName] = true;
             totalChunkModuleMap[packageName] = true;
+          }
+        };
+
+        const moduleCallback = (chunkModule: any) => {
+          fileCallback(
+            chunkModule.resource ||
+              (chunkModule.rootModule && chunkModule.rootModule.resource)
+          );
+          if (Array.isArray(chunkModule.fileDependencies)) {
+            const fileDependencies: string[] = chunkModule.fileDependencies;
+            fileDependencies.forEach(fileCallback);
           }
         };
 

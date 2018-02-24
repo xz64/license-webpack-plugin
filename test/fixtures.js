@@ -186,6 +186,14 @@ function oneLibCRLFProject() {
   return fixture;
 }
 
+function fileDependenciesProject() {
+  var fixture = oneLibProject();
+  var mod = fixture.compiler.compilation.chunks[0].modules[0];
+  delete mod.resource;
+  mod.fileDependencies = ['/project1/node_modules/lib1/3rd_party_lib.js'];
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -205,5 +213,6 @@ module.exports = {
   no3rdPartyLicenseProject: no3rdPartyLicenseProject,
   strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject,
   rootModuleProject: rootModuleProject,
-  oneLibCRLFProject: oneLibCRLFProject
+  oneLibCRLFProject: oneLibCRLFProject,
+  fileDependenciesProject: fileDependenciesProject
 };

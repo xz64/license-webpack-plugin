@@ -577,3 +577,19 @@ test('the plugin normalizes line endings from license files to LF format', funct
   teardown();
   t.end();
 });
+
+test('the plugin handles fileDependencies sections in chunk modules', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /MIT/
+  });
+  var compiler = setup(fixtures.fileDependenciesProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
