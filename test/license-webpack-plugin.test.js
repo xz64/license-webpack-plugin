@@ -593,3 +593,83 @@ test('the plugin handles fileDependencies sections in chunk modules', function(
   teardown();
   t.end();
 });
+
+test('the plugin handles explicitly specified build roots', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    buildRoot: '/project1'
+  });
+  var compiler = setup(fixtures.oneLibProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
+
+test('the plugin throws on an invalid build root', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    buildRoot: '/projectINVALID'
+  });
+  var compiler = setup(fixtures.oneLibProject());
+  t.throws(function() {
+    plugin.apply(compiler);
+  });
+  teardown();
+  t.end();
+});
+
+test('the plugin throws an error on non-array modulesDirectories', function(t) {
+  t.throws(function() {
+    new LicenseWebpackPlugin({
+      pattern: /^.*$/,
+      modulesDirectories: 'libs'
+    });
+  });
+  t.end();
+});
+
+test('the plugin throws an error on empty array of modulesDirectories', function(
+  t
+) {
+  t.throws(function() {
+    new LicenseWebpackPlugin({
+      pattern: /^.*$/,
+      modulesDirectories: []
+    });
+  });
+  t.end();
+});
+
+test('the plugin handles a non-node_modules module directory', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    modulesDirectories: ['libs']
+  });
+  var compiler = setup(fixtures.alternateModuleDirectoryProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
+
+test('the plugin handles multiple modules directories', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    modulesDirectories: ['node_modules', 'libs']
+  });
+  var compiler = setup(fixtures.multiModuleDirectoryProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License\n\nlib2@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});

@@ -59,7 +59,9 @@ Below is an annotated list of options that can be passed along with their defaul
     '/*! 3rd party license information is available at <%- filename %> */',
   includedChunks: [], // array of chunk names for which license files should be produced
   excludedChunks: [], // array of chunk names for which license files should not be produced. If a chunk is both included and excluded, then it is ultimately excluded.
-  additionalPackages: [] // array of additional packages to scan
+  additionalPackages: [], // array of additional packages to scan
+  buildRoot: undefined, // project build root. If left blank, the plugin will try to guess where your build root is based on webpack's compilation information
+  modulesDirectories: ['node_modules'] // directories to check for modules. Can be useful in case you organize your frontend and backend dependencies into separate directories.
 }
 ```
 

@@ -10,24 +10,30 @@ import { ErrorMessage } from './ErrorMessage';
 
 class LicenseExtractor {
   static UNKNOWN_LICENSE: string = 'Unknown license';
-  private modulePrefix: string;
   private moduleCache: ModuleCache = {};
 
   constructor(
-    private context: string,
     private options: ConstructedOptions,
     private errors: LicenseWebpackPluginError[]
-  ) {
-    this.modulePrefix = path.join(this.context, FileUtils.MODULE_DIR);
-  }
+  ) {}
 
   // returns true if the package is included as part of license report
-  parsePackage(packageName: string): boolean {
+  parsePackage(packageName: string, modulePrefix: string | null): boolean {
     if (this.moduleCache[packageName]) {
       return true;
     }
 
-    const packageJson = this.readPackageJson(packageName);
+    if (modulePrefix === null) {
+      this.errors.push(
+        new LicenseWebpackPluginError(
+          ErrorMessage.NO_MODULE_DIRECTORY_FOUND_FOR_MODULE,
+          packageName
+        )
+      );
+      return false;
+    }
+
+    const packageJson = this.readPackageJson(packageName, modulePrefix);
     const licenseName = this.getLicenseName(packageJson);
 
     if (
@@ -61,7 +67,11 @@ class LicenseExtractor {
       }
     }
 
-    const licenseText = this.getLicenseText(packageJson, licenseName);
+    const licenseText = this.getLicenseText(
+      packageJson,
+      licenseName,
+      modulePrefix
+    );
 
     const moduleCacheEntry = {
       packageJson,
@@ -117,7 +127,8 @@ class LicenseExtractor {
 
   private getLicenseFilename(
     packageJson: any,
-    licenseName: string
+    licenseName: string,
+    modulePrefix: string
   ): string | undefined {
     let filename;
     const packageName = packageJson.name;
@@ -140,7 +151,7 @@ class LicenseExtractor {
 
     for (let i = 0; i < this.options.licenseFilenames.length; i = i + 1) {
       const licenseFile = path.join(
-        this.modulePrefix,
+        modulePrefix,
         packageName,
         this.options.licenseFilenames[i]
       );
@@ -163,12 +174,20 @@ class LicenseExtractor {
     return filename;
   }
 
-  private getLicenseText(packageJson: any, licenseName: string): string {
+  private getLicenseText(
+    packageJson: any,
+    licenseName: string,
+    modulePrefix: string
+  ): string {
     if (licenseName === LicenseExtractor.UNKNOWN_LICENSE) {
       return '';
     }
 
-    const licenseFilename = this.getLicenseFilename(packageJson, licenseName);
+    const licenseFilename = this.getLicenseFilename(
+      packageJson,
+      licenseName,
+      modulePrefix
+    );
     if (!licenseFilename) {
       this.errors.push(
         new LicenseWebpackPluginError(
@@ -186,8 +205,8 @@ class LicenseExtractor {
       .replace(/\r\n/g, '\n');
   }
 
-  private readPackageJson(packageName: string) {
-    const pathName = path.join(this.modulePrefix, packageName, 'package.json');
+  private readPackageJson(packageName: string, modulePrefix: string) {
+    const pathName = path.join(modulePrefix, packageName, 'package.json');
     const file = fs.readFileSync(pathName, 'utf8');
     return JSON.parse(file);
   }

@@ -194,6 +194,36 @@ function fileDependenciesProject() {
   return fixture;
 }
 
+function alternateModuleDirectoryProject() {
+  var fixture = oneLibProject();
+  fixture.fs = {
+    '/project1/libs/lib1/package.json': JSON.stringify({
+      name: 'lib1',
+      license: 'MIT',
+      version: '0.0.1'
+    }),
+    '/project1/libs/lib1/LICENSE': 'MIT License',
+    '/project1/node_modules': {}
+  };
+  fixture.compiler.compilation.chunks[0].modules[0].resource =
+    '/project1/libs/lib1/3rd_party_lib.js';
+  return fixture;
+}
+
+function multiModuleDirectoryProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/project1/libs/lib2/package.json'] = JSON.stringify({
+    name: 'lib2',
+    license: 'MIT',
+    version: '0.0.1'
+  });
+  fixture.fs['/project1/libs/lib2/LICENSE'] = 'MIT License';
+  fixture.compiler.compilation.chunks[0].modules.push({
+    resource: '/project1/libs/lib2/3rd_party_lib.js'
+  });
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -214,5 +244,7 @@ module.exports = {
   strayJsFileInNodeModulesProject: strayJsFileInNodeModulesProject,
   rootModuleProject: rootModuleProject,
   oneLibCRLFProject: oneLibCRLFProject,
-  fileDependenciesProject: fileDependenciesProject
+  fileDependenciesProject: fileDependenciesProject,
+  alternateModuleDirectoryProject: alternateModuleDirectoryProject,
+  multiModuleDirectoryProject: multiModuleDirectoryProject
 };

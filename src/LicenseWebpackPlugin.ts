@@ -34,6 +34,17 @@ class LicenseWebpackPlugin {
       );
     }
 
+    if (
+      options.modulesDirectories !== undefined &&
+      options.modulesDirectories !== null &&
+      (!Array.isArray(options.modulesDirectories) ||
+        options.modulesDirectories.length === 0)
+    ) {
+      throw new LicenseWebpackPluginError(
+        ErrorMessage.INVALID_MODULES_DIRECTORIES
+      );
+    }
+
     this.options = {
       ...{
         licenseFilenames: [
@@ -58,7 +69,8 @@ class LicenseWebpackPlugin {
           '/*! 3rd party license information is available at <%- filename %> */',
         includedChunks: [],
         excludedChunks: [],
-        additionalPackages: []
+        additionalPackages: [],
+        modulesDirectories: ['node_modules']
       },
       ...options
     };
@@ -75,7 +87,15 @@ class LicenseWebpackPlugin {
   }
 
   apply(compiler: any) {
-    this.buildRoot = this.findBuildRoot(compiler.context);
+    if (this.options.buildRoot && !FileUtils.isThere(this.options.buildRoot)) {
+      throw new LicenseWebpackPluginError(
+        ErrorMessage.BUILD_ROOT_NOT_EXIST,
+        this.options.buildRoot
+      );
+    }
+
+    this.buildRoot =
+      this.options.buildRoot || this.findBuildRoot(compiler.context);
     this.moduleProcessor = new ModuleProcessor(
       this.buildRoot,
       this.options,
@@ -131,7 +151,7 @@ class LicenseWebpackPlugin {
         }
 
         this.options.additionalPackages.forEach((packageName: string) => {
-          this.moduleProcessor.processPackage(packageName);
+          this.moduleProcessor.processExternalPackage(packageName);
           chunkModuleMap[packageName] = true;
           totalChunkModuleMap[packageName] = true;
         });
@@ -196,14 +216,14 @@ class LicenseWebpackPlugin {
     let buildRoot: string = context;
     let lastPathSepIndex: number;
 
-    if (buildRoot.indexOf(FileUtils.MODULE_DIR) > -1) {
+    if (buildRoot.indexOf(FileUtils.NODE_MODULES) > -1) {
       buildRoot = buildRoot.substring(
         0,
-        buildRoot.indexOf(FileUtils.MODULE_DIR) - 1
+        buildRoot.indexOf(FileUtils.NODE_MODULES) - 1
       );
     } else {
       let oldBuildRoot: string | null = null;
-      while (!FileUtils.isThere(path.join(buildRoot, FileUtils.MODULE_DIR))) {
+      while (!FileUtils.isThere(path.join(buildRoot, FileUtils.NODE_MODULES))) {
         lastPathSepIndex = buildRoot.lastIndexOf(path.sep);
         if (lastPathSepIndex === -1 || oldBuildRoot === buildRoot) {
           throw new LicenseWebpackPluginError(ErrorMessage.NO_PROJECT_ROOT);

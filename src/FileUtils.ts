@@ -1,7 +1,7 @@
 import { accessSync } from 'fs';
 
 class FileUtils {
-  static MODULE_DIR: string = 'node_modules';
+  static NODE_MODULES = 'node_modules';
 
   static isThere(file: string): boolean {
     let exists = true;
