@@ -102,7 +102,7 @@ class LicenseWebpackPlugin {
       this.errors
     );
 
-    compiler.plugin('emit', (compilation: any, callback: Function) => {
+    const emitCallback = (compilation: any, callback: Function) => {
       const totalChunkModuleMap: { [key: string]: boolean } = {};
       compilation.chunks.forEach((chunk: any) => {
         if (this.options.excludedChunks.indexOf(chunk.name) > -1) {
@@ -206,7 +206,13 @@ class LicenseWebpackPlugin {
       }
 
       callback();
-    });
+    };
+
+    if (typeof compiler.hooks !== 'undefined') {
+      compiler.hooks.emit.tap('LicenseWebpackPlugin', emitCallback);
+    } else {
+      compiler.plugin('emit', emitCallback);
+    }
   }
 
   private renderLicenseFile(packageNames: string[]): string {
