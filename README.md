@@ -61,7 +61,10 @@ Below is an annotated list of options that can be passed along with their defaul
   excludedChunks: [], // array of chunk names for which license files should not be produced. If a chunk is both included and excluded, then it is ultimately excluded.
   additionalPackages: [], // array of additional packages to scan
   buildRoot: undefined, // project build root. If left blank, the plugin will try to guess where your build root is based on webpack's compilation information
-  modulesDirectories: ['node_modules'] // directories to check for modules. Can be useful in case you organize your frontend and backend dependencies into separate directories.
+  modulesDirectories: ['node_modules'], // directories to check for modules. Can be useful in case you organize your frontend and backend dependencies into separate directories.
+  licenseTemplateDir: undefined, // directory containing sample license text files (e.g. MIT.txt) to use when a license file can't be found (default behavior just prints the license identifier). One place to get license files would be from https://github.com/spdx/license-list .
+  licenseFileOverrides: undefined, // object whose keys are package names and values are license filenames. Useful in case a package has multiple license files and you want to pick a specific one.
+  licenseTypeOverrides: undefined // object whose keys are package names and values are license types. Useful in case a package does not specify a license field in its package.json.
 }
 ```
 
