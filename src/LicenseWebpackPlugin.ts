@@ -144,12 +144,7 @@ class LicenseWebpackPlugin {
         };
 
         // scan all files used in compilation for this chunk
-        if (typeof chunk.modulesIterable !== 'undefined') {
-          for (const module of chunk.modulesIterable) {
-            moduleCallback(module);
-          }
-        } else if (typeof chunk.forEachModule === 'function') {
-          // chunk.forEachModule was deprecated in webpack v4
+        if (typeof chunk.forEachModule === 'function') {
           chunk.forEachModule(moduleCallback);
         } else {
           chunk.modules.forEach(moduleCallback); // chunk.modules was deprecated in webpack v3
