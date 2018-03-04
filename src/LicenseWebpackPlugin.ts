@@ -209,7 +209,7 @@ class LicenseWebpackPlugin {
     };
 
     if (typeof compiler.hooks !== 'undefined') {
-      compiler.hooks.emit.tap('LicenseWebpackPlugin', emitCallback);
+      compiler.hooks.emit.tapAsync('LicenseWebpackPlugin', emitCallback);
     } else {
       compiler.plugin('emit', emitCallback);
     }
