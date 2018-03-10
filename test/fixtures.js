@@ -224,6 +224,12 @@ function multiModuleDirectoryProject() {
   return fixture;
 }
 
+function endingCommentLicenseProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/project1/node_modules/lib1/LICENSE'] = 'MIT License*/';
+  return fixture;
+}
+
 module.exports = {
   oneLibProject: oneLibProject,
   badBuildRootProject: badBuildRootProject,
@@ -246,5 +252,6 @@ module.exports = {
   oneLibCRLFProject: oneLibCRLFProject,
   fileDependenciesProject: fileDependenciesProject,
   alternateModuleDirectoryProject: alternateModuleDirectoryProject,
-  multiModuleDirectoryProject: multiModuleDirectoryProject
+  multiModuleDirectoryProject: multiModuleDirectoryProject,
+  endingCommentLicenseProject: endingCommentLicenseProject
 };

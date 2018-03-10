@@ -173,7 +173,8 @@ class LicenseWebpackPlugin {
               .forEach((file: string) => {
                 compilation.assets[file] = new ConcatSource(
                   ejs.render(this.options.bannerTemplate, {
-                    filename: outputPath
+                    filename: outputPath,
+                    licenseInfo: renderedFile.replace(/\*\//g, '') // remove premature comment endings
                   }),
                   '\n',
                   compilation.assets[file]

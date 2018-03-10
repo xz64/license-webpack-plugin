@@ -299,6 +299,40 @@ test('the plugin allows for custom banner templates', function(t) {
   t.end();
 });
 
+test('the plugin allows injecting license information into the banner', function(
+  t
+) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    addBanner: true,
+    bannerTemplate: '/*! <%- licenseInfo %> */'
+  });
+  var compiler = setup(fixtures.oneLibProject());
+  plugin.apply(compiler);
+  t.equals(
+    compiler.compilation.assets['output.abcd.js'].text,
+    '/*! lib1@0.0.1\nMIT\nMIT License */\nsome test file'
+  );
+  teardown();
+  t.end();
+});
+
+test('the plugin removes ending comments found in license text', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    addBanner: true,
+    bannerTemplate: '/*! <%- licenseInfo %> */'
+  });
+  var compiler = setup(fixtures.endingCommentLicenseProject());
+  plugin.apply(compiler);
+  t.equals(
+    compiler.compilation.assets['output.abcd.js'].text,
+    '/*! lib1@0.0.1\nMIT\nMIT License */\nsome test file'
+  );
+  teardown();
+  t.end();
+});
+
 test('the plugin allows overriding a license file for a module', function(t) {
   var plugin = new LicenseWebpackPlugin({
     pattern: /^.*$/,
