@@ -1,9 +1,6 @@
 interface Module {
-  packageJson: any;
-  license: {
-    name: string;
-    text: string;
-  };
+  name: string;
+  directory: string;
 }
 
 export { Module };
