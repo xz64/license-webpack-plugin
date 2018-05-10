@@ -154,6 +154,12 @@ class LicenseWebpackPlugin {
         } else {
           chunk.modules.forEach(moduleCallback); // chunk.modules was deprecated in webpack v3
         }
+        if (chunk.entryModule && chunk.entryModule.dependencies) {
+          for (const module of chunk.entryModule.dependencies) {
+            const file = module.originModule && module.originModule.resource;
+            fileCallback(file);
+          }
+        }
 
         this.options.additionalPackages.forEach((packageName: string) => {
           this.moduleProcessor.processExternalPackage(packageName);
