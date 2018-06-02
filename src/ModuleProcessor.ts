@@ -32,6 +32,10 @@ class ModuleProcessor {
     }
 
     const packageName: string = this.extractPackageName(filename, modulePrefix);
+    if (this.options.excludedPackages && this.options.excludedPackages.test(packageName)) {
+      return null;
+    }
+
     return this.processPackage(packageName, modulePrefix);
   }
 

@@ -45,6 +45,15 @@ class LicenseWebpackPlugin {
       );
     }
 
+    if (
+      options.excludedPackages !== undefined && 
+      options.excludedPackages !== null &&
+      !(options.excludedPackages instanceof RegExp)) {
+      throw new LicenseWebpackPluginError(
+        ErrorMessage.UNACCEPTABLE_EXCLUDED_PACKAGES_NOT_REGEX
+      );
+    }
+
     this.options = {
       ...{
         licenseFilenames: [
@@ -127,8 +136,8 @@ class LicenseWebpackPlugin {
         const fileCallback = (filename: string) => {
           const packageName = this.moduleProcessor.processFile(filename);
           if (packageName) {
-            chunkModuleMap[packageName] = true;
-            totalChunkModuleMap[packageName] = true;
+              chunkModuleMap[packageName] = true;
+              totalChunkModuleMap[packageName] = true;
           }
         };
 

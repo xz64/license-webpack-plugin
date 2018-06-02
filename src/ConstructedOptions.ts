@@ -18,6 +18,7 @@ interface ConstructedOptions {
   additionalPackages: string[];
   buildRoot?: string;
   modulesDirectories: string[];
+  excludedPackages?: RegExp;
 }
 
 export { ConstructedOptions };
