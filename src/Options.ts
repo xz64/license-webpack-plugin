@@ -18,6 +18,7 @@ interface Options {
   additionalPackages?: string[];
   buildRoot?: string;
   modulesDirectories?: string[];
+  excludedPackages?: RegExp;
 }
 
 export { Options };
