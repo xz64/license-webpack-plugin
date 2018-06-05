@@ -45,14 +45,17 @@ describe('the file handler', () => {
   beforeAll(() => {
     fakeFileSystem = new FakeFileSystem('/');
     fakeWindowsFileSystem = new FakeFileSystem('\\');
-    pluginFileHandler = new PluginFileHandler(fakeFileSystem, '/home/repo', [
-      'node_modules',
-      'other_modules'
-    ]);
+    pluginFileHandler = new PluginFileHandler(
+      fakeFileSystem,
+      '/home/repo',
+      ['node_modules', 'other_modules'],
+      packageName => packageName === 'excluded-package'
+    );
     windowsPluginFileHandler = new PluginFileHandler(
       fakeWindowsFileSystem,
       'C:\\home\\repo',
-      ['node_modules', 'other_modules']
+      ['node_modules', 'other_modules'],
+      () => false
     );
   });
 
@@ -118,5 +121,12 @@ describe('the file handler', () => {
     );
     expect(module.name).toBe('@foo/bar');
     expect(module.directory).toBe('C:\\home\\repo\\node_modules\\@foo\\bar');
+  });
+
+  test('excludes packages according to the exclude option', () => {
+    const module: Module = pluginFileHandler.getModule(
+      '/home/repo/node_modules/excluded-package/lib.js'
+    );
+    expect(module).toBeNull();
   });
 });

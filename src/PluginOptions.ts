@@ -38,6 +38,7 @@ interface PluginOptions {
     licenses: { type: string; url: string }[]
   ) => string);
   handleMissingLicenseType?: ((packageName: string) => string | null);
+  excludedPackageTest?: ((packageName: string) => boolean);
 }
 
 export { PluginOptions };

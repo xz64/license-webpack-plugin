@@ -8,7 +8,8 @@ class PluginFileHandler implements FileHandler {
   constructor(
     private fileSystem: FileSystem,
     buildRoot: string,
-    modulesDirectories: string[]
+    modulesDirectories: string[],
+    private excludedPackageTest: ((packageName: string) => boolean)
   ) {
     this.modulesDirectories = modulesDirectories.map(
       x => buildRoot + this.fileSystem.pathSeparator + x
@@ -26,6 +27,9 @@ class PluginFileHandler implements FileHandler {
           filename,
           modulesDirectory
         );
+        if (module !== null && this.excludedPackageTest(module.name)) {
+          return null;
+        }
         return module;
       }
     }

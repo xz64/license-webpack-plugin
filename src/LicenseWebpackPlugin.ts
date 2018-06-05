@@ -39,7 +39,8 @@ class LicenseWebpackPlugin implements WebpackPlugin {
     const fileHandler: FileHandler = new PluginFileHandler(
       fileSystem,
       options.buildRoot,
-      options.modulesDirectories
+      options.modulesDirectories,
+      options.excludedPackageTest
     );
     const licenseTypeIdentifier = new PluginLicenseTypeIdentifier(
       options.licenseTypeOverrides,
