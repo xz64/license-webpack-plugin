@@ -24,7 +24,7 @@ module.exports = {
 
 The default behavior will add a license notice file to each chunk of the webpack build. In addition, it will add a banner indicating the path to the license notice file in any Javascript assets. Third party libraries imported via external tools like SASS `@import` may not appear in the output (since webpack does not process `@import`). If this issue happens, please specify additional modules that the plugin should scan.
 
-To configure the plugin, check the [documentation](DOCUMENTATION.MD).
+To configure the plugin, check the [documentation](DOCUMENTATION.md).
 
 ## Build Instructions
 
