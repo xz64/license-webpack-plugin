@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts'",
+    "lint": "cross-env prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts'",
     "build": "npm run lint && npm run clean && tsc",
     "prepublishOnly": "npm run build",
     "jest": "jest",
@@ -39,6 +39,7 @@
     "@types/jest": "^22.2.2",
     "@types/node": "^8.10.0",
     "@types/webpack-sources": "^0.1.4",
+    "cross-env": "^5.2.0",
     "jest": "^22.4.3",
     "prettier": "^1.11.1",
     "rimraf": "^2.6.2",
