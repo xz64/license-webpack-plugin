@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "cross-env prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts'",
+    "lint": "cross-env prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts' --project tsconfig.json",
     "build": "npm run lint && npm run clean && tsc",
     "prepublishOnly": "npm run build",
     "jest": "jest",
