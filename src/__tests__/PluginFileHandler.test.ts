@@ -5,57 +5,84 @@ import { Module } from '../Module';
 
 class FakeFileSystem implements FileSystem {
   pathSeparator: string;
+  availableFiles: { [key: string]: string } = {
+    '/home/repo': '[directory]',
+    '/home/repo/package.json': '{"name":"repo"}',
+    '/home/repo/node_modules/foo': '[directory]',
+    '/home/repo/node_modules/a.js': 'a.js',
+    '/home/repo/node_modules/foo/lib.js': 'foo.txt',
+    '/home/repo/node_modules/foo/package.json': '{"name":"foo"}',
+    '/home/repo/other_modules': '[directory]',
+    '/home/repo/other_modules/someothermodule': '[directory]',
+    '/home/repo/other_modules/someothermodule/package.json':
+      '{"name":"someothermodule"}',
+    '/home/repo/other_modules/someothermodule/lib.js': 'lib.js',
+    '/home/repo/node_modules/excluded-package': '[directory]',
+    '/home/repo/node_modules/excluded-package/lib.js': 'lib.js'
+  };
 
   constructor(pathSeparator: string) {
     this.pathSeparator = pathSeparator;
   }
 
   readFileAsUtf8(filename: string) {
-    return filename;
+    return this.availableFiles[filename];
   }
 
-  pathExists() {
-    return true;
+  pathExists(path: string) {
+    return !!this.availableFiles[path];
   }
 
   isFileInDirectory(filename: string, directory: string) {
-    if (
-      filename.indexOf('other_modules') > -1 &&
-      directory.indexOf('node_modules') > -1
-    ) {
-      return false;
-    }
     return (
-      filename.indexOf('node_modules') > -1 ||
-      filename.indexOf('other_modules') > -1
+      this.resolvePath(filename).indexOf(this.resolvePath(directory)) === 0
     );
   }
 
   join(...paths: string[]) {
     return paths.join(this.pathSeparator);
   }
+
+  resolvePath(pathInput: string) {
+    if (pathInput.indexOf(this.pathSeparator) === -1) {
+      return pathInput;
+    }
+    const pathElements: string[] = pathInput.split(this.pathSeparator);
+    let resolvedPath = this.pathSeparator === '/' ? '' : 'C:';
+    for (let i = 0; i < pathElements.length - 1; i++) {
+      const pathElement = pathElements[i];
+      if (pathElement === '') {
+        continue;
+      }
+      if (pathElement === '..') {
+        resolvedPath = resolvedPath.substring(
+          0,
+          resolvedPath.lastIndexOf(this.pathSeparator)
+        );
+        continue;
+      }
+      resolvedPath += this.pathSeparator + pathElement;
+    }
+
+    const lastPathElement = pathElements[pathElements.length - 1];
+    if (lastPathElement !== '') {
+      resolvedPath += this.pathSeparator + lastPathElement;
+    }
+    return resolvedPath;
+  }
 }
 
 describe('the file handler', () => {
   let fakeFileSystem: FileSystem;
-  let fakeWindowsFileSystem: FileSystem;
   let pluginFileHandler: FileHandler;
-  let windowsPluginFileHandler: FileHandler;
 
   beforeAll(() => {
     fakeFileSystem = new FakeFileSystem('/');
-    fakeWindowsFileSystem = new FakeFileSystem('\\');
     pluginFileHandler = new PluginFileHandler(
       fakeFileSystem,
       '/home/repo',
       ['node_modules', 'other_modules'],
       packageName => packageName === 'excluded-package'
-    );
-    windowsPluginFileHandler = new PluginFileHandler(
-      fakeWindowsFileSystem,
-      'C:\\home\\repo',
-      ['node_modules', 'other_modules'],
-      () => false
     );
   });
 
@@ -91,36 +118,12 @@ describe('the file handler', () => {
     expect(module).toBeNull();
   });
 
-  test('extracts scoped package names correctly', () => {
-    const module: Module = pluginFileHandler.getModule(
-      '/home/repo/node_modules/@foo/bar/lib.js'
-    );
-    expect(module.name).toBe('@foo/bar');
-    expect(module.directory).toBe('/home/repo/node_modules/@foo/bar');
-  });
-
-  test('extracts double scoped package names correctly', () => {
-    const module: Module = pluginFileHandler.getModule(
-      '/home/repo/node_modules/@foo/bar/@bar/lib.js'
-    );
-    expect(module.name).toBe('@foo/bar');
-    expect(module.directory).toBe('/home/repo/node_modules/@foo/bar');
-  });
-
   test('handles custom modules directories', () => {
     const module: Module = pluginFileHandler.getModule(
       '/home/repo/other_modules/someothermodule/lib.js'
     );
     expect(module.name).toBe('someothermodule');
     expect(module.directory).toBe('/home/repo/other_modules/someothermodule');
-  });
-
-  test('extracts scoped package names correctly on windows', () => {
-    const module: Module = windowsPluginFileHandler.getModule(
-      'C:\\home\\repo\\node_modules\\@foo\\bar\\lib.js'
-    );
-    expect(module.name).toBe('@foo/bar');
-    expect(module.directory).toBe('C:\\home\\repo\\node_modules\\@foo\\bar');
   });
 
   test('excludes packages according to the exclude option', () => {

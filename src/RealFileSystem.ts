@@ -7,8 +7,8 @@ class RealFileSystem implements FileSystem {
   pathSeparator: string = path.sep;
 
   isFileInDirectory(filename: string, directory: string): boolean {
-    const normalizedFile = path.normalize(filename);
-    const normalizedDirectory = path.normalize(directory);
+    const normalizedFile = this.resolvePath(filename);
+    const normalizedDirectory = this.resolvePath(directory);
     return normalizedFile.indexOf(normalizedDirectory) === 0;
   }
 
@@ -22,6 +22,10 @@ class RealFileSystem implements FileSystem {
 
   join(...paths: string[]): string {
     return path.join(...paths);
+  }
+
+  resolvePath(pathInput: string): string {
+    return path.resolve(pathInput);
   }
 }
 

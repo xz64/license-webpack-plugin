@@ -1,9 +1,10 @@
 import { FileHandler } from './FileHandler';
 import { FileSystem } from './FileSystem';
 import { Module } from './Module';
+import { PackageJson } from './PackageJson';
 
 class PluginFileHandler implements FileHandler {
-  private modulesDirectories: string[];
+  private fullModulesDirectories: string[];
 
   constructor(
     private fileSystem: FileSystem,
@@ -11,8 +12,10 @@ class PluginFileHandler implements FileHandler {
     modulesDirectories: string[],
     private excludedPackageTest: ((packageName: string) => boolean)
   ) {
-    this.modulesDirectories = modulesDirectories.map(
-      x => buildRoot + this.fileSystem.pathSeparator + x
+    this.fullModulesDirectories = modulesDirectories.map(modulesDirectory =>
+      this.fileSystem.resolvePath(
+        this.fileSystem.join(buildRoot, modulesDirectory)
+      )
     );
   }
 
@@ -21,7 +24,7 @@ class PluginFileHandler implements FileHandler {
       return null;
     }
 
-    for (const modulesDirectory of this.modulesDirectories) {
+    for (const modulesDirectory of this.fullModulesDirectories) {
       if (this.fileSystem.isFileInDirectory(filename, modulesDirectory)) {
         const module: Module | null = this.findModuleDir(
           filename,
@@ -41,29 +44,41 @@ class PluginFileHandler implements FileHandler {
     modulesDirectory: string
   ): Module | null {
     const pathSeparator = this.fileSystem.pathSeparator;
-    let moduleSubDir: string = filename.replace(
-      modulesDirectory + pathSeparator,
-      ''
+    const PACKAGE_JSON = 'package.json';
+    let dirOfModule = filename.substring(
+      0,
+      filename.lastIndexOf(pathSeparator)
     );
-    if (moduleSubDir.indexOf(this.fileSystem.pathSeparator) === -1) {
-      // this could be a file like node_modules/a.js, which should be excluded as it does not belong to any package
+
+    // exit if we found something like node_modules/foo.js
+    // as it does not belong to any package
+    if (dirOfModule === modulesDirectory) {
       return null;
     }
-    if (moduleSubDir.charAt(0) === '@') {
-      // extract @scope/a out of @scope/a/filename.js
-      moduleSubDir = moduleSubDir.substring(
-        0,
-        moduleSubDir.replace(pathSeparator, ' ').indexOf(pathSeparator)
+
+    while (
+      !this.fileSystem.pathExists(
+        this.fileSystem.join(dirOfModule, PACKAGE_JSON)
+      )
+    ) {
+      // check parent directory
+      dirOfModule = this.fileSystem.resolvePath(
+        dirOfModule + pathSeparator + '..' + pathSeparator
       );
-    } else {
-      moduleSubDir = moduleSubDir.substring(
-        0,
-        moduleSubDir.indexOf(pathSeparator)
-      );
+      if (dirOfModule === modulesDirectory) {
+        // traversed too many directories up
+        return null;
+      }
     }
+
+    const packageJsonText = this.fileSystem.readFileAsUtf8(
+      this.fileSystem.join(dirOfModule, PACKAGE_JSON)
+    );
+    const packageJson: PackageJson = JSON.parse(packageJsonText);
+
     return {
-      name: moduleSubDir.replace('\\', '/'),
-      directory: modulesDirectory + this.fileSystem.pathSeparator + moduleSubDir
+      name: packageJson.name,
+      directory: dirOfModule
     };
   }
 }

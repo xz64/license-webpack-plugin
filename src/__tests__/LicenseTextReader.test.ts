@@ -25,6 +25,10 @@ class FakeFileSystem implements FileSystem {
   join(...paths: string[]) {
     return paths.join(this.pathSeparator);
   }
+
+  resolvePath(pathInput: string) {
+    return pathInput;
+  }
 }
 
 describe('the license text reader', () => {

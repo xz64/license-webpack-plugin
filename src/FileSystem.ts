@@ -4,6 +4,7 @@ interface FileSystem {
   isFileInDirectory(filename: string, directory: string): boolean;
   readFileAsUtf8(filename: string): string;
   join(...paths: string[]): string;
+  resolvePath(path: string): string;
 }
 
 export { FileSystem };
