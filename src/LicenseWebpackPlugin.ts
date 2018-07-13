@@ -5,7 +5,7 @@ import { WebpackChunkHandler } from './WebpackChunkHandler';
 import { PluginChunkReadHandler } from './PluginChunkReadHandler';
 import { PluginFileHandler } from './PluginFileHandler';
 import { FileHandler } from './FileHandler';
-import { RealFileSystem } from './RealFileSystem';
+import { WebpackFileSystem } from './WebpackFileSystem';
 import { PluginLicenseTypeIdentifier } from './PluginLicenseTypeIdentifier';
 import { LicenseTextReader } from './LicenseTextReader';
 import { LicensePolicy } from './LicensePolicy';
@@ -25,7 +25,7 @@ class LicenseWebpackPlugin implements WebpackPlugin {
   constructor(private pluginOptions: PluginOptions = {}) {}
 
   apply(compiler: WebpackCompiler) {
-    const fileSystem = new RealFileSystem();
+    const fileSystem = new WebpackFileSystem(compiler.inputFileSystem);
     const buildRootFinder = new BuildRootFinder(fileSystem);
     const guessedBuildRoot: string = buildRootFinder.findBuildRoot(
       compiler.context

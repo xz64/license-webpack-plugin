@@ -1,10 +1,11 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import { FileSystem } from './FileSystem';
 
-class RealFileSystem implements FileSystem {
+class WebpackFileSystem implements FileSystem {
   pathSeparator: string = path.sep;
+
+  constructor(private fs: any) {}
 
   isFileInDirectory(filename: string, directory: string): boolean {
     const normalizedFile = this.resolvePath(filename);
@@ -13,11 +14,16 @@ class RealFileSystem implements FileSystem {
   }
 
   pathExists(filename: string): boolean {
-    return fs.existsSync(filename);
+    try {
+      this.fs.statSync(filename);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   readFileAsUtf8(filename: string): string {
-    return fs.readFileSync(filename, 'utf8');
+    return this.fs.readFileSync(filename).toString('utf8');
   }
 
   join(...paths: string[]): string {
@@ -29,4 +35,4 @@ class RealFileSystem implements FileSystem {
   }
 }
 
-export { RealFileSystem };
+export { WebpackFileSystem };
