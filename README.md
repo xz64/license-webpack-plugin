@@ -6,6 +6,13 @@ This webpack plugin finds all 3rd party libraries used in a webpack build whose
 licenses match a given regex, and outputs the licenses for each package in your
 webpack build directory.
 
+## :warning: SEEKING TESTERS :warning:
+I am looking for some feedback on the next release, which allows more customizability. It can be installed using the `next` tag as shown below:
+
+ `npm install license-webpack-plugin@next --save-dev`
+
+See issue #43 for more details about the next release.
+
 ## Installation
 `npm install license-webpack-plugin --save-dev`
 
