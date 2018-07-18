@@ -11,7 +11,7 @@ I am looking for some feedback on the next release, which allows more customizab
 
  `npm install license-webpack-plugin@next --save-dev`
 
-See issue #43 for more details about the next release.
+See issue [#43](/../../issues/43) for more details about the next release.
 
 ## Installation
 `npm install license-webpack-plugin --save-dev`
