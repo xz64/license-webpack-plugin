@@ -53,7 +53,13 @@ class LicenseWebpackPlugin {
           'LICENSE.txt',
           'license',
           'license.md',
-          'license.txt'
+          'license.txt',
+          'LICENCE',
+          'LICENCE.md',
+          'LICENCE.txt',
+          'licence',
+          'licence.md',
+          'licence.txt'
         ],
         perChunkOutput: true,
         outputTemplate: path.resolve(__dirname, '../output.template.ejs'),

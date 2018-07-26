@@ -71,6 +71,13 @@ function oneLibProjectWithLicenseTxtFile() {
   return fixture;
 }
 
+function oneLibProjectWithLicenceFile() {
+  var fixture = oneLibProject();
+  delete fixture.fs['/project1/node_modules/lib1/LICENSE'];
+  fixture.fs['/project1/node_modules/lib1/LICENCE'] = 'MIT License';
+  return fixture;
+}
+
 function unknownLicenseProject() {
   var fixture = oneLibProject();
   fixture.fs['/project1/node_modules/lib1/package.json'] = JSON.stringify({
@@ -236,6 +243,7 @@ module.exports = {
   hasNonJsOutputProject: hasNonJsOutputProject,
   multiModuleVaryingLicenseProject: multiModuleVaryingLicenseProject,
   oneLibProjectWithLicenseTxtFile: oneLibProjectWithLicenseTxtFile,
+  oneLibProjectWithLicenceFile: oneLibProjectWithLicenceFile,
   unknownLicenseProject: unknownLicenseProject,
   missingLicenseFileProject: missingLicenseFileProject,
   oneLibScopedPackageProject: oneLibScopedPackageProject,
