@@ -188,6 +188,20 @@ test('the plugin detects a license.txt file from a module', function(t) {
   t.end();
 });
 
+test('the plugin detects a LICENCE file from a module', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/
+  });
+  var compiler = setup(fixtures.oneLibProjectWithLicenceFile());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
+
 test('the plugin allows custom array of license filenames to match', function(
   t
 ) {
