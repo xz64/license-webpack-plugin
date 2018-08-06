@@ -11,14 +11,6 @@ class PluginOptionsReader {
     const unacceptableLicenseTest =
       options.unacceptableLicenseTest || (() => false);
     const perChunkOutput = options.perChunkOutput === undefined;
-    const licenseFilenames = options.licenseFilenames || [
-      'LICENSE',
-      'LICENSE.md',
-      'LICENSE.txt',
-      'license',
-      'license.md',
-      'license.txt'
-    ];
     const licenseTemplateDir = options.licenseTemplateDir;
     const licenseTextOverrides = options.licenseTextOverrides || {};
     const licenseTypeOverrides = options.licenseTypeOverrides || {};
@@ -85,7 +77,6 @@ class PluginOptionsReader {
       licenseInclusionTest,
       unacceptableLicenseTest,
       perChunkOutput,
-      licenseFilenames,
       licenseTemplateDir,
       licenseTextOverrides,
       licenseFileOverrides,

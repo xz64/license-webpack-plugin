@@ -5,6 +5,7 @@ interface FileSystem {
   readFileAsUtf8(filename: string): string;
   join(...paths: string[]): string;
   resolvePath(path: string): string;
+  listPaths(dir: string): string[];
 }
 
 export { FileSystem };

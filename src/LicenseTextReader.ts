@@ -5,7 +5,6 @@ import { LicenseFileOverrides } from './LicenseFilesOverrides';
 
 class LicenseTextReader {
   constructor(
-    private licenseFilenames: string[],
     private fileSystem: FileSystem,
     private fileOverrides: LicenseFileOverrides,
     private textOverrides: LicenseTextOverrides,
@@ -30,14 +29,15 @@ class LicenseTextReader {
       return this.readText(module.directory, filename);
     }
 
-    for (const filename of this.licenseFilenames) {
-      if (
-        this.fileSystem.pathExists(
-          this.fileSystem.join(module.directory, filename)
-        )
-      ) {
-        return this.readText(module.directory, filename);
-      }
+    const pathsInModuleDirectory: string[] = this.fileSystem.listPaths(
+      module.directory
+    );
+    const guessedLicenseFilename = this.guessLicenseFilename(
+      pathsInModuleDirectory
+    );
+
+    if (guessedLicenseFilename !== null) {
+      return this.readText(module.directory, guessedLicenseFilename);
     }
 
     if (this.templateDir) {
@@ -55,6 +55,15 @@ class LicenseTextReader {
     return this.fileSystem
       .readFileAsUtf8(this.fileSystem.join(directory, filename))
       .replace(/\r\n/g, '\n');
+  }
+
+  private guessLicenseFilename(paths: string[]): string | null {
+    for (const path of paths) {
+      if (/^licen[cs]e/i.test(path)) {
+        return path;
+      }
+    }
+    return null;
   }
 }
 

@@ -2,14 +2,15 @@ import { FileSystem } from '../FileSystem';
 import { LicenseTextReader } from '../LicenseTextReader';
 
 class FakeFileSystem implements FileSystem {
-  pathSeparator: string;
+  pathSeparator: string = '/';
 
-  constructor(pathSeparator: string) {
-    this.pathSeparator = pathSeparator;
-  }
+  constructor(
+    private licenseFilenames: string[],
+    private useCRLF: boolean = false
+  ) {}
 
   readFileAsUtf8(filename: string) {
-    return 'LICENSE-' + filename;
+    return 'LICENSE-' + filename + (this.useCRLF ? '\r\n' : '');
   }
 
   pathExists(filename: string) {
@@ -17,9 +18,7 @@ class FakeFileSystem implements FileSystem {
   }
 
   isFileInDirectory(filename: string, directory: string) {
-    return (
-      filename === '/project/LICENSE' || filename === '/project/LICENSE\r\n'
-    );
+    return filename === '/project/LICENSE';
   }
 
   join(...paths: string[]) {
@@ -29,19 +28,19 @@ class FakeFileSystem implements FileSystem {
   resolvePath(pathInput: string) {
     return pathInput;
   }
+
+  listPaths(dir: string): string[] {
+    if (dir === '/project') {
+      return this.licenseFilenames;
+    }
+    throw new Error(`not implemented for ${dir}`);
+  }
 }
 
 describe('the license text reader', () => {
-  let fakeFileSystem: FileSystem;
-
-  beforeAll(() => {
-    fakeFileSystem = new FakeFileSystem('/');
-  });
-
   test('overrides are honored', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      ['LICENSE'],
-      fakeFileSystem,
+      new FakeFileSystem(['LICENSE']),
       {},
       { foo: 'custom' },
       null,
@@ -57,10 +56,9 @@ describe('the license text reader', () => {
     expect(licenseText).toBe('custom');
   });
 
-  test('file matches are honored', () => {
+  test('LICENSE file is detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      ['LICENSE'],
-      fakeFileSystem,
+      new FakeFileSystem(['LICENSE']),
       {},
       {},
       null,
@@ -76,10 +74,63 @@ describe('the license text reader', () => {
     expect(licenseText).toBe('LICENSE-/project/LICENSE');
   });
 
+  test('LICENCE file is detected', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      new FakeFileSystem(['LICENCE']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      ''
+    );
+    expect(licenseText).toBe('LICENSE-/project/LICENCE');
+  });
+
+  test('license files ending with an extension are detected', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      new FakeFileSystem(['license.txt']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      ''
+    );
+    expect(licenseText).toBe('LICENSE-/project/license.txt');
+  });
+
+  test('license files with a suffix are detected', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      new FakeFileSystem(['license-MIT.txt']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      ''
+    );
+    expect(licenseText).toBe('LICENSE-/project/license-MIT.txt');
+  });
+
   test('line endings are normalized', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      ['LICENSE\r\n'],
-      fakeFileSystem,
+      new FakeFileSystem(['LICENSE'], true),
       {},
       {},
       null,
@@ -97,8 +148,7 @@ describe('the license text reader', () => {
 
   test('non-matches return null', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      ['notexist.txt'],
-      fakeFileSystem,
+      new FakeFileSystem([]),
       {},
       {},
       null,
@@ -116,8 +166,7 @@ describe('the license text reader', () => {
 
   test('template dir is used as a fallback', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      [],
-      fakeFileSystem,
+      new FakeFileSystem([]),
       {},
       {},
       '/templates',
@@ -135,8 +184,7 @@ describe('the license text reader', () => {
 
   test('the SEE LICENSE IN license type resolves the license text from the specified file', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
-      [],
-      fakeFileSystem,
+      new FakeFileSystem(['LICENSE']),
       {},
       {},
       null,

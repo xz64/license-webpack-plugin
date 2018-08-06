@@ -33,6 +33,10 @@ class WebpackFileSystem implements FileSystem {
   resolvePath(pathInput: string): string {
     return path.resolve(pathInput);
   }
+
+  listPaths(dir: string): string[] {
+    return this.fs.readdirSync(dir);
+  }
 }
 
 export { WebpackFileSystem };

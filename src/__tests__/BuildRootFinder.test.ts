@@ -25,6 +25,10 @@ class FakeFileSystem implements FileSystem {
   resolvePath(pathInput: string) {
     return pathInput;
   }
+
+  listPaths(dir: string): string[] {
+    throw new Error('not implemented');
+  }
 }
 
 describe('the build root finder', () => {

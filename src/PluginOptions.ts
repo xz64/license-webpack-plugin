@@ -15,7 +15,6 @@ interface PluginOptions {
     licenseType: string | null
   ) => string | null);
   perChunkOutput?: boolean;
-  licenseFilenames?: string[];
   licenseTemplateDir?: string;
   licenseTextOverrides?: { [key: string]: string };
   licenseFileOverrides?: { [key: string]: string };

@@ -15,7 +15,6 @@ interface ConstructedOptions {
     licenseType: string | null
   ) => string | null);
   perChunkOutput: boolean;
-  licenseFilenames: string[];
   licenseTemplateDir?: string;
   licenseFileOverrides: { [key: string]: string };
   licenseTextOverrides: { [key: string]: string };

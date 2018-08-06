@@ -49,7 +49,6 @@ class LicenseWebpackPlugin implements WebpackPlugin {
       options.handleMissingLicenseType
     );
     const licenseTextReader = new LicenseTextReader(
-      options.licenseFilenames,
       fileSystem,
       options.licenseFileOverrides,
       options.licenseTextOverrides,

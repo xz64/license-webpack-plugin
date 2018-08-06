@@ -70,6 +70,10 @@ class FakeFileSystem implements FileSystem {
     }
     return resolvedPath;
   }
+
+  listPaths(dir: string): string[] {
+    throw new Error('not implemented');
+  }
 }
 
 describe('the file handler', () => {
