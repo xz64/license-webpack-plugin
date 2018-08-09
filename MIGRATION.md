@@ -13,7 +13,7 @@
   - `includedChunks` - Use the new `chunkIncludeExcludeTest` option instead.
   - `excludedChunks` - Use the new `chunkIncludeExcludeTest` option instead.
   - `additionalPackages` - Use the new `additionalChunkModules` or `additionalModules` option instead.
-* Check the [documentation](DOCUMENTATION.MD) for information on how to use the new options.
+* Check the [documentation](DOCUMENTATION.md) for information on how to use the new options.
 
 ## 0.6.x to 1.x
 
