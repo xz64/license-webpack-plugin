@@ -37,5 +37,9 @@ yarn build
 
 Migration guides for breaking changes are documented [here](MIGRATION.md).
 
+## Changelog
+
+The changelog can be found [here](CHANGELOG.md).
+
 ## License
 [ISC](https://opensource.org/licenses/ISC)
