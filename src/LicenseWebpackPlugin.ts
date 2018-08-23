@@ -91,8 +91,8 @@ class LicenseWebpackPlugin implements WebpackPlugin {
       readHandler,
       assetManager,
       moduleCache,
-      options.perChunkOutput,
       options.addBanner,
+      options.perChunkOutput,
       options.additionalChunkModules,
       options.additionalModules
     );
