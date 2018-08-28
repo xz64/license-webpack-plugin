@@ -39,7 +39,9 @@ class PluginOptionsReader {
       ((filename: string) => {
         return `/*! License information is available at ${filename} */`;
       });
-    const outputFilename = options.outputFilename || '[name].licenses.txt';
+    const outputFilename =
+      options.outputFilename ||
+      (perChunkOutput ? '[name].licenses.txt' : 'licenses.txt');
     const addBanner =
       options.addBanner === undefined ? true : options.addBanner;
     const chunkIncludeExcludeTest =
