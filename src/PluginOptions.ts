@@ -27,7 +27,6 @@ interface PluginOptions {
   outputFilename?: string;
   addBanner?: boolean;
   chunkIncludeExcludeTest?: IncludeExcludeTest;
-  buildRoot?: string;
   modulesDirectories?: string[];
   additionalChunkModules?: { [chunkName: string]: Module[] };
   additionalModules?: Module[];

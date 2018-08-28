@@ -3,10 +3,9 @@ import { ConstructedOptions } from './ConstructedOptions';
 import { PluginOptions } from './PluginOptions';
 
 class PluginOptionsReader {
-  constructor(private guessedBuildRoot: string) {}
+  constructor(private cwd: string) {}
 
   readOptions(options: PluginOptions): ConstructedOptions {
-    const buildRoot = options.buildRoot || this.guessedBuildRoot;
     const licenseInclusionTest = options.licenseInclusionTest || (() => true);
     const unacceptableLicenseTest =
       options.unacceptableLicenseTest || (() => false);
@@ -45,7 +44,7 @@ class PluginOptionsReader {
       options.addBanner === undefined ? true : options.addBanner;
     const chunkIncludeExcludeTest =
       options.chunkIncludeExcludeTest || (() => true);
-    const modulesDirectories = options.modulesDirectories || ['node_modules'];
+    const modulesDirectories = options.modulesDirectories || null;
     const additionalChunkModules = options.additionalChunkModules || {};
     const additionalModules = options.additionalModules || [];
     const preferredLicenseTypes = options.preferredLicenseTypes || [];
@@ -73,7 +72,6 @@ class PluginOptionsReader {
       options.excludedPackageTest || (() => false);
 
     const constructedOptions: ConstructedOptions = {
-      buildRoot,
       licenseInclusionTest,
       unacceptableLicenseTest,
       perChunkOutput,
@@ -94,7 +92,8 @@ class PluginOptionsReader {
       preferredLicenseTypes,
       handleLicenseAmbiguity,
       handleMissingLicenseType,
-      excludedPackageTest
+      excludedPackageTest,
+      buildRoot: this.cwd
     };
 
     return constructedOptions;

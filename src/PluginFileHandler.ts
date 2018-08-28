@@ -4,57 +4,47 @@ import { Module } from './Module';
 import { PackageJson } from './PackageJson';
 
 class PluginFileHandler implements FileHandler {
-  private fullModulesDirectories: string[];
-
   constructor(
     private fileSystem: FileSystem,
-    buildRoot: string,
-    modulesDirectories: string[],
+    private buildRoot: string,
+    private modulesDirectories: string[] | null,
     private excludedPackageTest: ((packageName: string) => boolean)
-  ) {
-    this.fullModulesDirectories = modulesDirectories.map(modulesDirectory =>
-      this.fileSystem.resolvePath(
-        this.fileSystem.join(buildRoot, modulesDirectory)
-      )
-    );
-  }
+  ) {}
 
   getModule(filename: string): Module | null {
     if (filename === null || filename === undefined) {
       return null;
     }
 
-    for (const modulesDirectory of this.fullModulesDirectories) {
-      if (this.fileSystem.isFileInDirectory(filename, modulesDirectory)) {
-        const module: Module | null = this.findModuleDir(
-          filename,
-          modulesDirectory
-        );
-        if (module !== null && this.excludedPackageTest(module.name)) {
-          return null;
+    if (this.modulesDirectories !== null) {
+      let foundInModuleDirectory = false;
+      for (const modulesDirectory of this.modulesDirectories) {
+        if (this.fileSystem.isFileInDirectory(filename, modulesDirectory)) {
+          foundInModuleDirectory = true;
         }
-        return module;
+      }
+      if (!foundInModuleDirectory) {
+        return null;
       }
     }
-    return null;
+
+    const module: Module | null = this.findModuleDir(filename);
+
+    if (module !== null && this.excludedPackageTest(module.name)) {
+      return null;
+    }
+
+    return module;
   }
 
-  private findModuleDir(
-    filename: string,
-    modulesDirectory: string
-  ): Module | null {
+  private findModuleDir(filename: string): Module | null {
     const pathSeparator = this.fileSystem.pathSeparator;
     const PACKAGE_JSON = 'package.json';
     let dirOfModule = filename.substring(
       0,
       filename.lastIndexOf(pathSeparator)
     );
-
-    // exit if we found something like node_modules/foo.js
-    // as it does not belong to any package
-    if (dirOfModule === modulesDirectory) {
-      return null;
-    }
+    let oldDirOfModule: string | null = null;
 
     while (
       !this.fileSystem.pathExists(
@@ -62,11 +52,17 @@ class PluginFileHandler implements FileHandler {
       )
     ) {
       // check parent directory
+      oldDirOfModule = dirOfModule;
       dirOfModule = this.fileSystem.resolvePath(
         dirOfModule + pathSeparator + '..' + pathSeparator
       );
-      if (dirOfModule === modulesDirectory) {
-        // traversed too many directories up
+
+      // reached filesystem root
+      if (oldDirOfModule === dirOfModule) {
+        return null;
+      }
+
+      if (this.buildRoot === dirOfModule) {
         return null;
       }
     }

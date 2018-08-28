@@ -79,14 +79,21 @@ class FakeFileSystem implements FileSystem {
 describe('the file handler', () => {
   let fakeFileSystem: FileSystem;
   let pluginFileHandler: FileHandler;
+  let restrictedFileHandler: FileHandler;
 
   beforeAll(() => {
     fakeFileSystem = new FakeFileSystem('/');
     pluginFileHandler = new PluginFileHandler(
       fakeFileSystem,
       '/home/repo',
-      ['node_modules', 'other_modules'],
+      null,
       packageName => packageName === 'excluded-package'
+    );
+    restrictedFileHandler = new PluginFileHandler(
+      fakeFileSystem,
+      '/home/repo',
+      ['/home/repo/other_modules'],
+      packageName => false
     );
   });
 
@@ -108,6 +115,26 @@ describe('the file handler', () => {
     expect(module.directory).toBe('/home/repo/node_modules/foo');
   });
 
+  test('ignores files not in modulesDirectories', () => {
+    const module: Module = restrictedFileHandler.getModule(
+      '/home/repo/node_modules/foo/lib.js'
+    );
+    expect(module).toBeNull();
+  });
+
+  test('returns null for files which do not have matching package.json', () => {
+    const module: Module = restrictedFileHandler.getModule('/some/lib.js');
+    expect(module).toBeNull();
+  });
+
+  test('includes files in custom modulesDirectories', () => {
+    const module: Module = restrictedFileHandler.getModule(
+      '/home/repo/other_modules/someothermodule/lib.js'
+    );
+    expect(module.name).toBe('someothermodule');
+    expect(module.directory).toBe('/home/repo/other_modules/someothermodule');
+  });
+
   test('returns null for a stray file in node_modules', () => {
     const module: Module = pluginFileHandler.getModule(
       '/home/repo/node_modules/a.js'
@@ -120,14 +147,6 @@ describe('the file handler', () => {
       '/home/repo/src/main.js'
     );
     expect(module).toBeNull();
-  });
-
-  test('handles custom modules directories', () => {
-    const module: Module = pluginFileHandler.getModule(
-      '/home/repo/other_modules/someothermodule/lib.js'
-    );
-    expect(module.name).toBe('someothermodule');
-    expect(module.directory).toBe('/home/repo/other_modules/someothermodule');
   });
 
   test('excludes packages according to the exclude option', () => {

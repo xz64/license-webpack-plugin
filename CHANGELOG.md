@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This should make package identificaton more reliable.
 - Use webpack's `inputFileSystem` instead of `fs` module.
 - Plugin hook is done at a different phase of webpack build.
+- The `modulesDirectories` option requires full paths and is now used to restrict which directories a module may be detected from.
 
 ### Removed
 - `suppressErrors` option

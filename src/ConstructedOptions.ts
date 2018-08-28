@@ -4,6 +4,7 @@ import { IncludeExcludeTest } from './IncludeExcludeTest';
 import { Module } from './Module';
 
 interface ConstructedOptions {
+  buildRoot: string;
   licenseInclusionTest: LicenseTest;
   unacceptableLicenseTest: LicenseTest;
   handleUnacceptableLicense: ((
@@ -27,8 +28,7 @@ interface ConstructedOptions {
   outputFilename: string;
   addBanner: boolean;
   chunkIncludeExcludeTest: IncludeExcludeTest;
-  buildRoot: string;
-  modulesDirectories: string[];
+  modulesDirectories: string[] | null;
   additionalChunkModules: { [chunkName: string]: Module[] };
   additionalModules: Module[];
   preferredLicenseTypes: string[];

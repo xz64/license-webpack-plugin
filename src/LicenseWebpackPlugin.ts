@@ -13,7 +13,6 @@ import { WebpackCompilerHandler } from './WebpackCompilerHandler';
 import { PluginModuleCache } from './PluginModuleCache';
 import { ModuleCache } from './ModuleCache';
 import { WebpackAssetManager } from './WebpackAssetManager';
-import { BuildRootFinder } from './BuildRootFinder';
 import { PluginLicensesRenderer } from './PluginLicensesRenderer';
 import { ConstructedOptions } from './ConstructedOptions';
 import { PluginLicensePolicy } from './PluginLicensePolicy';
@@ -26,12 +25,9 @@ class LicenseWebpackPlugin implements WebpackPlugin {
 
   apply(compiler: WebpackCompiler) {
     const fileSystem = new WebpackFileSystem(compiler.inputFileSystem);
-    const buildRootFinder = new BuildRootFinder(fileSystem);
-    const guessedBuildRoot: string = buildRootFinder.findBuildRoot(
-      compiler.context
-    );
+
     const optionsReader: PluginOptionsReader = new PluginOptionsReader(
-      guessedBuildRoot
+      process.cwd()
     );
     const options: ConstructedOptions = optionsReader.readOptions(
       this.pluginOptions
