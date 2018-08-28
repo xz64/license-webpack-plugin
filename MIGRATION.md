@@ -4,7 +4,7 @@
 * The plugin no longer requires any explicit configuration. By default it will pick up all license types.
 * The `modulesDirectories` option defaults to null and requires full paths if specified. When `modulesDirectories` is null, third-party modules may be picked up from any directory.
 * The following options have been removed:
-  - `suppressErrors` - Use the new `handleMissingLicenseText`, `handleLicenseAmbiguity`, and `handleMissingLicenseType` options to suppress the default settings which output messages to the console.
+  - `suppressErrors` - This has been renamed to `silent`.
   - `pattern` - Use the new `licenseInclusionTest` option instead.
   - `outputTemplate` - Use the new `renderLicenses` option instead.
   - `includePackagesWithoutLicense` - Use the new `licenseInclusionTest` option instead.

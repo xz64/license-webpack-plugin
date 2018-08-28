@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `handleLicenseAmbiguity` option
 - `handleMissingLicenseType` option
 - `excludedPackageTest` option
+- `silent` option
 
 ### Changed
 - No explicit configuration is necessary anymore. All license types will be included.

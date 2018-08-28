@@ -28,6 +28,7 @@ module.exports = {
 
 |Option|Purpose|Default Behavior|Example Usage|
 | --- | --- | --- | --- |
+|`silent`|Suppresses console output from the plugin.|Console output is not suppressed.|`true`|
 |`licenseInclusionTest`|Limits which license types are included in the output. It is a function which takes the license type as string and returns a boolean (indicating whether or not the license type should be included)|All license types are included in the output.|`(licenseType) => (licenseType === 'MIT')`|
 |`unacceptableLicenseTest`|Identifies which license types are unacceptable for the build. It is configured the same way as `licenseInclusionTest`.|No license type is marked as unacceptable.|See example usage for `licenseInclusionTest`.
 |`handleUnacceptableLicense`|A function which gets called whenever an unacceptable license is encountered. It is passed the package name and license type.|Does not do anything|<code>(packageName, licenseType) => {<br>&nbsp;&nbsp;throw new Error(packageName + ' has unacceptable license type: ' + licenseType)<br>}</code>

@@ -37,6 +37,7 @@ interface PluginOptions {
   ) => string);
   handleMissingLicenseType?: ((packageName: string) => string | null);
   excludedPackageTest?: ((packageName: string) => boolean);
+  silent?: boolean;
 }
 
 export { PluginOptions };

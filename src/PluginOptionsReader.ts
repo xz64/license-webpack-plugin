@@ -6,6 +6,7 @@ class PluginOptionsReader {
   constructor(private cwd: string) {}
 
   readOptions(options: PluginOptions): ConstructedOptions {
+    const silent = options.silent === undefined ? false : options.silent;
     const licenseInclusionTest = options.licenseInclusionTest || (() => true);
     const unacceptableLicenseTest =
       options.unacceptableLicenseTest || (() => false);
@@ -18,9 +19,11 @@ class PluginOptionsReader {
     const handleMissingLicenseText =
       options.handleMissingLicenseText ||
       ((packageName: string) => {
-        console.warn(
-          `license-webpack-plugin: could not find any license file for ${packageName}. Use the licenseTextOverrides option to add the license text if desired.`
-        );
+        if (!silent) {
+          console.warn(
+            `license-webpack-plugin: could not find any license file for ${packageName}. Use the licenseTextOverrides option to add the license text if desired.`
+          );
+        }
         return null;
       });
     const renderLicenses =
@@ -55,17 +58,21 @@ class PluginOptionsReader {
       ((packageName, licenses) => {
         const selectedLicense = licenses[0].type;
         const licenseTypes: string = licenses.map(x => x.type).join();
-        console.warn(
-          `license-webpack-plugin: ${packageName} specifies multiple licenses: ${licenseTypes}. Selecting ${selectedLicense}. Use the preferredLicenseTypes or the licenseTypeOverrides option to override this behavior.`
-        );
+        if (!silent) {
+          console.warn(
+            `license-webpack-plugin: ${packageName} specifies multiple licenses: ${licenseTypes}. Selecting ${selectedLicense}. Use the preferredLicenseTypes or the licenseTypeOverrides option to override this behavior.`
+          );
+        }
         return selectedLicense;
       });
     const handleMissingLicenseType =
       options.handleMissingLicenseType ||
       ((packageName: string) => {
-        console.error(
-          `license-webpack-plugin: could not find any license type for ${packageName} in its package.json`
-        );
+        if (!silent) {
+          console.error(
+            `license-webpack-plugin: could not find any license type for ${packageName} in its package.json`
+          );
+        }
         return null;
       });
     const licenseFileOverrides: { [key: string]: string } =
