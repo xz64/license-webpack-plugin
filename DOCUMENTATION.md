@@ -1,3 +1,31 @@
+# Documentation
+
+Below is an example of how to add the plugin to a webpack config:
+
+```javascript
+const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
+
+module.exports = {
+  plugins: [
+    new LicenseWebpackPlugin()
+  ]
+};
+```
+
+The call to `new LicenseWebpackPlugin()` can take an object of options. See below for an example:
+
+```javascript
+const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
+
+module.exports = {
+  plugins: [
+    new LicenseWebpackPlugin({
+      addBanner: false
+    })
+  ]
+};
+```
+
 |Option|Purpose|Default Behavior|Example Usage|
 | --- | --- | --- | --- |
 |`licenseInclusionTest`|Limits which license types are included in the output. It is a function which takes the license type as string and returns a boolean (indicating whether or not the license type should be included)|All license types are included in the output.|`(licenseType) => (licenseType === 'MIT')`|
