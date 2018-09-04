@@ -1,3 +1,5 @@
+var mockSymlink = require('mock-fs').symlink;
+
 function oneLibProject() {
   return {
     fs: {
@@ -231,6 +233,48 @@ function multiModuleDirectoryProject() {
   return fixture;
 }
 
+function absDirectoryProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/abs/path/node_modules/lib1/package.json'] =
+    fixture.fs['/project1/node_modules/lib1/package.json'];
+  fixture.fs['/abs/path/node_modules/lib1/LICENSE'] =
+    fixture.fs['/project1/node_modules/lib1/LICENSE'];
+  delete fixture.fs['/project1/node_modules/lib1/package.json'];
+  delete fixture.fs['/project1/node_modules/lib1/LICENSE'];
+  fixture.compiler.compilation.chunks[0].modules = [
+    {
+      resource: '/abs/path/node_modules/lib1/3rd_party_lib.js'
+    },
+    {
+      resource: '/project1/myfile.js'
+    }
+  ];
+  return fixture;
+}
+
+function symlinkDirectoryProject() {
+  var fixture = oneLibProject();
+  fixture.fs['/abs/path/node_modules/lib1/package.json'] =
+    fixture.fs['/project1/node_modules/lib1/package.json'];
+  fixture.fs['/abs/path/node_modules/lib1/LICENSE'] =
+    fixture.fs['/project1/node_modules/lib1/LICENSE'];
+  delete fixture.fs['/project1/node_modules/lib1/package.json'];
+  delete fixture.fs['/project1/node_modules/lib1/LICENSE'];
+  fixture.fs['/project1/node_modules/'] = mockSymlink({
+    path: '/abs/path/node_modules'
+  });
+
+  fixture.compiler.compilation.chunks[0].modules = [
+    {
+      resource: '/abs/path/node_modules/lib1/3rd_party_lib.js'
+    },
+    {
+      resource: '/project1/myfile.js'
+    }
+  ];
+  return fixture;
+}
+
 function endingCommentLicenseProject() {
   var fixture = oneLibProject();
   fixture.fs['/project1/node_modules/lib1/LICENSE'] = 'MIT License*/';
@@ -261,5 +305,7 @@ module.exports = {
   fileDependenciesProject: fileDependenciesProject,
   alternateModuleDirectoryProject: alternateModuleDirectoryProject,
   multiModuleDirectoryProject: multiModuleDirectoryProject,
+  absDirectoryProject: absDirectoryProject,
+  symlinkDirectoryProject: symlinkDirectoryProject,
   endingCommentLicenseProject: endingCommentLicenseProject
 };

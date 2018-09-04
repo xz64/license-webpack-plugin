@@ -15,6 +15,7 @@ var LicenseWebpackPlugin = proxyquire('../dist/LicenseWebpackPlugin', {
     sep: '/',
     join: pathjoin,
     resolve: pathjoin,
+    isAbsolute: p => p[0] === '/',
     '@global': true
   }
 }).LicenseWebpackPlugin;
@@ -717,6 +718,38 @@ test('the plugin handles multiple modules directories', function(t) {
   t.equal(
     compiler.compilation.assets['main.licenses.txt'].text,
     'lib1@0.0.1\nMIT\nMIT License\n\nlib2@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
+
+test('the plugin handles absolute node_modules directory', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    buildRoot: '/project1',
+    modulesDirectories: ['/abs/path/node_modules']
+  });
+  var compiler = setup(fixtures.absDirectoryProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
+  );
+  teardown();
+  t.end();
+});
+
+test('the plugin handles symlink node_modules directory', function(t) {
+  var plugin = new LicenseWebpackPlugin({
+    pattern: /^.*$/,
+    buildRoot: '/project1',
+    modulesDirectories: ['node_modules']
+  });
+  var compiler = setup(fixtures.symlinkDirectoryProject());
+  plugin.apply(compiler);
+  t.equal(
+    compiler.compilation.assets['main.licenses.txt'].text,
+    'lib1@0.0.1\nMIT\nMIT License'
   );
   teardown();
   t.end();
