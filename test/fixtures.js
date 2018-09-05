@@ -239,8 +239,10 @@ function absDirectoryProject() {
     fixture.fs['/project1/node_modules/lib1/package.json'];
   fixture.fs['/abs/path/node_modules/lib1/LICENSE'] =
     fixture.fs['/project1/node_modules/lib1/LICENSE'];
+
   delete fixture.fs['/project1/node_modules/lib1/package.json'];
   delete fixture.fs['/project1/node_modules/lib1/LICENSE'];
+
   fixture.compiler.compilation.chunks[0].modules = [
     {
       resource: '/abs/path/node_modules/lib1/3rd_party_lib.js'
@@ -258,8 +260,10 @@ function symlinkDirectoryProject() {
     fixture.fs['/project1/node_modules/lib1/package.json'];
   fixture.fs['/abs/path/node_modules/lib1/LICENSE'] =
     fixture.fs['/project1/node_modules/lib1/LICENSE'];
+
   delete fixture.fs['/project1/node_modules/lib1/package.json'];
   delete fixture.fs['/project1/node_modules/lib1/LICENSE'];
+
   fixture.fs['/project1/node_modules/'] = mockSymlink({
     path: '/abs/path/node_modules'
   });
