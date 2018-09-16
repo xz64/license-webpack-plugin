@@ -3,7 +3,7 @@ import { ConstructedOptions } from './ConstructedOptions';
 import { PluginOptions } from './PluginOptions';
 
 class PluginOptionsReader {
-  constructor(private cwd: string) {}
+  constructor(private context: string) {}
 
   readOptions(options: PluginOptions): ConstructedOptions {
     const silent = options.silent === undefined ? false : options.silent;
@@ -104,7 +104,7 @@ class PluginOptionsReader {
       handleLicenseAmbiguity,
       handleMissingLicenseType,
       excludedPackageTest,
-      buildRoot: this.cwd
+      buildRoot: this.context
     };
 
     return constructedOptions;

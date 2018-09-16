@@ -61,10 +61,10 @@ class PluginFileHandler implements FileHandler {
       if (oldDirOfModule === dirOfModule) {
         return null;
       }
+    }
 
-      if (this.buildRoot === dirOfModule) {
-        return null;
-      }
+    if (this.buildRoot === dirOfModule) {
+      return null;
     }
 
     const packageJsonText = this.fileSystem.readFileAsUtf8(

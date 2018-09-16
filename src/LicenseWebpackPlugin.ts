@@ -27,7 +27,7 @@ class LicenseWebpackPlugin implements WebpackPlugin {
     const fileSystem = new WebpackFileSystem(compiler.inputFileSystem);
 
     const optionsReader: PluginOptionsReader = new PluginOptionsReader(
-      process.cwd()
+      compiler.context
     );
     const options: ConstructedOptions = optionsReader.readOptions(
       this.pluginOptions
