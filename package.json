@@ -12,10 +12,10 @@
   "scripts": {
     "clean": "rimraf dist",
     "lint": "cross-env prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts' --project tsconfig.json",
-    "build": "npm run lint && npm run clean && tsc",
-    "prepublishOnly": "npm run build",
+    "build": "yarn run lint && yarn run clean && tsc",
+    "prepublishOnly": "yarn run build",
     "jest": "jest",
-    "test": "npm run build && npm run jest"
+    "test": "yarn run build && yarn run jest"
   },
   "repository": {
     "type": "git",
