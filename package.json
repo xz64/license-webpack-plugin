@@ -11,11 +11,15 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "cross-env prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts' --project tsconfig.json",
-    "build": "yarn run lint && yarn run clean && tsc",
+    "format": "cross-env prettier --single-quote --write 'src/**/*.ts'",
+    "format:e2e": "cross-env prettier --ignore-path .gitignore --single-quote --write 'e2e/**/*.js'",
+    "lint": "tslint 'src/**/*.ts' --project tsconfig.json",
+    "build": "yarn run format && yarn run lint && yarn run clean && tsc",
     "prepublishOnly": "yarn run build",
     "jest": "jest",
-    "test": "yarn run build && yarn run jest"
+    "test:unit": "yarn run build && yarn run jest",
+    "test:e2e": "yarn run format:e2e && yarn --cwd e2e/webpack-v4 && jest --config jest.config.e2e.js --runInBand",
+    "test": "yarn run test:unit && yarn run test:e2e"
   },
   "repository": {
     "type": "git",
