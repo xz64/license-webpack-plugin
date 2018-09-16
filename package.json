@@ -32,9 +32,6 @@
     "url": "https://github.com/xz64/license-webpack-plugin/issues"
   },
   "homepage": "https://github.com/xz64/license-webpack-plugin#readme",
-  "peerDependencies": {
-    "webpack-sources": "^1.0.1"
-  },
   "devDependencies": {
     "@types/jest": "^22.2.2",
     "@types/node": "^8.10.0",
@@ -48,5 +45,8 @@
     "tslint-config-airbnb": "^5.8.0",
     "tslint-config-prettier": "^1.10.0",
     "typescript": "^2.7.2"
+  },
+  "dependencies": {
+    "webpack-sources": "^1.2.0"
   }
 }
