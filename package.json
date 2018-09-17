@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "MIGRATION.md",
-    "DOCUMENTATION.md"
+    "/dist/**/*",
+    "/MIGRATION.md",
+    "/DOCUMENTATION.md"
   ],
   "scripts": {
     "clean": "rimraf dist",
