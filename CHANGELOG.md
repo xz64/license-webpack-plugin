@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use webpack's `inputFileSystem` instead of `fs` module.
 - In order to avoid issues with source maps, the plugin hook is done at a different phase of the webpack build.
 - The `modulesDirectories` option requires full paths and is now used to restrict which directories a module may be detected from.
+- License filename detection is now done by regular expression which means more license files should be picked up now.
 
 ### Removed
 - `suppressErrors` option
