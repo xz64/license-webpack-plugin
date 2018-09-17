@@ -1,5 +1,7 @@
 # Documentation
 
+## Basic Setup
+
 Below is an example of how to add the plugin to a webpack config:
 
 ```javascript
@@ -12,42 +14,275 @@ module.exports = {
 };
 ```
 
-The call to `new LicenseWebpackPlugin()` can take an object of options. See below for an example:
+## Configuration Examples
+
+The below examples showcase all functionality available in the plugin.
+
+---
+
+**limit which license types get included in the output**
 
 ```javascript
-const LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
-
-module.exports = {
-  plugins: [
-    new LicenseWebpackPlugin({
-      addBanner: false
-    })
-  ]
-};
+new LicenseWebpackPlugin({
+  licenseInclusionTest: (licenseType) => (licenseType === 'MIT')
+});
 ```
 
-|Option|Purpose|Default Behavior|Example Usage|
-| --- | --- | --- | --- |
-|`silent`|Suppresses console output from the plugin.|Console output is not suppressed.|`true`|
-|`licenseInclusionTest`|Limits which license types are included in the output. It is a function which takes the license type as string and returns a boolean (indicating whether or not the license type should be included)|All license types are included in the output.|`(licenseType) => (licenseType === 'MIT')`|
-|`unacceptableLicenseTest`|Identifies which license types are unacceptable for the build. It is configured the same way as `licenseInclusionTest`.|No license type is marked as unacceptable.|See example usage for `licenseInclusionTest`.
-|`handleUnacceptableLicense`|A function which gets called whenever an unacceptable license is encountered. It is passed the package name and license type.|Does not do anything|<code>(packageName, licenseType) => {<br>&nbsp;&nbsp;throw new Error(packageName + ' has unacceptable license type: ' + licenseType)<br>}</code>
-|`handleMissingLicenseText`|A function which gets called whenever the license text cannot be found. It is passed the package name and license type. Its return value can be used to override the license text. |Does not do anything|<code>(packageName, licenseType) => {<br>&nbsp;&nbsp;console.log('Cannot find license for ' + packageName);<br>&nbsp;&nbsp;return 'UNKNOWN';<br>}</code>
-|`perChunkOutput`|A boolean which controls whether or not the license notice is produced for each chunk or for the whole build.|Per chunk output is enabled.|`true`
-|`licenseTemplateDir`|Fallback license text based on license type, since some packages don't include a license file. This option specifies a directory containing `.txt` files containing the license text based on the license type. (e.g. `MIT.txt`). Templates can be found [here](https://github.com/spdx/license-list).|No template directory is used.|`'/path/to/license_templates'`
-|`licenseTypeOverrides`|Supply the license type for packages. Object whose keys are package names and values are license types.|No overrides| <code>{<br>&nbsp;&nbsp;foopkg: 'MIT'<br>}</code>
-|`licenseTextOverrides`|Supply the license text for packages. Object whose keys are package names and values are strings to use for license text.|No overrides| <code>{<br>&nbsp;&nbsp;foopkg: 'abc'<br>}</code>
-|`licenseFileOverrides`|Supply the license text file to use for packages. The file is resolved relative to the package directory. Object whose keys are package names and values are strings pointing to the file containing the license text.|No overrides| <code>{<br>&nbsp;&nbsp;foopkg: 'license-2.0.txt'<br>}</code>
-|`renderLicenses`|Function to render the licenses. Output is a string. Input is an array of objects with the following keys:<ul><li>`packageJson` - the package.json of the package</li><li>`licenseId` - The license ID of the package. It is null if the license ID could not be determined.</li><li>`licenseText` - The text of the license. It is null if the license text could not be determined.</li></ul>|Plain text output of the package name, license ID, and license Text. Null values for license ID and license text are not printed.|<code>(modules) => {<br>&nbsp;&nbsp;console.log(modules[0].packageJson, modules[0].licenseId, modules[0].licenseText);<br>&nbsp;&nbsp;return JSON.stringify(modules);<br>}</code>
-|`renderBanner`|Function to render the banner for `.js` files. No escaping is done on the output. Output is a string which should be in the form of a Javascript comment. Inputs are the generated filename of the license text output, and the list of packages as mentioned in the `renderLicenses` option.|A one line comment is generated pointing to the location of the license text output.|<code>(filename, modules) => {<br>&nbsp;&nbsp;console.log(modules);<br>&nbsp;&nbsp;return '/\*! licenses are at ' + filename + '*/';<br>}</code>
-|`outputFilename`|Specifies filename template to use for the license text output.|`[name].licenses.txt`, where `[name]` refers the name of the webpack chunk being processed.|`'[name].[hash].licenses.txt'`
-|`addBanner`|Boolean indicating wheter or not to add a banner indicating the path to the license text file to each `.js` file|The value is `true`, by default, meaning the banner will get written to each `.js` file.|`false`
-|`chunkIncludeExcludeTest`|Include/exclude certain chunks. There are different ways to specify this option.<ol><li>An object indicating which chunks (string array) to include, via the `include` key, and which chunks to exclude via the `exclude` key.</li><li>Function that takes the chunk name as input and returns a boolean. If it returns `true` then the chunk is included.</li></ol>|All chunks are included.|<ol><li>`{ exclude: ['foo'] }`<br>or<br>`{ include: ['bar'] }`</li><li>`(chunkName) => chunkName.startsWith('my')`</li></ul>
-|`buildRoot`|String specifying the path to the build root. (i.e. where the `package.json` of the actual project being built is.) This is useful in case there is some abstraction over webpack that makes the default behavior of guessing the build root impossible.|Guesses the root based on the information given by webpack.|`'/path/to/a/project/'`
-|`modulesDirectories`|String array of modules directories to look inside. Used to scan directories besides `node_modules` for licenses.|Only `node_modules` is searched.|`['node_modules','other_modules']`
-|`additionalChunkModules`|Add additional modules to add to a  chunk for license scanning. Modules need the `name` (name of the package) and `directory` (location of the installed package) key in order to work. Object whose keys are chunk names and values are arrays of modules.|No additional modules are added.|<code>{<br>&nbsp;&nbsp;main: [<br>&nbsp;&nbsp;&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: 'somepkg'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directory: path.join(__dirname, 'node_modules', 'somepkg')<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;]<br>}</code>
-|`additionalModules`|Array of modules (as mentioned in the `additionalChunkModules` option) to add to the license output. Useful in case `perChunkOutput` is set to `false`.|No additional modules are added.|<code>[<br>&nbsp;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: 'somepkg'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directory: path.join(__dirname, 'node_modules', 'somepkg')<br>&nbsp;&nbsp;}<br>]</code>
-|`preferredLicenseTypes`|Array of strings specifying which license types should be preferred in case a package specifies multiple licenses via the deprecated `licenses` field in its package.json|No preferred license types.|`['MIT', 'ISC']`
-|`handleLicenseAmbiguity`|Function which is called whenever a license type could not be determined when a package uses the deprecated `licenses` field in its package.json. It should return the license type to use.|Prints a warning message to the console and chooses the first license type|<code>(packageName, licenses) => {<br>&nbsp;&nbsp;console.log(packageName);<br>&nbsp;&nbsp;console.log(licenses[0].url);<br>&nbsp;&nbsp;return licenses[0].type;<br>}</code>
-|`handleMissingLicenseType`|Function which is called whenever a license type could not be found for a package. It is provided a package name and may output a license type, or null if no license type is to be used.|Prints a warning message to the console and assumes no license type exists for the package.|<code>(packageName) => {<br>&nbsp;&nbsp;console.log(packageName);<br>&nbsp;&nbsp;return null;<br>}</code>
-|`excludedPackageTest`|Function which takes a package name as a string and returns a boolean. If it returns true then the package will be excluded.|No package is excluded.|<code>(packageName) => packageName === 'excluded-package'</code>
+---
+
+**silence output**
+
+```javascript
+new LicenseWebpackPlugin({
+  silent: true
+});
+```
+
+---
+
+**change the output filename**
+
+```javascript
+new LicenseWebpackPlugin({
+  outputFilename: '[name].[hash].licenses.txt'
+});
+```
+
+---
+
+**do something when an unacceptable license is found**
+
+```javascript
+new LicenseWebpackPlugin({
+  unacceptableLicenseTest: (licenseType) => (licenseType === 'GPL'),
+  handleUnacceptableLicense: (packageName, licenseType) => {
+    throw new Error(packageName + ' has unacceptable license type: ' + licenseType)
+  }
+});
+```
+
+---
+
+**exclude specific packages**
+
+```javascript
+new LicenseWebpackPlugin({
+  excludedPackageTest: (packageName) => packageName === 'excluded-package'
+});
+```
+
+---
+
+
+**combine all license information into one file instead of having one file per chunk**
+
+```javascript
+new LicenseWebpackPlugin({
+  perChunkOutput: false
+});
+```
+
+---
+
+**do not write banner to top of js files**
+
+```javascript
+new LicenseWebpackPlugin({
+  addBanner: false
+});
+```
+
+---
+
+**override the license type for specific packages**
+
+```javascript
+new LicenseWebpackPlugin({
+  licenseTypeOverrides: {
+    foopkg: 'MIT'
+  }
+});
+```
+
+---
+
+**override the license text for specific packages**
+
+```javascript
+new LicenseWebpackPlugin({
+  licenseTypeOverrides: {
+    foopkg: 'License text for foopkg'
+  }
+});
+```
+
+---
+
+**override the license filename for specific packages**
+
+```javascript
+new LicenseWebpackPlugin({
+  licenseFileOverrides: {
+    foopkg: 'The-License.txt'
+  }
+});
+```
+
+Notes: The license filename is resolved relative to the package directory.
+
+---
+
+**change the format / contents of the generated license file**
+
+```javascript
+new LicenseWebpackPlugin({
+  renderLicenses: (modules) => {
+    console.log(modules[0].packageJson, modules[0].licenseId, modules[0].licenseText);
+    return JSON.stringify(modules);
+  }
+});
+```
+
+---
+
+**change the format / contents of the banner written to the top of each js file**
+
+```javascript
+new LicenseWebpackPlugin({
+  renderBanner: (filename, modules) => {
+    console.log(modules);
+    return '/*! licenses are at ' + filename + '*/';
+  }
+});
+```
+
+---
+
+**do something when license text is missing from a package**
+
+```javascript
+new LicenseWebpackPlugin({
+  handleMissingLicenseText: (packageName, licenseType) => {
+    console.log('Cannot find license for ' + packageName);
+    return 'UNKNOWN';
+  }
+});
+```
+
+Notes: You can return your own license text from this function, but you should prefer using `licenseTextOverrides` first.
+
+---
+
+**use fallback license files for when a package is missing a license file**
+
+```javascript
+new LicenseWebpackPlugin({
+  licenseTemplateDir: path.resolve(__dirname, 'licenseTemplates')
+});
+```
+
+Notes: This option specifies a directory containing `.txt` files containing the license text based on the license type. (e.g. `MIT.txt`). Templates can be found [here](https://github.com/spdx/license-list).
+
+---
+
+**control which chunks gets processed by the plugin**
+
+```javascript
+new LicenseWebpackPlugin({
+  chunkIncludeExcludeTest: {
+    exclude: ['foo'],
+    include: ['bar']
+  }
+});
+
+new LicenseWebpackPlugin({
+  chunkIncludeExcludeTest: (chunkName) => chunkName.startsWith('abc')
+});
+```
+
+Notes: If there is a duplicate entry in both the `exclude` and `include` array, the duplicated entry will be excluded.
+
+---
+
+**limit which folders get scanned for license files**
+
+```javascript
+new LicenseWebpackPlugin({
+  modulesDirectories: [
+    path.resolve(__dirname, 'node_modules')
+  ]
+});
+```
+
+---
+
+**add additional node modules to a chunk**
+
+```javascript
+new LicenseWebpackPlugin({
+  additionalChunkModules: {
+    main: [
+      {
+        name: 'somepkg'
+        directory: path.join(__dirname, 'node_modules', 'somepkg')
+      }
+    ]
+  }
+});
+```
+
+---
+
+**add additional node modules to the scan**
+
+```javascript
+new LicenseWebpackPlugin({
+  additionalModules: [
+    {
+      name: 'somepkg'
+      directory: path.join(__dirname, 'node_modules', 'somepkg')
+    }
+  ]
+});
+```
+
+---
+
+**help the plugin decide which license type to pick in case a package specifies multiple licenses**
+
+```javascript
+new LicenseWebpackPlugin({
+  preferredLicenseTypes: ['MIT', 'ISC']
+});
+```
+
+---
+
+**do something when the plugin finds ambiguous license types**
+
+```javascript
+new LicenseWebpackPlugin({
+  handleLicenseAmbiguity: (packageName, licenses) => {
+    console.log(packageName);
+    console.log(licenses[0].url);
+    return licenses[0].type;
+  }
+});
+```
+
+Notes: This function is called whenever a license type could not be determined when a package uses the deprecated `licenses` field (which is an array of license types) in its package.json. It should return the license type to use. By default, the plugin prints a warning message to the console and chooses the first license type. You should use the `preferredLicenseTypes` option instead of this one.
+
+---
+
+**do something when a package is missing a license type**
+
+```javascript
+new LicenseWebpackPlugin({
+  handleMissingLicenseType: (packageName) => {
+    console.log(packageName);
+    return null;
+  }
+});
+```
+
+Notes: You can return a license type from this function, but it is a better idea to use the `licenseTypeOverides` option.

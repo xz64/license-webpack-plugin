@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Packages are identified by traversing dictories upward until a `package.json` file is found.
   This should make package identificaton more reliable.
 - Use webpack's `inputFileSystem` instead of `fs` module.
-- Plugin hook is done at a different phase of webpack build.
+- In order to avoid issues with source maps, the plugin hook is done at a different phase of the webpack build.
 - The `modulesDirectories` option requires full paths and is now used to restrict which directories a module may be detected from.
 
 ### Removed
@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `includedChunks` option
 - `excludedChunks` option
 - `additionalPackages` option
+- `buildRoot` option
 
 ### Fixed
 - No more interference with source maps
