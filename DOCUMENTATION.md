@@ -28,6 +28,19 @@ new LicenseWebpackPlugin({
 });
 ```
 
+Notes: All license identifiers in npm packages are supposed to follow SPDX format. If your requirements are very specific, it is recommended to set up this option using the [`spdx-satisfies`](https://www.npmjs.com/package/spdx-satisfies) package. The plugin does not provide the `spdx-satisfies` package, so you must install it separately if you want to use it.
+
+Example using `spdx-satisfies`:
+
+```javascript
+const satisfies = require('spdx-satisfies');
+
+new LicenseWebpackPlugin({
+  licenseInclusionTest: (licenseType) => satisfies(licenseType, '(ISC OR MIT)')
+});
+
+```
+
 ---
 
 **silence output**
