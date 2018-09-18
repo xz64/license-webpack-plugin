@@ -48,7 +48,7 @@ class PluginOptionsReader {
       options.outputFilename ||
       (perChunkOutput ? '[name].licenses.txt' : 'licenses.txt');
     const addBanner =
-      options.addBanner === undefined ? true : options.addBanner;
+      options.addBanner === undefined ? false : options.addBanner;
     const chunkIncludeExcludeTest =
       options.chunkIncludeExcludeTest || (() => true);
     const modulesDirectories = options.modulesDirectories || null;
