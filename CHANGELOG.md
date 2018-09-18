@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In order to avoid issues with source maps, the plugin hook is done at a different phase of the webpack build.
 - The `modulesDirectories` option requires full paths and is now used to restrict which directories a module may be detected from.
 - License filename detection is now done by regular expression which means more license files should be picked up now.
+- When license text cannot be found, the plugin will no longer write the license type as the license text. Instead it will omit printing the license text. (The license type will still be written though.)
+- The `webpack-sources` dependency has moved from a peer dependency to a direct dependency.
 
 ### Removed
 - `suppressErrors` option
