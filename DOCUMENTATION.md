@@ -84,11 +84,11 @@ new LicenseWebpackPlugin({
 
 ---
 
-**do not write banner to top of js files**
+**write banner to top of js files**
 
 ```javascript
 new LicenseWebpackPlugin({
-  addBanner: false
+  addBanner: true
 });
 ```
 
@@ -149,6 +149,7 @@ new LicenseWebpackPlugin({
 
 ```javascript
 new LicenseWebpackPlugin({
+  addBanner: true, 
   renderBanner: (filename, modules) => {
     console.log(modules);
     return '/*! licenses are at ' + filename + '*/';
