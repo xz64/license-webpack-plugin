@@ -43,16 +43,6 @@ new LicenseWebpackPlugin({
 
 ---
 
-**silence output**
-
-```javascript
-new LicenseWebpackPlugin({
-  silent: true
-});
-```
-
----
-
 **change the output filename**
 
 ```javascript

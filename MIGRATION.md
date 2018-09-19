@@ -5,12 +5,12 @@
 * The `modulesDirectories` option defaults to null and requires full paths if specified. When `modulesDirectories` is null, third-party modules may be picked up from any directory.
 * The following options have been removed:
   - `buildRoot` - The plugin can work reliably without this option having to be specified now. You can remove it from your configuration.
-  - `suppressErrors` - This has been renamed to `silent`.
+  - `suppressErrors` - Use the `stats` option on the webpack config instead to suppress warnings/errors.
   - `pattern` - Use the new `licenseInclusionTest` option instead.
   - `outputTemplate` - Use the new `renderLicenses` option instead.
   - `includePackagesWithoutLicense` - Use the new `licenseInclusionTest` option instead.
   - `unacceptablePattern` - Use the new `unacceptableLicenseTest` option instead.
-  - `abortOnUnacceptableLicense` - Use the new `handleUnacceptableLicense` option instead.
+  - `abortOnUnacceptableLicense` - The plugin will send an error to webpack whenever an unacceptable license is found. Use the new `handleUnacceptableLicense` option if you want to do something in addition to that.
   - `bannerTemplate` - Use the new `renderBanner` option instead.
   - `includedChunks` - Use the new `chunkIncludeExcludeTest` option instead.
   - `excludedChunks` - Use the new `chunkIncludeExcludeTest` option instead.
