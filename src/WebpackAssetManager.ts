@@ -17,7 +17,7 @@ class WebpackAssetManager implements AssetManager {
     chunk: WebpackChunk
   ): void {
     const text = this.licensesRenderer.renderLicenses(modules);
-    if (text) {
+    if (text && text.trim()) {
       const filename = compilation.getPath(this.outputFilename, { chunk });
       compilation.assets[filename] = new RawSource(text);
     }
@@ -30,7 +30,7 @@ class WebpackAssetManager implements AssetManager {
   ): void {
     const filename = compilation.getPath(this.outputFilename, { chunk });
     const text = this.licensesRenderer.renderBanner(filename, modules);
-    if (text) {
+    if (text && text.trim()) {
       chunk.files
         .filter((file: string) => /\.js$/.test(file))
         .forEach((file: string) => {
