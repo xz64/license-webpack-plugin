@@ -54,7 +54,7 @@ class PluginFileHandler implements FileHandler {
       // check parent directory
       oldDirOfModule = dirOfModule;
       dirOfModule = this.fileSystem.resolvePath(
-        dirOfModule + pathSeparator + '..' + pathSeparator
+        `${dirOfModule}${pathSeparator}..${pathSeparator}`
       );
 
       // reached filesystem root

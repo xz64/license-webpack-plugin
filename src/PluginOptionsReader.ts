@@ -20,15 +20,13 @@ class PluginOptionsReader {
     const renderLicenses =
       options.renderLicenses ||
       ((modules: LicenseIdentifiedModule[]) => {
-        return (
-          modules
-            .reduce((file, module) => {
-              return `${file}${module.name}${
-                module.licenseId ? `\n${module.licenseId}` : ''
-              }${module.licenseText ? `\n${module.licenseText}` : ''}\n\n`;
-            }, '')
-            .trim() + '\n'
-        );
+        return `${modules
+          .reduce((file, module) => {
+            return `${file}${module.name}${
+              module.licenseId ? `\n${module.licenseId}` : ''
+            }${module.licenseText ? `\n${module.licenseText}` : ''}\n\n`;
+          }, '')
+          .trim()}\n`;
       });
     const renderBanner =
       options.renderBanner ||
