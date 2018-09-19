@@ -1,5 +1,6 @@
 import { FileSystem } from '../FileSystem';
 import { LicenseTextReader } from '../LicenseTextReader';
+import { Compilation as compilation } from './FakeCompilation';
 
 class FakeFileSystem implements FileSystem {
   pathSeparator: string = '/';
@@ -47,6 +48,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -65,6 +67,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -83,6 +86,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -101,6 +105,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -119,6 +124,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -137,6 +143,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -155,6 +162,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -173,6 +181,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'
@@ -191,6 +200,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
+      compilation,
       {
         name: 'foo',
         directory: '/project'

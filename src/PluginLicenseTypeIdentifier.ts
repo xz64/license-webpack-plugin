@@ -1,6 +1,7 @@
 import { LicenseTypeIdentifier } from './LicenseTypeIdentifier';
 import { PackageJson } from './PackageJson';
 import { LicenseTypeOverrides } from './LicenseTypeOverrides';
+import { WebpackCompilation } from './WebpackCompilation';
 
 class PluginLicenseTypeIdentifier implements LicenseTypeIdentifier {
   constructor(
@@ -14,6 +15,7 @@ class PluginLicenseTypeIdentifier implements LicenseTypeIdentifier {
   ) {}
 
   findLicenseIdentifier(
+    compilation: WebpackCompilation,
     packageName: string,
     packageJson: PackageJson
   ): string | null {
@@ -45,9 +47,19 @@ class PluginLicenseTypeIdentifier implements LicenseTypeIdentifier {
         return licenseType;
       }
 
-      return this.handleLicenseAmbiguity(packageName, packageJson.licenses);
+      const resolvedLicenseType = this.handleLicenseAmbiguity(
+        packageName,
+        packageJson.licenses
+      );
+      compilation.warnings.push(
+        `license-webpack-plugin: ${packageName} specifies multiple licenses: ${licenseTypes}. Automatically selected ${resolvedLicenseType}. Use the preferredLicenseTypes or the licenseTypeOverrides option to resolve this warning.`
+      );
+      return resolvedLicenseType;
     }
 
+    compilation.warnings.push(
+      `license-webpack-plugin: could not find any license type for ${packageName} in its package.json`
+    );
     return this.handleMissingLicenseType(packageName);
   }
 

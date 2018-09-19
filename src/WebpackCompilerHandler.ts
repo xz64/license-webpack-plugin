@@ -27,7 +27,7 @@ class WebpackCompilerHandler {
           compilation.hooks.optimizeChunkAssets.tap(
             'LicenseWebpackPlugin',
             (chunks: IterableIterator<WebpackChunk>) => {
-              this.iterateChunks(chunks, compilation);
+              this.iterateChunks(compilation, chunks);
             }
           );
         }
@@ -38,7 +38,7 @@ class WebpackCompilerHandler {
           compilation.plugin(
             'optimize-chunk-assets',
             (chunks: IterableIterator<WebpackChunk>, callback: Function) => {
-              this.iterateChunks(chunks, compilation);
+              this.iterateChunks(compilation, chunks);
               callback();
             }
           );
@@ -48,20 +48,30 @@ class WebpackCompilerHandler {
   }
 
   private iterateChunks(
-    chunks: IterableIterator<WebpackChunk>,
-    compilation: WebpackCompilation
+    compilation: WebpackCompilation,
+    chunks: IterableIterator<WebpackChunk>
   ) {
     for (const chunk of chunks) {
       if (this.chunkIncludeTester.isIncluded(chunk.name)) {
-        this.chunkHandler.processChunk(chunk, this.moduleCache);
+        this.chunkHandler.processChunk(compilation, chunk, this.moduleCache);
         if (this.additionalChunkModules[chunk.name]) {
           this.additionalChunkModules[chunk.name].forEach(module =>
-            this.chunkHandler.processModule(chunk, this.moduleCache, module)
+            this.chunkHandler.processModule(
+              compilation,
+              chunk,
+              this.moduleCache,
+              module
+            )
           );
         }
         if (this.additionalModules.length > 0) {
           this.additionalModules.forEach(module =>
-            this.chunkHandler.processModule(chunk, this.moduleCache, module)
+            this.chunkHandler.processModule(
+              compilation,
+              chunk,
+              this.moduleCache,
+              module
+            )
           );
         }
         if (this.perChunkOutput) {

@@ -2,6 +2,7 @@ import { LicenseTextOverrides } from './LicenseTextOverrides';
 import { FileSystem } from './FileSystem';
 import { Module } from './Module';
 import { LicenseFileOverrides } from './LicenseFilesOverrides';
+import { WebpackCompilation } from './WebpackCompilation';
 
 class LicenseTextReader {
   constructor(
@@ -15,7 +16,11 @@ class LicenseTextReader {
     ) => string | null)
   ) {}
 
-  readLicense(module: Module, licenseType: string | null): string | null {
+  readLicense(
+    compilation: WebpackCompilation,
+    module: Module,
+    licenseType: string | null
+  ): string | null {
     if (this.textOverrides[module.name]) {
       return this.textOverrides[module.name];
     }
@@ -48,6 +53,11 @@ class LicenseTextReader {
         .replace(/\r\n/g, '\n');
     }
 
+    compilation.warnings.push(
+      `license-webpack-plugin: could not find any license file for ${
+        module.name
+      }. Use the licenseTextOverrides option to add the license text if desired.`
+    );
     return this.handleMissingLicenseText(module.name, licenseType);
   }
 

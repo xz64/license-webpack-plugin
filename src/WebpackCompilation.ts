@@ -4,6 +4,8 @@ import { Source } from 'webpack-sources';
 export interface WebpackCompilation {
   chunks: IterableIterator<WebpackChunk>;
   assets: { [key: string]: Source };
+  errors: any[];
+  warnings: any[];
   getPath(
     filename: string,
     data: {

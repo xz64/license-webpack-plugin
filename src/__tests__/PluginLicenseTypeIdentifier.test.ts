@@ -1,4 +1,5 @@
 import { PluginLicenseTypeIdentifier } from '../PluginLicenseTypeIdentifier';
+import { Compilation as compilation } from './FakeCompilation';
 
 describe('LicenseTypeIdentifier', () => {
   test('It handles overrides', () => {
@@ -9,7 +10,10 @@ describe('LicenseTypeIdentifier', () => {
       () => null
     );
     expect(
-      identifier.findLicenseIdentifier('foo', { name: 'foo', version: '1.0.0' })
+      identifier.findLicenseIdentifier(compilation, 'foo', {
+        name: 'foo',
+        version: '1.0.0'
+      })
     ).toBe('ISC');
   });
 
@@ -21,7 +25,7 @@ describe('LicenseTypeIdentifier', () => {
       () => null
     );
     expect(
-      identifier.findLicenseIdentifier('foo', {
+      identifier.findLicenseIdentifier(compilation, 'foo', {
         name: 'foo',
         version: '1.0.0',
         license: 'ISC'
@@ -50,7 +54,11 @@ describe('LicenseTypeIdentifier', () => {
         }
       ]
     };
-    const licenseType = identifier.findLicenseIdentifier('foo', fooPackageJson);
+    const licenseType = identifier.findLicenseIdentifier(
+      compilation,
+      'foo',
+      fooPackageJson
+    );
     expect(licenseType).toBe('MIT');
   });
 
@@ -75,7 +83,11 @@ describe('LicenseTypeIdentifier', () => {
         }
       ]
     };
-    const licenseType = identifier.findLicenseIdentifier('foo', fooPackageJson);
+    const licenseType = identifier.findLicenseIdentifier(
+      compilation,
+      'foo',
+      fooPackageJson
+    );
     expect(licenseType).toBe('BSD-3-Clause');
   });
 
@@ -100,7 +112,11 @@ describe('LicenseTypeIdentifier', () => {
         }
       ]
     };
-    const licenseType = identifier.findLicenseIdentifier('foo', fooPackageJson);
+    const licenseType = identifier.findLicenseIdentifier(
+      compilation,
+      'foo',
+      fooPackageJson
+    );
     expect(licenseType).toBe('MIT');
   });
 });

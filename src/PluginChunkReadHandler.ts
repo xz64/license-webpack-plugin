@@ -10,6 +10,7 @@ import { LicenseTextReader } from './LicenseTextReader';
 import { ModuleCache } from './ModuleCache';
 import { LicensePolicy } from './LicensePolicy';
 import { Module } from './Module';
+import { WebpackCompilation } from './WebpackCompilation';
 
 class PluginChunkReadHandler implements WebpackChunkHandler {
   private moduleIterator = new WebpackChunkModuleIterator();
@@ -23,13 +24,17 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
     private fileSystem: FileSystem
   ) {}
 
-  processChunk(chunk: WebpackChunk, moduleCache: ModuleCache) {
+  processChunk(
+    compilation: WebpackCompilation,
+    chunk: WebpackChunk,
+    moduleCache: ModuleCache
+  ) {
     this.moduleIterator.iterateModules(chunk, module => {
       this.fileIterator.iterateFiles(
         module,
         (filename: string | null | undefined) => {
           const module = this.fileHandler.getModule(filename);
-          this.processModule(chunk, moduleCache, module);
+          this.processModule(compilation, chunk, moduleCache, module);
         }
       );
     });
@@ -42,6 +47,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
   }
 
   processModule(
+    compilation: WebpackCompilation,
     chunk: WebpackChunk,
     moduleCache: ModuleCache,
     module: Module | null
@@ -56,10 +62,16 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
         const licenseType:
           | string
           | null = this.licenseTypeIdentifier.findLicenseIdentifier(
+          compilation,
           module.name,
           packageJson
         );
         if (this.licensePolicy.isLicenseUnacceptableFor(licenseType)) {
+          compilation.errors.push(
+            `license-webpack-plugin: unacceptable license found for ${
+              module.name
+            }: ${licenseType}`
+          );
           this.licensePolicy.handleUnacceptableLicense(
             module.name,
             licenseType
@@ -67,6 +79,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
         }
         if (this.licensePolicy.isLicenseWrittenFor(licenseType)) {
           const licenseText = this.licenseTextReader.readLicense(
+            compilation,
             module,
             licenseType
           );
