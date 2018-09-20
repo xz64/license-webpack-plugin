@@ -19,6 +19,7 @@ import { PluginLicensePolicy } from './PluginLicensePolicy';
 import { PluginLicenseTestRunner } from './PluginLicenseTestRunner';
 import { PluginOptionsReader } from './PluginOptionsReader';
 import { PluginOptions } from './PluginOptions';
+import { Logger } from './Logger';
 
 class LicenseWebpackPlugin implements WebpackPlugin {
   constructor(private pluginOptions: PluginOptions = {}) {}
@@ -32,6 +33,7 @@ class LicenseWebpackPlugin implements WebpackPlugin {
     const options: ConstructedOptions = optionsReader.readOptions(
       this.pluginOptions
     );
+    const logger: Logger = new Logger(options.stats);
     const fileHandler: FileHandler = new PluginFileHandler(
       fileSystem,
       options.buildRoot,
@@ -39,12 +41,14 @@ class LicenseWebpackPlugin implements WebpackPlugin {
       options.excludedPackageTest
     );
     const licenseTypeIdentifier = new PluginLicenseTypeIdentifier(
+      logger,
       options.licenseTypeOverrides,
       options.preferredLicenseTypes,
       options.handleLicenseAmbiguity,
       options.handleMissingLicenseType
     );
     const licenseTextReader = new LicenseTextReader(
+      logger,
       fileSystem,
       options.licenseFileOverrides,
       options.licenseTextOverrides,
@@ -64,6 +68,7 @@ class LicenseWebpackPlugin implements WebpackPlugin {
       options.handleMissingLicenseText
     );
     const readHandler: WebpackChunkHandler = new PluginChunkReadHandler(
+      logger,
       fileHandler,
       licenseTypeIdentifier,
       licenseTextReader,

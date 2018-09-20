@@ -1,6 +1,7 @@
 import { FileSystem } from '../FileSystem';
 import { LicenseTextReader } from '../LicenseTextReader';
 import { Compilation as compilation } from './FakeCompilation';
+import { FakeLogger as logger } from './FakeLogger';
 
 class FakeFileSystem implements FileSystem {
   pathSeparator: string = '/';
@@ -41,6 +42,7 @@ class FakeFileSystem implements FileSystem {
 describe('the license text reader', () => {
   test('overrides are honored', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['LICENSE']),
       {},
       { foo: 'custom' },
@@ -60,6 +62,7 @@ describe('the license text reader', () => {
 
   test('LICENSE file is detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['LICENSE']),
       {},
       {},
@@ -79,6 +82,7 @@ describe('the license text reader', () => {
 
   test('LICENCE file is detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['LICENCE']),
       {},
       {},
@@ -98,6 +102,7 @@ describe('the license text reader', () => {
 
   test('license files ending with an extension are detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['license.txt']),
       {},
       {},
@@ -117,6 +122,7 @@ describe('the license text reader', () => {
 
   test('license files with a suffix are detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['license-MIT.txt']),
       {},
       {},
@@ -136,6 +142,7 @@ describe('the license text reader', () => {
 
   test('line endings are normalized', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['LICENSE'], true),
       {},
       {},
@@ -155,6 +162,7 @@ describe('the license text reader', () => {
 
   test('non-matches return null', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem([]),
       {},
       {},
@@ -174,6 +182,7 @@ describe('the license text reader', () => {
 
   test('template dir is used as a fallback', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem([]),
       {},
       {},
@@ -193,6 +202,7 @@ describe('the license text reader', () => {
 
   test('the SEE LICENSE IN license type resolves the license text from the specified file', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
       new FakeFileSystem(['LICENSE']),
       {},
       {},

@@ -2,6 +2,7 @@ import { LicenseTest } from './LicenseTest';
 import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { IncludeExcludeTest } from './IncludeExcludeTest';
 import { Module } from './Module';
+import { ConstructedStats } from './ConstructedStats';
 
 interface ConstructedOptions {
   buildRoot: string;
@@ -38,6 +39,7 @@ interface ConstructedOptions {
   ) => string);
   handleMissingLicenseType: ((packageName: string) => string | null);
   excludedPackageTest: ((packageName: string) => boolean);
+  stats: ConstructedStats;
 }
 
 export { ConstructedOptions };

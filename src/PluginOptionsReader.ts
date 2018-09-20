@@ -55,6 +55,16 @@ class PluginOptionsReader {
       options.licenseFileOverrides || {};
     const excludedPackageTest: ((packageName: string) => boolean) =
       options.excludedPackageTest || (() => false);
+    const stats = {
+      warnings:
+        options.stats && options.stats.warnings !== undefined
+          ? options.stats.warnings
+          : true,
+      errors:
+        options.stats && options.stats.errors !== undefined
+          ? options.stats.errors
+          : true
+    };
 
     const constructedOptions: ConstructedOptions = {
       licenseInclusionTest,
@@ -78,6 +88,7 @@ class PluginOptionsReader {
       handleLicenseAmbiguity,
       handleMissingLicenseType,
       excludedPackageTest,
+      stats,
       buildRoot: this.context
     };
 

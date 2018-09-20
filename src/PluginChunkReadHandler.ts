@@ -11,12 +11,14 @@ import { ModuleCache } from './ModuleCache';
 import { LicensePolicy } from './LicensePolicy';
 import { Module } from './Module';
 import { WebpackCompilation } from './WebpackCompilation';
+import { Logger } from './Logger';
 
 class PluginChunkReadHandler implements WebpackChunkHandler {
   private moduleIterator = new WebpackChunkModuleIterator();
   private fileIterator = new WebpackModuleFileIterator();
 
   constructor(
+    private logger: Logger,
     private fileHandler: FileHandler,
     private licenseTypeIdentifier: LicenseTypeIdentifier,
     private licenseTextReader: LicenseTextReader,
@@ -68,10 +70,9 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
           packageJson
         );
         if (this.licensePolicy.isLicenseUnacceptableFor(licenseType)) {
-          compilation.errors.push(
-            `license-webpack-plugin: unacceptable license found for ${
-              module.name
-            }: ${licenseType}`
+          this.logger.error(
+            compilation,
+            `unacceptable license found for ${module.name}: ${licenseType}`
           );
           this.licensePolicy.handleUnacceptableLicense(
             module.name,

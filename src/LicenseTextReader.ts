@@ -3,9 +3,11 @@ import { FileSystem } from './FileSystem';
 import { Module } from './Module';
 import { LicenseFileOverrides } from './LicenseFilesOverrides';
 import { WebpackCompilation } from './WebpackCompilation';
+import { Logger } from './Logger';
 
 class LicenseTextReader {
   constructor(
+    private logger: Logger,
     private fileSystem: FileSystem,
     private fileOverrides: LicenseFileOverrides,
     private textOverrides: LicenseTextOverrides,
@@ -53,8 +55,9 @@ class LicenseTextReader {
         .replace(/\r\n/g, '\n');
     }
 
-    compilation.warnings.push(
-      `license-webpack-plugin: could not find any license file for ${
+    this.logger.warn(
+      compilation,
+      `could not find any license file for ${
         module.name
       }. Use the licenseTextOverrides option to add the license text if desired.`
     );

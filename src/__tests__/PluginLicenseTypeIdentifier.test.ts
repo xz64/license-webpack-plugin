@@ -1,9 +1,11 @@
 import { PluginLicenseTypeIdentifier } from '../PluginLicenseTypeIdentifier';
 import { Compilation as compilation } from './FakeCompilation';
+import { FakeLogger as logger } from './FakeLogger';
 
 describe('LicenseTypeIdentifier', () => {
   test('It handles overrides', () => {
     const identifier = new PluginLicenseTypeIdentifier(
+      logger,
       { foo: 'ISC' },
       [],
       (_, licenses) => licenses[0].type,
@@ -19,6 +21,7 @@ describe('LicenseTypeIdentifier', () => {
 
   test('It handles the license field in package.json', () => {
     const identifier = new PluginLicenseTypeIdentifier(
+      logger,
       {},
       [],
       (_, licenses) => licenses[0].type,
@@ -35,6 +38,7 @@ describe('LicenseTypeIdentifier', () => {
 
   test('It selects the first license type when there are multiple license types', () => {
     const identifier = new PluginLicenseTypeIdentifier(
+      logger,
       {},
       [],
       (_, licenses) => licenses[0].type,
@@ -64,6 +68,7 @@ describe('LicenseTypeIdentifier', () => {
 
   test('It selects a preferred license when there is a preferred license type match', () => {
     const identifier = new PluginLicenseTypeIdentifier(
+      logger,
       {},
       ['BSD-3-Clause'],
       (_, licenses) => licenses[0].type,
@@ -93,6 +98,7 @@ describe('LicenseTypeIdentifier', () => {
 
   test('It selects the first license if there is no preferred license matched', () => {
     const identifier = new PluginLicenseTypeIdentifier(
+      logger,
       {},
       ['BSD-3-Clause'],
       (_, licenses) => licenses[0].type,

@@ -5,7 +5,7 @@
 * The `modulesDirectories` option defaults to null and requires full paths if specified. When `modulesDirectories` is null, third-party modules may be picked up from any directory.
 * The following options have been removed:
   - `buildRoot` - The plugin can work reliably without this option having to be specified now. You can remove it from your configuration.
-  - `suppressErrors` - Use the `stats` option on the webpack config instead to suppress warnings/errors.
+  - `suppressErrors` - Use the `stats` option on the plugin config instead to turn off warnings/errors.
   - `pattern` - Use the new `licenseInclusionTest` option instead.
   - `outputTemplate` - Use the new `renderLicenses` option instead.
   - `includePackagesWithoutLicense` - Use the new `licenseInclusionTest` option instead.

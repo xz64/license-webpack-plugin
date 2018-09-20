@@ -2,6 +2,7 @@ import { LicenseTest } from './LicenseTest';
 import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { IncludeExcludeTest } from './IncludeExcludeTest';
 import { Module } from './Module';
+import { PluginStats } from './PluginStats';
 
 interface PluginOptions {
   licenseInclusionTest?: LicenseTest;
@@ -37,7 +38,7 @@ interface PluginOptions {
   ) => string);
   handleMissingLicenseType?: ((packageName: string) => string | null);
   excludedPackageTest?: ((packageName: string) => boolean);
-  silent?: boolean;
+  stats?: PluginStats;
 }
 
 export { PluginOptions };
