@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { ConstructedOptions } from './ConstructedOptions';
 import { Module } from './Module';
@@ -15,9 +16,13 @@ class ModuleProcessor {
     private options: ConstructedOptions,
     private errors: LicenseWebpackPluginError[]
   ) {
-    this.modulePrefixes = options.modulesDirectories.map(dir =>
-      path.join(this.context, dir)
-    );
+    this.modulePrefixes = options.modulesDirectories.map(dir => {
+      let resolvedDir = dir;
+      if (!path.isAbsolute(resolvedDir)) {
+        resolvedDir = path.join(this.context, resolvedDir);
+      }
+      return fs.realpathSync(resolvedDir);
+    });
     this.licenseExtractor = new LicenseExtractor(this.options, this.errors);
   }
 
