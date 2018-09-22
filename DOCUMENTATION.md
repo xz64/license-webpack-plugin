@@ -202,8 +202,10 @@ new LicenseWebpackPlugin({
     include: ['bar']
   }
 });
+```
 
 Example:
+```
 new LicenseWebpackPlugin({
   chunkIncludeExcludeTest: (chunkName) => chunkName.startsWith('abc')
 });
