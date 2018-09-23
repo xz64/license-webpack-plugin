@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2018-09-23
 ### Added
 - `licenseInclusionTest` option
 - `unacceptableLicenseTest` option
@@ -49,6 +49,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - No more interference with source maps
+
+## [1.5.0] - 2018-09-20
+### Added
+- Support for absolute paths in `modulesDirectories` option
+
+### Fixed
+- Support symlinked `node_modules` folder
 
 ## [1.4.0] - 2018-08-05
 ### Changed
