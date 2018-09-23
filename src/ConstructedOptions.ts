@@ -1,23 +1,45 @@
+import { LicenseTest } from './LicenseTest';
+import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
+import { IncludeExcludeTest } from './IncludeExcludeTest';
+import { Module } from './Module';
+import { ConstructedStats } from './ConstructedStats';
+
 interface ConstructedOptions {
-  pattern: RegExp;
-  unacceptablePattern?: RegExp;
-  abortOnUnacceptableLicense: boolean;
+  buildRoot: string;
+  licenseInclusionTest: LicenseTest;
+  unacceptableLicenseTest: LicenseTest;
+  handleUnacceptableLicense: ((
+    packageName: string,
+    licenseType: string
+  ) => void);
+  handleMissingLicenseText: ((
+    packageName: string,
+    licenseType: string | null
+  ) => string | null);
   perChunkOutput: boolean;
-  licenseFilenames: string[];
   licenseTemplateDir?: string;
-  licenseFileOverrides?: { [key: string]: string };
-  licenseTypeOverrides?: { [key: string]: string };
-  outputTemplate: string;
+  licenseFileOverrides: { [key: string]: string };
+  licenseTextOverrides: { [key: string]: string };
+  licenseTypeOverrides: { [key: string]: string };
+  renderLicenses: ((modules: LicenseIdentifiedModule[]) => string);
+  renderBanner: ((
+    filename: string,
+    modules: LicenseIdentifiedModule[]
+  ) => string);
   outputFilename: string;
-  suppressErrors: boolean;
-  includePackagesWithoutLicense: boolean;
   addBanner: boolean;
-  bannerTemplate: string;
-  includedChunks: string[];
-  excludedChunks: string[];
-  additionalPackages: string[];
-  buildRoot?: string;
-  modulesDirectories: string[];
+  chunkIncludeExcludeTest: IncludeExcludeTest;
+  modulesDirectories: string[] | null;
+  additionalChunkModules: { [chunkName: string]: Module[] };
+  additionalModules: Module[];
+  preferredLicenseTypes: string[];
+  handleLicenseAmbiguity: ((
+    packageName: string,
+    licenses: { type: string; url: string }[]
+  ) => string);
+  handleMissingLicenseType: ((packageName: string) => string | null);
+  excludedPackageTest: ((packageName: string) => boolean);
+  stats: ConstructedStats;
 }
 
 export { ConstructedOptions };

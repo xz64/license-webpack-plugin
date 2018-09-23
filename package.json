@@ -1,19 +1,25 @@
 {
   "name": "license-webpack-plugin",
-  "version": "1.5.0",
+  "version": "2.0.0-beta.3",
   "description": "Outputs licenses from 3rd party libraries to a file",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "output.template.ejs"
+    "/dist/**/*",
+    "/MIGRATION.md",
+    "/DOCUMENTATION.md"
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "prettier --single-quote --write 'src/**/*.ts' && tslint 'src/**/*.ts'",
-    "build": "npm run lint && npm run clean && tsc",
-    "prepublishOnly": "npm run build",
-    "test": "npm run build && prettier --single-quote --write 'test/**/*.js' && node test/license-webpack-plugin.test.js"
+    "format": "cross-env prettier --single-quote --write 'src/**/*.ts'",
+    "format:e2e": "cross-env prettier --ignore-path .gitignore --single-quote --write 'e2e/**/*.js'",
+    "lint": "tslint 'src/**/*.ts' --project tsconfig.json",
+    "build": "yarn run format && yarn run lint && yarn run clean && tsc",
+    "prepublishOnly": "yarn run build",
+    "jest": "jest",
+    "test:unit": "yarn run build && yarn run jest",
+    "test:e2e": "yarn run format:e2e && yarn --cwd e2e/webpack-v4 && jest --config jest.config.e2e.js --runInBand",
+    "test": "yarn run test:unit && yarn run test:e2e"
   },
   "repository": {
     "type": "git",
@@ -31,25 +37,20 @@
   },
   "homepage": "https://github.com/xz64/license-webpack-plugin#readme",
   "devDependencies": {
-    "@types/ejs": "^2.3.33",
-    "@types/webpack": "^3.0.5",
-    "@types/webpack-sources": "^0.1.2",
-    "mock-fs": "^4.4.1",
-    "object-assign": "^4.1.1",
-    "path.join": "^1.0.0",
-    "prettier": "^1.5.3",
-    "proxyquire": "^1.8.0",
-    "rimraf": "^2.6.1",
-    "tape": "^4.8.0",
-    "tslint": "^5.5.0",
-    "tslint-config-airbnb": "^5.2.1",
-    "tslint-config-prettier": "^1.3.0",
-    "typescript": "^2.4.2"
-  },
-  "peerDependencies": {
-    "webpack-sources": ">=1.0.0"
+    "@types/jest": "^22.2.2",
+    "@types/node": "^8.10.0",
+    "@types/webpack-sources": "^0.1.4",
+    "cross-env": "^5.2.0",
+    "jest": "^22.4.3",
+    "prettier": "^1.11.1",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^22.4.2",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.8.0",
+    "tslint-config-prettier": "^1.10.0",
+    "typescript": "^2.7.2"
   },
   "dependencies": {
-    "ejs": "^2.5.7"
+    "webpack-sources": "^1.2.0"
   }
 }

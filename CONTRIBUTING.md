@@ -6,8 +6,8 @@ Please follow the below steps for contributing:
 
 1. Fork this repo.
 2. Make your changes and add a unit test.
-3. Ensure the tests still pass by running `npm install` followed by `npm test`. This will automatically format the code as well.
-4. Update the README.md file if any user-facing functionality has changed.
+3. Ensure the tests still pass by running `yarn` followed by `yarn test`. This will automatically format the code as well.
+4. Update the DOCUMENTATION.md file and CHANGELOG.md file if any user-facing functionality has changed.
 5. Commit your changes following the semantic commit message guide
    [here](https://seesparkbox.com/foundry/semantic_commit_messages).
 6. Push changes to your fork.

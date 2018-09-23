@@ -1,0 +1,12 @@
+{
+  "name": "webpack-v4",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.19.0"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1"
+  }
+}
