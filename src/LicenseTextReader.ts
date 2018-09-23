@@ -33,7 +33,9 @@ class LicenseTextReader {
 
     if (licenseType && licenseType.indexOf('SEE LICENSE IN ') === 0) {
       const filename = licenseType.split(' ')[3];
-      return this.readText(module.directory, filename);
+      return this.fileSystem.isFileInDirectory(filename, module.directory)
+        ? this.readText(module.directory, filename)
+        : null;
     }
 
     const pathsInModuleDirectory: string[] = this.fileSystem.listPaths(

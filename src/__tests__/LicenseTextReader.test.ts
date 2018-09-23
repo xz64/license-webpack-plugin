@@ -20,7 +20,7 @@ class FakeFileSystem implements FileSystem {
   }
 
   isFileInDirectory(filename: string, directory: string) {
-    return filename === '/project/LICENSE';
+    return filename === '/project/LICENSE' || filename === 'custom_file.txt';
   }
 
   join(...paths: string[]) {
@@ -218,5 +218,25 @@ describe('the license text reader', () => {
       'SEE LICENSE IN custom_file.txt'
     );
     expect(licenseText).toBe('LICENSE-/project/custom_file.txt');
+  });
+
+  test('the SEE LICENSE IN license type does not try to resolve nonexistent files', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
+      new FakeFileSystem(['LICENSE']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      compilation,
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      'SEE LICENSE IN https://something'
+    );
+    expect(licenseText).toBeNull();
   });
 });
