@@ -21,7 +21,7 @@ class LicenseTextReader {
   readLicense(
     compilation: WebpackCompilation,
     module: Module,
-    license: string | null
+    licenseType: string | null
   ): string | null {
     if (this.textOverrides[module.name]) {
       return this.textOverrides[module.name];
