@@ -14,14 +14,14 @@ class LicenseTextReader {
     private templateDir: string | undefined,
     private handleMissingLicenseText: ((
       packageName: string,
-      licenseType: string | null | Object
+      licenseType: string | null
     ) => string | null)
   ) {}
 
   readLicense(
     compilation: WebpackCompilation,
     module: Module,
-    license: string | null | Object
+    license: string | null
   ): string | null {
     if (this.textOverrides[module.name]) {
       return this.textOverrides[module.name];
