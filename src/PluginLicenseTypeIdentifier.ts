@@ -25,8 +25,11 @@ class PluginLicenseTypeIdentifier implements LicenseTypeIdentifier {
       return this.licenseTypeOverrides[packageName];
     }
 
-    if (packageJson.license) {
-      return packageJson.license;
+    const licensePropValue = packageJson.license;
+    if (licensePropValue) {
+      return typeof licensePropValue === 'string'
+        ? licensePropValue
+        : licensePropValue.type;
     }
 
     // handle deprecated "licenses" field in package.json

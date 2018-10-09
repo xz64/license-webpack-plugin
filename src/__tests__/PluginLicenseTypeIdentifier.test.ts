@@ -19,7 +19,7 @@ describe('LicenseTypeIdentifier', () => {
     ).toBe('ISC');
   });
 
-  test('It handles the license field in package.json', () => {
+  test('It handles the license string field in package.json', () => {
     const identifier = new PluginLicenseTypeIdentifier(
       logger,
       {},
@@ -32,6 +32,26 @@ describe('LicenseTypeIdentifier', () => {
         name: 'foo',
         version: '1.0.0',
         license: 'ISC'
+      })
+    ).toBe('ISC');
+  });
+
+  test('It handles the license object field in package.json', () => {
+    const identifier = new PluginLicenseTypeIdentifier(
+      logger,
+      {},
+      [],
+      (_, licenses) => licenses[0].type,
+      () => null
+    );
+    expect(
+      identifier.findLicenseIdentifier(compilation, 'foo', {
+        name: 'foo',
+        version: '1.0.0',
+        license: {
+          type: 'ISC',
+          url: 'https://example.com'
+        }
       })
     ).toBe('ISC');
   });
