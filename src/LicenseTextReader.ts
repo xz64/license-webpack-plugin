@@ -41,8 +41,10 @@ class LicenseTextReader {
     const pathsInModuleDirectory: string[] = this.fileSystem.listPaths(
       module.directory
     );
+
     const guessedLicenseFilename = this.guessLicenseFilename(
-      pathsInModuleDirectory
+      pathsInModuleDirectory,
+      module.directory
     );
 
     if (guessedLicenseFilename !== null) {
@@ -72,9 +74,16 @@ class LicenseTextReader {
       .replace(/\r\n/g, '\n');
   }
 
-  private guessLicenseFilename(paths: string[]): string | null {
+  private guessLicenseFilename(
+    paths: string[],
+    modulePath: string
+  ): string | null {
     for (const path of paths) {
-      if (/^licen[cs]e/i.test(path)) {
+      const filePath = this.fileSystem.join(modulePath, path);
+      if (
+        /^licen[cs]e/i.test(path) &&
+        this.fileSystem.isDirectory(filePath) === false
+      ) {
         return path;
       }
     }

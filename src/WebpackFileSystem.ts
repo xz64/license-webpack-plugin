@@ -37,6 +37,14 @@ class WebpackFileSystem implements FileSystem {
   listPaths(dir: string): string[] {
     return this.fs.readdirSync(dir);
   }
+
+  isDirectory(dir: string): boolean {
+    let isDir = false;
+    try {
+      isDir = this.fs.statSync(dir).isDirectory();
+    } catch (e) {}
+    return isDir;
+  }
 }
 
 export { WebpackFileSystem };

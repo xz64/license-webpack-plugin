@@ -7,6 +7,7 @@
     "webpack": "^4.19.0"
   },
   "dependencies": {
+    "example-lib": "file:lib/example-lib-0.1.0.tgz",
     "jquery": "^3.3.1"
   }
 }

@@ -6,6 +6,7 @@ interface FileSystem {
   join(...paths: string[]): string;
   resolvePath(path: string): string;
   listPaths(dir: string): string[];
+  isDirectory(dir: string): boolean;
 }
 
 export { FileSystem };
