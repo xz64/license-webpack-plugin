@@ -1,2 +1,2 @@
 require('jquery');
-require('example-lib');
+require('example-js-lib');

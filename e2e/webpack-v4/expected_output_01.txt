@@ -1,4 +1,4 @@
-example-lib
+example-js-lib
 MIT
 
 jquery

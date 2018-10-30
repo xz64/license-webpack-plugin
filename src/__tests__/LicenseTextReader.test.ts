@@ -32,14 +32,14 @@ class FakeFileSystem implements FileSystem {
   }
 
   listPaths(dir: string): string[] {
-    if (dir === '/project' || dir === '/example-lib') {
+    if (dir === '/project' || dir === '/example-js-lib') {
       return this.licenseFilenames;
     }
     throw new Error(`not implemented for ${dir}`);
   }
 
   isDirectory(dir: string): boolean {
-    return dir === '/example-lib/licence';
+    return dir === '/example-js-lib/licence';
   }
 }
 
@@ -257,7 +257,7 @@ describe('the license text reader', () => {
       compilation,
       {
         name: 'foo',
-        directory: '/example-lib'
+        directory: '/example-js-lib'
       },
       ''
     );
