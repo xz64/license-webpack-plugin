@@ -244,7 +244,7 @@ describe('the license text reader', () => {
     expect(licenseText).toBeNull();
   });
 
-  test('the it does not try to resolve licence type when it is a directory', () => {
+  test('it does not try to resolve licence type when it is a directory', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
       logger,
       new FakeFileSystem(['licence']),
