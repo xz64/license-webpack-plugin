@@ -32,10 +32,14 @@ class FakeFileSystem implements FileSystem {
   }
 
   listPaths(dir: string): string[] {
-    if (dir === '/project') {
+    if (dir === '/project' || dir === '/example-js-lib') {
       return this.licenseFilenames;
     }
     throw new Error(`not implemented for ${dir}`);
+  }
+
+  isDirectory(dir: string): boolean {
+    return dir === '/example-js-lib/licence';
   }
 }
 
@@ -236,6 +240,26 @@ describe('the license text reader', () => {
         directory: '/project'
       },
       'SEE LICENSE IN https://something'
+    );
+    expect(licenseText).toBeNull();
+  });
+
+  test('it does not try to resolve licence type when it is a directory', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
+      new FakeFileSystem(['licence']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      compilation,
+      {
+        name: 'foo',
+        directory: '/example-js-lib'
+      },
+      ''
     );
     expect(licenseText).toBeNull();
   });

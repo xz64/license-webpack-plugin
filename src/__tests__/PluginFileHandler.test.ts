@@ -74,6 +74,10 @@ class FakeFileSystem implements FileSystem {
   listPaths(dir: string): string[] {
     throw new Error('not implemented');
   }
+
+  isDirectory(dir: string): boolean {
+    throw new Error(`not implemented for ${dir}`);
+  }
 }
 
 describe('the file handler', () => {
