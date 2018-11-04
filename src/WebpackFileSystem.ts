@@ -10,7 +10,10 @@ class WebpackFileSystem implements FileSystem {
   isFileInDirectory(filename: string, directory: string): boolean {
     const normalizedFile = this.resolvePath(filename);
     const normalizedDirectory = this.resolvePath(directory);
-    return normalizedFile.indexOf(normalizedDirectory) === 0;
+    return (
+      !this.isDirectory(normalizedFile) &&
+      normalizedFile.indexOf(normalizedDirectory) === 0
+    );
   }
 
   pathExists(filename: string): boolean {
