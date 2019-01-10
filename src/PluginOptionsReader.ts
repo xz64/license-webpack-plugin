@@ -21,6 +21,9 @@ class PluginOptionsReader {
       options.renderLicenses ||
       ((modules: LicenseIdentifiedModule[]) => {
         return `${modules
+          .sort((left, right) => {
+            return left.name < right.name ? -1 : 1;
+          })
           .reduce((file, module) => {
             return `${file}${module.name}${
               module.licenseId ? `\n${module.licenseId}` : ''
