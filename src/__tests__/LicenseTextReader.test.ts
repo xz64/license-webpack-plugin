@@ -20,7 +20,11 @@ class FakeFileSystem implements FileSystem {
   }
 
   isFileInDirectory(filename: string, directory: string) {
-    return filename === '/project/LICENSE' || filename === 'custom_file.txt';
+    return (
+      filename === '/project/LICENSE' ||
+      filename === 'custom_file.txt' ||
+      (directory === '/templates' && filename === 'MIT.txt')
+    );
   }
 
   join(...paths: string[]) {
@@ -202,6 +206,27 @@ describe('the license text reader', () => {
       'MIT'
     );
     expect(licenseText).toBe('LICENSE-/templates/MIT.txt');
+  });
+
+  test('calls handleMissingLicenseText if template dir is used as a fallback but no template is available', () => {
+    const handleMissingLicenseText = jest.fn();
+    const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
+      new FakeFileSystem([]),
+      {},
+      {},
+      '/templates',
+      handleMissingLicenseText
+    );
+    const licenseText = reader.readLicense(
+      compilation,
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      'FOO'
+    );
+    expect(handleMissingLicenseText).toBeCalledWith('foo', 'FOO');
   });
 
   test('the SEE LICENSE IN license type resolves the license text from the specified file', () => {

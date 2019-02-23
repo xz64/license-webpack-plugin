@@ -52,11 +52,16 @@ class LicenseTextReader {
     }
 
     if (this.templateDir) {
-      return this.fileSystem
-        .readFileAsUtf8(
-          this.fileSystem.join(this.templateDir, `${licenseType}.txt`)
-        )
-        .replace(/\r\n/g, '\n');
+      const templateFilename = `${licenseType}.txt`;
+      if (
+        this.fileSystem.isFileInDirectory(templateFilename, this.templateDir)
+      ) {
+        return this.fileSystem
+          .readFileAsUtf8(
+            this.fileSystem.join(this.templateDir, templateFilename)
+          )
+          .replace(/\r\n/g, '\n');
+      }
     }
 
     this.logger.warn(
