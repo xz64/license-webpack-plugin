@@ -53,13 +53,15 @@ class LicenseTextReader {
 
     if (this.templateDir) {
       const templateFilename = `${licenseType}.txt`;
+      const templateFilePath = this.fileSystem.join(
+        this.templateDir,
+        templateFilename
+      );
       if (
-        this.fileSystem.isFileInDirectory(templateFilename, this.templateDir)
+        this.fileSystem.isFileInDirectory(templateFilePath, this.templateDir)
       ) {
         return this.fileSystem
-          .readFileAsUtf8(
-            this.fileSystem.join(this.templateDir, templateFilename)
-          )
+          .readFileAsUtf8(templateFilePath)
           .replace(/\r\n/g, '\n');
       }
     }

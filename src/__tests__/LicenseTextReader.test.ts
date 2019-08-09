@@ -23,7 +23,7 @@ class FakeFileSystem implements FileSystem {
     return (
       filename === '/project/LICENSE' ||
       filename === 'custom_file.txt' ||
-      (directory === '/templates' && filename === 'MIT.txt')
+      (directory === '/templates' && filename === '/templates/MIT.txt')
     );
   }
 
