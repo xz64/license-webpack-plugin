@@ -12,6 +12,9 @@ class FakeFileSystem implements FileSystem {
     '/home/repo/node_modules/a.js': 'a.js',
     '/home/repo/node_modules/foo/lib.js': 'foo.txt',
     '/home/repo/node_modules/foo/package.json': '{"name":"foo"}',
+    '/home/repo/node_modules/foo2/package.json': '{"name":"foo2"}',
+    '/home/repo/node_modules/foo2/dir/package.json': '{"description":"bar"}',
+    '/home/repo/node_modules/foo2/dir/lib.js': 'contents',
     '/home/repo/other_modules': '[directory]',
     '/home/repo/other_modules/someothermodule': '[directory]',
     '/home/repo/other_modules/someothermodule/package.json':
@@ -117,6 +120,14 @@ describe('the file handler', () => {
     );
     expect(module.name).toBe('foo');
     expect(module.directory).toBe('/home/repo/node_modules/foo');
+  });
+
+  test('ignores incorrect package.json files', () => {
+    const module: Module = pluginFileHandler.getModule(
+      '/home/repo/node_modules/foo2/dir/lib.js'
+    );
+    expect(module.name).toBe('foo2');
+    expect(module.directory).toBe('/home/repo/node_modules/foo2');
   });
 
   test('ignores files not in modulesDirectories', () => {

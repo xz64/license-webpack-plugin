@@ -11,6 +11,8 @@ class PluginFileHandler implements FileHandler {
     private excludedPackageTest: ((packageName: string) => boolean)
   ) {}
 
+  static PACKAGE_JSON: string = 'package.json';
+
   getModule(filename: string): Module | null {
     if (filename === null || filename === undefined) {
       return null;
@@ -39,18 +41,13 @@ class PluginFileHandler implements FileHandler {
 
   private findModuleDir(filename: string): Module | null {
     const pathSeparator = this.fileSystem.pathSeparator;
-    const PACKAGE_JSON = 'package.json';
     let dirOfModule = filename.substring(
       0,
       filename.lastIndexOf(pathSeparator)
     );
     let oldDirOfModule: string | null = null;
 
-    while (
-      !this.fileSystem.pathExists(
-        this.fileSystem.join(dirOfModule, PACKAGE_JSON)
-      )
-    ) {
+    while (!this.dirContainsValidPackageJson(dirOfModule)) {
       // check parent directory
       oldDirOfModule = dirOfModule;
       dirOfModule = this.fileSystem.resolvePath(
@@ -67,15 +64,33 @@ class PluginFileHandler implements FileHandler {
       return null;
     }
 
-    const packageJsonText = this.fileSystem.readFileAsUtf8(
-      this.fileSystem.join(dirOfModule, PACKAGE_JSON)
-    );
-    const packageJson: PackageJson = JSON.parse(packageJsonText);
+    const packageJson: PackageJson = this.parsePackageJson(dirOfModule);
 
     return {
       name: packageJson.name,
       directory: dirOfModule
     };
+  }
+
+  private parsePackageJson(dirOfModule: string): PackageJson {
+    const packageJsonText = this.fileSystem.readFileAsUtf8(
+      this.fileSystem.join(dirOfModule, PluginFileHandler.PACKAGE_JSON)
+    );
+    const packageJson: PackageJson = JSON.parse(packageJsonText);
+    return packageJson;
+  }
+
+  private dirContainsValidPackageJson(dirOfModule: string): boolean {
+    if (
+      !this.fileSystem.pathExists(
+        this.fileSystem.join(dirOfModule, PluginFileHandler.PACKAGE_JSON)
+      )
+    ) {
+      return false;
+    }
+
+    const packageJson: PackageJson = this.parsePackageJson(dirOfModule);
+    return !!packageJson.name;
   }
 }
 
