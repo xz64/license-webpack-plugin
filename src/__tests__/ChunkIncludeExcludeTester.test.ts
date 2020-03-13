@@ -47,4 +47,21 @@ describe('the chunk include exclude tester', () => {
     expect(tester.isIncluded('vendor')).toBe(true);
     expect(tester.isIncluded('foo')).toBe(false);
   });
+
+  test('an include with multiple chunks is allowed', () => {
+    const tester = new ChunkIncludeExcludeTester({
+      include: ['vendor1', 'vendor2']
+    });
+    expect(tester.isIncluded('vendor1')).toBe(true);
+    expect(tester.isIncluded('vendor2')).toBe(true);
+  });
+
+  test('an exclude with multiple chunks is allowed', () => {
+    const tester = new ChunkIncludeExcludeTester({
+      exclude: ['vendor1', 'vendor2']
+    });
+    expect(tester.isIncluded('something')).toBe(true);
+    expect(tester.isIncluded('vendor1')).toBe(false);
+    expect(tester.isIncluded('vendor2')).toBe(false);
+  });
 });
