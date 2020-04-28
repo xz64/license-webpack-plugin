@@ -21,7 +21,7 @@ class WebpackCompilerHandler {
 
   handleCompiler(compiler: WebpackCompiler) {
     if (typeof compiler.hooks !== 'undefined') {
-      compiler.hooks.compilation.tap(
+      compiler.hooks.thisCompilation.tap(
         'LicenseWebpackPlugin',
         (compilation: WebpackCompilation) => {
           compilation.hooks.optimizeChunkAssets.tap(
