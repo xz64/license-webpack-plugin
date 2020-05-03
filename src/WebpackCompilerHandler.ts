@@ -16,12 +16,16 @@ class WebpackCompilerHandler {
     private addBanner: boolean,
     private perChunkOutput: boolean,
     private additionalChunkModules: { [chunkName: string]: Module[] },
-    private additionalModules: Module[]
+    private additionalModules: Module[],
+    private skipChildCompilers: boolean
   ) {}
 
   handleCompiler(compiler: WebpackCompiler) {
     if (typeof compiler.hooks !== 'undefined') {
-      compiler.hooks.compilation.tap(
+      const hookType = this.skipChildCompilers
+        ? 'thisCompilation'
+        : 'compilation';
+      compiler.hooks[hookType].tap(
         'LicenseWebpackPlugin',
         (compilation: WebpackCompilation) => {
           compilation.hooks.optimizeChunkAssets.tap(

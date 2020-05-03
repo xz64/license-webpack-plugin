@@ -40,6 +40,7 @@ interface ConstructedOptions {
   handleMissingLicenseType: ((packageName: string) => string | null);
   excludedPackageTest: ((packageName: string) => boolean);
   stats: ConstructedStats;
+  skipChildCompilers: boolean;
 }
 
 export { ConstructedOptions };

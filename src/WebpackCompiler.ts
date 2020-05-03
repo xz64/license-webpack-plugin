@@ -2,6 +2,12 @@ import { WebpackCompilation } from './WebpackCompilation';
 
 export interface WebpackCompiler {
   hooks: {
+    thisCompilation: {
+      tap: (
+        pluginName: string,
+        handler: (compilation: WebpackCompilation) => void
+      ) => void;
+    };
     compilation: {
       tap: (
         pluginName: string,

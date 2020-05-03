@@ -95,7 +95,8 @@ class LicenseWebpackPlugin implements WebpackPlugin {
       options.addBanner,
       options.perChunkOutput,
       options.additionalChunkModules,
-      options.additionalModules
+      options.additionalModules,
+      options.skipChildCompilers
     );
     handler.handleCompiler(compiler);
   }

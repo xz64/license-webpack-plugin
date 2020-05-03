@@ -294,3 +294,12 @@ new LicenseWebpackPlugin({
 ```
 
 Notes: You can return a license type from this function, but it is a better idea to use the `licenseTypeOverides` option.
+
+* **`skipChildCompilers`** - do not apply the plugin to child webpack compilers
+
+Example:
+```javascript
+new LicenseWebpackPlugin({
+  skipChildCompilers: true
+});
+```

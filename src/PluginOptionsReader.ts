@@ -68,6 +68,7 @@ class PluginOptionsReader {
           ? options.stats.errors
           : true
     };
+    const skipChildCompilers = !!options.skipChildCompilers;
 
     const constructedOptions: ConstructedOptions = {
       licenseInclusionTest,
@@ -92,7 +93,8 @@ class PluginOptionsReader {
       handleMissingLicenseType,
       excludedPackageTest,
       stats,
-      buildRoot: this.context
+      buildRoot: this.context,
+      skipChildCompilers
     };
 
     return constructedOptions;
