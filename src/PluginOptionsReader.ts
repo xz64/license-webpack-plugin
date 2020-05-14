@@ -93,8 +93,8 @@ class PluginOptionsReader {
       handleMissingLicenseType,
       excludedPackageTest,
       stats,
-      buildRoot: this.context,
-      skipChildCompilers
+      skipChildCompilers,
+      buildRoot: this.context
     };
 
     return constructedOptions;

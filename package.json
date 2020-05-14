@@ -13,7 +13,7 @@
     "clean": "rimraf dist",
     "format": "cross-env prettier --single-quote --write 'src/**/*.ts'",
     "format:e2e": "cross-env prettier --ignore-path .gitignore --single-quote --write 'e2e/**/*.js'",
-    "lint": "tslint 'src/**/*.ts' --project tsconfig.json",
+    "lint": "cross-env tslint 'src/**/*.ts' --project tsconfig.json",
     "build": "yarn run format && yarn run lint && yarn run clean && tsc",
     "prepublishOnly": "yarn run build",
     "jest": "jest",
