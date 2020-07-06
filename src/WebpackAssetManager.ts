@@ -47,8 +47,9 @@ class WebpackAssetManager implements AssetManager {
     compilation: WebpackCompilation
   ): void {
     const text = this.licensesRenderer.renderLicenses(modules);
+    const filename = compilation.getPath(this.outputFilename, { chunk: text });
     if (text) {
-      compilation.assets[this.outputFilename] = new RawSource(text);
+      compilation.assets[filename] = new RawSource(text);
     }
   }
 }

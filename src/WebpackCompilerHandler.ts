@@ -34,6 +34,15 @@ class WebpackCompilerHandler {
               this.iterateChunks(compilation, chunks);
             }
           );
+
+          compiler.hooks.emit.tap('LicenseWebpackPlugin', () => {
+            if (!this.perChunkOutput) {
+              this.assetManager.writeAllLicenses(
+                this.moduleCache.getAllModules(),
+                compilation
+              );
+            }
+          });
         }
       );
     } else if (typeof compiler.plugin !== 'undefined') {
@@ -46,6 +55,15 @@ class WebpackCompilerHandler {
               callback();
             }
           );
+
+          compiler.plugin!('emit', () => {
+            if (!this.perChunkOutput) {
+              this.assetManager.writeAllLicenses(
+                this.moduleCache.getAllModules(),
+                compilation
+              );
+            }
+          });
         }
       });
     }
@@ -93,12 +111,6 @@ class WebpackCompilerHandler {
           );
         }
       }
-    }
-    if (!this.perChunkOutput) {
-      this.assetManager.writeAllLicenses(
-        this.moduleCache.getAllModules(),
-        compilation
-      );
     }
   }
 }
