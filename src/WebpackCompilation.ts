@@ -2,6 +2,7 @@ import { WebpackChunk } from './WebpackChunk';
 import { Source } from 'webpack-sources';
 
 export interface WebpackCompilation {
+  hash: string;
   chunks: IterableIterator<WebpackChunk>;
   assets: { [key: string]: Source };
   errors: any[];
