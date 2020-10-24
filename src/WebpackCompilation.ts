@@ -24,6 +24,12 @@ export interface WebpackCompilation {
         handler: (chunks: IterableIterator<WebpackChunk>) => void
       ) => void;
     };
+    processAssets: {
+      tap: (
+        options: { name: string; stage: number },
+        handler: () => void
+      ) => void;
+    };
   };
   plugin?: (phase: string, callback: Function) => void;
 }
