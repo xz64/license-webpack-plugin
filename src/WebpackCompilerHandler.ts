@@ -8,6 +8,9 @@ import { AssetManager } from './AssetManager';
 import { Module } from './Module';
 
 class WebpackCompilerHandler {
+  // copied from webpack/lib/Compilation.js
+  static PROCESS_ASSETS_STAGE_ADDITIONAL = -2000;
+  static PROCESS_ASSETS_STAGE_ADDITIONS = -100;
   constructor(
     private chunkIncludeTester: ChunkIncludeExcludeTester,
     private chunkHandler: WebpackChunkHandler,
@@ -28,12 +31,26 @@ class WebpackCompilerHandler {
       compiler.hooks[hookType].tap(
         'LicenseWebpackPlugin',
         (compilation: WebpackCompilation) => {
-          compilation.hooks.optimizeChunkAssets.tap(
-            'LicenseWebpackPlugin',
-            (chunks: IterableIterator<WebpackChunk>) => {
-              this.iterateChunks(compilation, chunks);
-            }
-          );
+          if (typeof compilation.hooks.processAssets !== 'undefined') {
+            // webpack v5
+            compilation.hooks.processAssets.tap(
+              {
+                name: 'LicenseWebpackPlugin',
+                stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL
+              },
+              () => {
+                this.iterateChunks(compilation, compilation.chunks);
+              }
+            );
+          } else {
+            // webpack v4
+            compilation.hooks.optimizeChunkAssets.tap(
+              'LicenseWebpackPlugin',
+              (chunks: IterableIterator<WebpackChunk>) => {
+                this.iterateChunks(compilation, chunks);
+              }
+            );
+          }
         }
       );
     } else if (typeof compiler.plugin !== 'undefined') {
@@ -86,11 +103,29 @@ class WebpackCompilerHandler {
           );
         }
         if (this.addBanner) {
-          this.assetManager.writeChunkBanners(
-            this.moduleCache.getAllModulesForChunk(chunk.name),
-            compilation,
-            chunk
-          );
+          if (typeof compilation.hooks.processAssets !== 'undefined') {
+            // webpack v5
+            compilation.hooks.processAssets.tap(
+              {
+                name: 'LicenseWebpackPlugin',
+                stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONS
+              },
+              () => {
+                this.assetManager.writeChunkBanners(
+                  this.moduleCache.getAllModulesForChunk(chunk.name),
+                  compilation,
+                  chunk
+                );
+              }
+            );
+          } else {
+            // webpack v4
+            this.assetManager.writeChunkBanners(
+              this.moduleCache.getAllModulesForChunk(chunk.name),
+              compilation,
+              chunk
+            );
+          }
         }
       }
     }

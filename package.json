@@ -18,7 +18,7 @@
     "prepublishOnly": "yarn run build",
     "jest": "jest",
     "test:unit": "yarn run build && yarn run jest",
-    "test:e2e": "yarn run format:e2e && yarn --cwd e2e/webpack-v4 && jest --config jest.config.e2e.js --runInBand",
+    "test:e2e": "yarn run format:e2e && yarn --cwd e2e/webpack-v4 && yarn --cwd e2e/webpack-v5 && jest --config jest.config.e2e.js --runInBand",
     "test": "yarn run test:unit && yarn run test:e2e"
   },
   "repository": {
