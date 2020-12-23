@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.3] - 2020-12-23
+### Fixed
+- Fix deprecation messages in webpack 5: `[DEP_WEBPACK_CHUNK_MODULES_ITERABLE] DeprecationWarning: Chunk.modulesIterable: Use new ChunkGraph API` and `[DEP_WEBPACK_CHUNK_ENTRY_MODULE] DeprecationWarning: Chunk.entryModule: Use new ChunkGraph API`
+
 ## [2.3.2] - 2020-12-07
 ### Fixed
 - Fix directory permission of dist folder by publishing from Linux instead of Windows
