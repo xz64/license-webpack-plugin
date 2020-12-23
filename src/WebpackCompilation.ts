@@ -34,4 +34,6 @@ export interface WebpackCompilation {
   };
   plugin?: (phase: string, callback: Function) => void;
   chunkGraph?: ChunkGraph;
+  compiler: WebpackCompilation;
+  isChild: () => boolean;
 }
