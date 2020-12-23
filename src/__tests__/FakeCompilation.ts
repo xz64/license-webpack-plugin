@@ -1,12 +1,13 @@
 import { WebpackCompilation } from '../WebpackCompilation';
 
-const Compilation: WebpackCompilation = {
-  chunks: null,
-  assets: null,
-  errors: [],
-  warnings: [],
-  getPath: null,
-  hooks: null
-};
+class FakeCompilation implements WebpackCompilation {
+  chunks = null;
+  assets = null;
+  errors = [];
+  warnings = [];
+  getPath = null;
+  hooks = null;
+  chunkGraph = undefined;
+}
 
-export { Compilation };
+export { FakeCompilation };

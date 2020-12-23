@@ -1,5 +1,6 @@
 import { WebpackChunk } from './WebpackChunk';
 import { Source } from 'webpack-sources';
+import { ChunkGraph } from './ChunkGraph';
 
 export interface WebpackCompilation {
   hash: string;
@@ -32,4 +33,5 @@ export interface WebpackCompilation {
     };
   };
   plugin?: (phase: string, callback: Function) => void;
+  chunkGraph?: ChunkGraph;
 }

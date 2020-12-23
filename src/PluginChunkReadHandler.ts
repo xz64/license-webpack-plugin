@@ -31,7 +31,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
     chunk: WebpackChunk,
     moduleCache: ModuleCache
   ) {
-    this.moduleIterator.iterateModules(chunk, module => {
+    this.moduleIterator.iterateModules(compilation, chunk, module => {
       this.fileIterator.iterateFiles(
         module,
         (filename: string | null | undefined) => {

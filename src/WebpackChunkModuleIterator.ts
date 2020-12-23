@@ -1,12 +1,20 @@
 import { WebpackChunk } from './WebpackChunk';
 import { WebpackChunkModule } from './WebpackChunkModule';
+import { WebpackCompilation } from './WebpackCompilation';
 
 class WebpackChunkModuleIterator {
   iterateModules(
+    compilation: WebpackCompilation,
     chunk: WebpackChunk,
     callback: ((module: WebpackChunkModule) => void)
   ): void {
-    if (typeof chunk.modulesIterable !== 'undefined') {
+    if (typeof compilation.chunkGraph !== 'undefined') {
+      for (const module of compilation.chunkGraph.getChunkModulesIterable(
+        chunk
+      )) {
+        callback(module);
+      }
+    } else if (typeof chunk.modulesIterable !== 'undefined') {
       for (const module of chunk.modulesIterable) {
         callback(module);
       }
@@ -15,7 +23,13 @@ class WebpackChunkModuleIterator {
     } else if (Array.isArray(chunk.modules)) {
       chunk.modules.forEach(callback);
     }
-    if (chunk.entryModule) {
+    if (typeof compilation.chunkGraph !== 'undefined') {
+      for (const module of compilation.chunkGraph.getChunkEntryModulesIterable(
+        chunk
+      )) {
+        callback(module);
+      }
+    } else if (chunk.entryModule) {
       callback(chunk.entryModule);
     }
   }

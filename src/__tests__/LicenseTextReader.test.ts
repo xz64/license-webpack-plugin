@@ -1,6 +1,6 @@
 import { FileSystem } from '../FileSystem';
 import { LicenseTextReader } from '../LicenseTextReader';
-import { Compilation as compilation } from './FakeCompilation';
+import { FakeCompilation } from './FakeCompilation';
 import { FakeLogger as logger } from './FakeLogger';
 
 class FakeFileSystem implements FileSystem {
@@ -58,7 +58,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -78,7 +78,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -98,7 +98,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -118,7 +118,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -138,7 +138,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -158,7 +158,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -178,7 +178,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -198,7 +198,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -219,7 +219,7 @@ describe('the license text reader', () => {
       handleMissingLicenseText
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -239,7 +239,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -259,7 +259,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/project'
@@ -279,7 +279,7 @@ describe('the license text reader', () => {
       () => null
     );
     const licenseText = reader.readLicense(
-      compilation,
+      new FakeCompilation(),
       {
         name: 'foo',
         directory: '/example-js-lib'

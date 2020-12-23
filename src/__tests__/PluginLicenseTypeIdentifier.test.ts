@@ -1,5 +1,5 @@
 import { PluginLicenseTypeIdentifier } from '../PluginLicenseTypeIdentifier';
-import { Compilation as compilation } from './FakeCompilation';
+import { FakeCompilation } from './FakeCompilation';
 import { FakeLogger as logger } from './FakeLogger';
 
 describe('LicenseTypeIdentifier', () => {
@@ -12,7 +12,7 @@ describe('LicenseTypeIdentifier', () => {
       () => null
     );
     expect(
-      identifier.findLicenseIdentifier(compilation, 'foo', {
+      identifier.findLicenseIdentifier(new FakeCompilation(), 'foo', {
         name: 'foo',
         version: '1.0.0'
       })
@@ -28,7 +28,7 @@ describe('LicenseTypeIdentifier', () => {
       () => null
     );
     expect(
-      identifier.findLicenseIdentifier(compilation, 'foo', {
+      identifier.findLicenseIdentifier(new FakeCompilation(), 'foo', {
         name: 'foo',
         version: '1.0.0',
         license: 'ISC'
@@ -45,7 +45,7 @@ describe('LicenseTypeIdentifier', () => {
       () => null
     );
     expect(
-      identifier.findLicenseIdentifier(compilation, 'foo', {
+      identifier.findLicenseIdentifier(new FakeCompilation(), 'foo', {
         name: 'foo',
         version: '1.0.0',
         license: {
@@ -79,7 +79,7 @@ describe('LicenseTypeIdentifier', () => {
       ]
     };
     const licenseType = identifier.findLicenseIdentifier(
-      compilation,
+      new FakeCompilation(),
       'foo',
       fooPackageJson
     );
@@ -109,7 +109,7 @@ describe('LicenseTypeIdentifier', () => {
       ]
     };
     const licenseType = identifier.findLicenseIdentifier(
-      compilation,
+      new FakeCompilation(),
       'foo',
       fooPackageJson
     );
@@ -139,7 +139,7 @@ describe('LicenseTypeIdentifier', () => {
       ]
     };
     const licenseType = identifier.findLicenseIdentifier(
-      compilation,
+      new FakeCompilation(),
       'foo',
       fooPackageJson
     );
