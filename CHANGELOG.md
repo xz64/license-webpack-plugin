@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.5] - 2020-12-24
+### Fixed
+- Fix warning when `perChunkOutput` is set to `false`: `DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated`. This reintroduces the warning `perChunkOutput` is set to `false`: `WARNING in Conflict: Multiple assets emit different content to the same filename <filename>`.
+
 ## [2.3.4] - 2020-12-23
 ### Fixed
 - Fix warning when `perChunkOutput` is set to `false`: `WARNING in Conflict: Multiple assets emit different content to the same filename <filename>`
