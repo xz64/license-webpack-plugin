@@ -59,19 +59,33 @@ class WebpackCompilerHandler {
           (compilation: WebpackCompilation) => {
             if (!compilation.compiler.isChild()) {
               // Select only root compiler to avoid writing license file multiple times per compilation
-              compilation.hooks.processAssets.tap(
-                {
-                  name: 'LicenseWebpackPlugin',
-                  stage:
-                    WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL + 1
-                },
-                () => {
-                  this.assetManager.writeAllLicenses(
-                    this.moduleCache.getAllModules(),
-                    compilation
-                  );
-                }
-              );
+              if (typeof compilation.hooks.processAssets !== 'undefined') {
+                // webpack v5
+                compilation.hooks.processAssets.tap(
+                  {
+                    name: 'LicenseWebpackPlugin',
+                    stage:
+                      WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL + 1
+                  },
+                  () => {
+                    this.assetManager.writeAllLicenses(
+                      this.moduleCache.getAllModules(),
+                      compilation
+                    );
+                  }
+                );
+              } else {
+                // webpack v4
+                compilation.hooks.optimizeChunkAssets.tap(
+                  'LicenseWebpackPlugin',
+                  () => {
+                    this.assetManager.writeAllLicenses(
+                      this.moduleCache.getAllModules(),
+                      compilation
+                    );
+                  }
+                );
+              }
             }
           }
         );
