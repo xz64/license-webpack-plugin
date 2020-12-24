@@ -24,4 +24,5 @@ export interface WebpackCompiler {
   context: string;
   inputFileSystem: any;
   plugin?: (phase: string, callback: Function) => void;
+  isChild: () => boolean;
 }

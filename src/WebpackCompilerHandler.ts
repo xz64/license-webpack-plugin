@@ -53,6 +53,29 @@ class WebpackCompilerHandler {
           }
         }
       );
+      if (!this.perChunkOutput) {
+        compiler.hooks[hookType].tap(
+          'LicenseWebpackPlugin',
+          (compilation: WebpackCompilation) => {
+            if (!compilation.compiler.isChild()) {
+              // Select only root compiler to avoid writing license file multiple times per compilation
+              compilation.hooks.processAssets.tap(
+                {
+                  name: 'LicenseWebpackPlugin',
+                  stage:
+                    WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL + 1
+                },
+                () => {
+                  this.assetManager.writeAllLicenses(
+                    this.moduleCache.getAllModules(),
+                    compilation
+                  );
+                }
+              );
+            }
+          }
+        );
+      }
     } else if (typeof compiler.plugin !== 'undefined') {
       compiler.plugin('compilation', (compilation: WebpackCompilation) => {
         if (typeof compilation.plugin !== 'undefined') {
@@ -128,12 +151,6 @@ class WebpackCompilerHandler {
           }
         }
       }
-    }
-    if (!this.perChunkOutput) {
-      this.assetManager.writeAllLicenses(
-        this.moduleCache.getAllModules(),
-        compilation
-      );
     }
   }
 }
