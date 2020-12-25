@@ -5,18 +5,30 @@ class WebpackModuleFileIterator {
     chunkModule: WebpackChunkModule,
     callback: (filename: string | null | undefined) => void
   ) {
-    callback(
+    const internalCallback = this.internalCallback.bind(this, callback);
+    internalCallback(
       chunkModule.resource ||
         (chunkModule.rootModule && chunkModule.rootModule.resource)
     );
     if (Array.isArray(chunkModule.fileDependencies)) {
       const fileDependencies: string[] = chunkModule.fileDependencies;
-      fileDependencies.forEach(callback);
+      fileDependencies.forEach(internalCallback);
     }
     if (Array.isArray(chunkModule.dependencies)) {
       chunkModule.dependencies.forEach(module =>
-        callback(module.originModule && module.originModule.resource)
+        internalCallback(module.originModule && module.originModule.resource)
       );
+    }
+  }
+
+  private internalCallback(
+    callback: (filename: string | null | undefined) => void,
+    filename: string | null | undefined
+  ): void {
+    if (filename && filename.indexOf('webpack/runtime') === 0) {
+      callback(require.resolve('webpack'));
+    } else {
+      callback(filename);
     }
   }
 }
