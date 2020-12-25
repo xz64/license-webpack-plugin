@@ -1,4 +1,5 @@
 import { WebpackCompilation } from '../WebpackCompilation';
+import { FakeWebpackStats } from './FakeWebpackStats';
 
 class FakeCompilation implements WebpackCompilation {
   chunks = null;
@@ -8,6 +9,13 @@ class FakeCompilation implements WebpackCompilation {
   getPath = null;
   hooks = null;
   chunkGraph = undefined;
+  getStats() {
+    return {
+      toJson: () => {
+        return new FakeWebpackStats();
+      }
+    };
+  }
 }
 
 export { FakeCompilation };

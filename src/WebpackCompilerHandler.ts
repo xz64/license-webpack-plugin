@@ -9,8 +9,8 @@ import { Module } from './Module';
 
 class WebpackCompilerHandler {
   // copied from webpack/lib/Compilation.js
-  static PROCESS_ASSETS_STAGE_ADDITIONAL = -2000;
   static PROCESS_ASSETS_STAGE_ADDITIONS = -100;
+  static PROCESS_ASSETS_STAGE_REPORT = 5000;
   constructor(
     private chunkIncludeTester: ChunkIncludeExcludeTester,
     private chunkHandler: WebpackChunkHandler,
@@ -36,7 +36,7 @@ class WebpackCompilerHandler {
             compilation.hooks.processAssets.tap(
               {
                 name: 'LicenseWebpackPlugin',
-                stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL
+                stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_REPORT
               },
               () => {
                 this.iterateChunks(compilation, compilation.chunks);
@@ -65,7 +65,7 @@ class WebpackCompilerHandler {
                   {
                     name: 'LicenseWebpackPlugin',
                     stage:
-                      WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONAL + 1
+                      WebpackCompilerHandler.PROCESS_ASSETS_STAGE_REPORT + 1
                   },
                   () => {
                     this.assetManager.writeAllLicenses(

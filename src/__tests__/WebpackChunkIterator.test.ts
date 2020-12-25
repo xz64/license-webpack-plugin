@@ -100,7 +100,8 @@ describe('chunk iterator', () => {
     );
     expect(getChunkModules).toHaveBeenCalled();
     expect(getChunkEntryModules).toHaveBeenCalled();
-    expect(mockCallback.mock.calls.length).toBe(2);
+    // 2 from the compilation's chunks, plus 2 from the stats
+    expect(mockCallback.mock.calls.length).toBe(4);
     expect(mockCallback.mock.calls[0][0]).toEqual({ resource: 'a' });
   });
 });

@@ -9,7 +9,8 @@ class PluginOptionsReader {
     const licenseInclusionTest = options.licenseInclusionTest || (() => true);
     const unacceptableLicenseTest =
       options.unacceptableLicenseTest || (() => false);
-    const perChunkOutput = options.perChunkOutput === undefined;
+    const perChunkOutput =
+      options.perChunkOutput === undefined || options.perChunkOutput;
     const licenseTemplateDir = options.licenseTemplateDir;
     const licenseTextOverrides = options.licenseTextOverrides || {};
     const licenseTypeOverrides = options.licenseTypeOverrides || {};
