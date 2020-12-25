@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.8] - 2020-12-24
+### Fixed
+- Fix missing ES modules from output when using webpack v5
+- Fix explicit setting of `perChunkOutput: true` not being honored by the plugin
+
 ## [2.3.7] - 2020-12-24
+### Fixed
 - Fix error when `perChunkOutput` is set to `false` and webpack 4 is used: `TypeError: Cannot read property 'tap' of undefined`
 
 ## [2.3.6] - 2020-12-24
+### Fixed
 - Fix warning when `perChunkOutput` is set to `false`: `WARNING in Conflict: Multiple assets emit different content to the same filename <filename>`
 
 ## [2.3.5] - 2020-12-24
