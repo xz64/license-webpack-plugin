@@ -25,7 +25,10 @@ class WebpackModuleFileIterator {
     callback: (filename: string | null | undefined) => void,
     filename: string | null | undefined
   ): void {
-    if (filename && filename.indexOf('webpack/runtime') === 0) {
+    if (!filename || filename.indexOf('external ') === 0) {
+      return;
+    }
+    if (filename.indexOf('webpack/runtime') === 0) {
       callback(require.resolve('webpack'));
     } else {
       callback(filename);
