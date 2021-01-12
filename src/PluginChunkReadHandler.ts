@@ -12,6 +12,7 @@ import { LicensePolicy } from './LicensePolicy';
 import { Module } from './Module';
 import { WebpackCompilation } from './WebpackCompilation';
 import { Logger } from './Logger';
+import { WebpackStats } from './WebpackStats';
 
 class PluginChunkReadHandler implements WebpackChunkHandler {
   private moduleIterator = new WebpackChunkModuleIterator();
@@ -29,9 +30,10 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
   processChunk(
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
-    moduleCache: ModuleCache
+    moduleCache: ModuleCache,
+    stats: WebpackStats | undefined
   ) {
-    this.moduleIterator.iterateModules(compilation, chunk, module => {
+    this.moduleIterator.iterateModules(compilation, chunk, stats, module => {
       this.fileIterator.iterateFiles(
         module,
         (filename: string | null | undefined) => {

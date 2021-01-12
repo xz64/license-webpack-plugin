@@ -9,18 +9,19 @@ class WebpackChunkModuleIterator {
   iterateModules(
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
+    stats: WebpackStats | undefined,
     callback: ((module: WebpackChunkModule) => void)
   ): void {
-    if (typeof compilation.chunkGraph !== 'undefined') {
+    if (
+      typeof compilation.chunkGraph !== 'undefined' &&
+      typeof stats !== 'undefined'
+    ) {
       // webpack v5
       for (const module of compilation.chunkGraph.getChunkModulesIterable(
         chunk
       )) {
         callback(module);
       }
-      // the chunk graph does not contain ES modules
-      // use stats instead to find the ES module imports
-      const stats: WebpackStats = compilation.getStats().toJson();
       const statsModules = this.statsIterator.collectModules(stats, chunk.name);
       for (const module of statsModules) {
         callback(module);
