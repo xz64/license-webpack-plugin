@@ -6,6 +6,7 @@ import { ChunkIncludeExcludeTester } from './ChunkIncludeExcludeTester';
 import { ModuleCache } from './ModuleCache';
 import { AssetManager } from './AssetManager';
 import { Module } from './Module';
+import { WebpackStats } from './WebpackStats';
 
 class WebpackCompilerHandler {
   // copied from webpack/lib/Compilation.js
@@ -39,7 +40,10 @@ class WebpackCompilerHandler {
                 stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_REPORT
               },
               () => {
-                this.iterateChunks(compilation, compilation.chunks);
+                // the chunk graph does not contain ES modules
+                // use stats instead to find the ES module imports
+                const stats: WebpackStats = compilation.getStats().toJson();
+                this.iterateChunks(compilation, compilation.chunks, stats);
               }
             );
           } else {
@@ -107,11 +111,17 @@ class WebpackCompilerHandler {
 
   private iterateChunks(
     compilation: WebpackCompilation,
-    chunks: IterableIterator<WebpackChunk>
+    chunks: IterableIterator<WebpackChunk>,
+    stats?: WebpackStats
   ) {
     for (const chunk of chunks) {
       if (this.chunkIncludeTester.isIncluded(chunk.name)) {
-        this.chunkHandler.processChunk(compilation, chunk, this.moduleCache);
+        this.chunkHandler.processChunk(
+          compilation,
+          chunk,
+          this.moduleCache,
+          stats
+        );
         if (this.additionalChunkModules[chunk.name]) {
           this.additionalChunkModules[chunk.name].forEach(module =>
             this.chunkHandler.processModule(

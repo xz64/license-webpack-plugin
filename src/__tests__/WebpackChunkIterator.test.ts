@@ -49,6 +49,7 @@ describe('chunk iterator', () => {
     iterator.iterateModules(
       new FakeCompilation(),
       new WebpackV2Chunk(),
+      undefined,
       mockCallback
     );
     expect(mockCallback.mock.calls.length).toBe(1);
@@ -60,6 +61,7 @@ describe('chunk iterator', () => {
     iterator.iterateModules(
       new FakeCompilation(),
       new WebpackV3Chunk(),
+      undefined,
       mockCallback
     );
     expect(mockCallback.mock.calls.length).toBe(1);
@@ -71,6 +73,7 @@ describe('chunk iterator', () => {
     iterator.iterateModules(
       new FakeCompilation(),
       new WebpackV4Chunk(),
+      undefined,
       mockCallback
     );
     expect(mockCallback.mock.calls.length).toBe(1);
@@ -96,6 +99,7 @@ describe('chunk iterator', () => {
     iterator.iterateModules(
       fakeCompilation,
       new WebpackV4Chunk(),
+      fakeCompilation.getStats().toJson(),
       mockCallback
     );
     expect(getChunkModules).toHaveBeenCalled();
