@@ -16,7 +16,7 @@ import { WebpackStats } from './WebpackStats';
 
 class PluginChunkReadHandler implements WebpackChunkHandler {
   private moduleIterator = new WebpackChunkModuleIterator();
-  private fileIterator = new WebpackModuleFileIterator();
+  private fileIterator = new WebpackModuleFileIterator(require.resolve);
 
   constructor(
     private logger: Logger,

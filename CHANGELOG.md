@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.12] - 2021-02-11
+### Fixed
+- Fix files processed by loaders not getting processed correctly
+- Fix errors about `/package.json` when using webpack module federation
+
 ## [2.3.11] - 2021-01-11
 ### Fixed
 - Fix performance regression by caching webpack stats object

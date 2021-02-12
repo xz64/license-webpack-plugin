@@ -1,6 +1,8 @@
 import { WebpackChunkModule } from './WebpackChunkModule';
 
 class WebpackModuleFileIterator {
+  constructor(private requireResolve: RequireResolve) {}
+
   iterateFiles(
     chunkModule: WebpackChunkModule,
     callback: (filename: string | null | undefined) => void
@@ -25,14 +27,34 @@ class WebpackModuleFileIterator {
     callback: (filename: string | null | undefined) => void,
     filename: string | null | undefined
   ): void {
+    callback(this.getActualFilename(filename));
+  }
+
+  getActualFilename(filename: string | null | undefined): string | null {
     if (!filename || filename.indexOf('external ') === 0) {
-      return;
+      return null;
     }
     if (filename.indexOf('webpack/runtime') === 0) {
-      callback(require.resolve('webpack'));
-    } else {
-      callback(filename);
+      return this.requireResolve('webpack');
     }
+    if (filename.indexOf('!') > -1) {
+      // file was procesed by loader, last item after ! is the actual file
+      const tokens = filename.split('!');
+      return tokens[tokens.length - 1];
+    }
+    if (filename.indexOf('provide module') === 0) {
+      return filename.split('=')[1].trim();
+    }
+    if (filename.indexOf('consume-shared-module') === 0) {
+      const tokens = filename.split('|');
+      // 3rd to last item is the filename, see identifier() function in node_modules/webpack/lib/sharing/ConsumeSharedModule.js
+      const actualFilename = tokens[tokens.length - 3];
+      if (actualFilename === 'undefined') {
+        return null;
+      }
+      return actualFilename;
+    }
+    return filename;
   }
 }
 
