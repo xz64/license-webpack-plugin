@@ -31,7 +31,11 @@ class WebpackModuleFileIterator {
   }
 
   getActualFilename(filename: string | null | undefined): string | null {
-    if (!filename || filename.indexOf('external ') === 0) {
+    if (
+      !filename ||
+      filename.indexOf('external ') === 0 ||
+      filename.indexOf('container entry ') === 0
+    ) {
       return null;
     }
     if (filename.indexOf('webpack/runtime') === 0) {

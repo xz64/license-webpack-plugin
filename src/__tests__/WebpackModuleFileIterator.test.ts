@@ -54,4 +54,12 @@ describe('WebpackModuleFileIterator', () => {
       )
     ).toBeNull();
   });
+
+  test('returns null for container entry module', () => {
+    expect(
+      iterator.getActualFilename(
+        'container entry (default) [["./Viewer",{"import":["./plugins/todo/src/app/viewer/viewer.component.ts"]}],["./Designer",{"import":["./plugins/todo/src/app/designer/designer.component.ts"]}]]'
+      )
+    ).toBeNull();
+  });
 });
