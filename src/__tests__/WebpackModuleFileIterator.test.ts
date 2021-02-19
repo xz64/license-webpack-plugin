@@ -62,4 +62,8 @@ describe('WebpackModuleFileIterator', () => {
       )
     ).toBeNull();
   });
+
+  test('returns null for ignored module', () => {
+    expect(iterator.getActualFilename('ignored|ws')).toBeNull();
+  });
 });
