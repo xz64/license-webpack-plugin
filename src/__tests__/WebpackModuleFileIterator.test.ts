@@ -66,4 +66,12 @@ describe('WebpackModuleFileIterator', () => {
   test('returns null for ignored module', () => {
     expect(iterator.getActualFilename('ignored|ws')).toBeNull();
   });
+
+  test('returns null for remote module', () => {
+    expect(
+      iterator.getActualFilename(
+        'remote (default) webpack/container/reference/Routing.module'
+      )
+    ).toBeNull();
+  });
 });
