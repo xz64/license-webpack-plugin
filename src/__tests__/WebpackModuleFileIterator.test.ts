@@ -74,4 +74,10 @@ describe('WebpackModuleFileIterator', () => {
       )
     ).toBeNull();
   });
+
+  test('returns null for data URI module', () => {
+    expect(
+      iterator.getActualFilename('data:text/javascript,console.log("Test");')
+    ).toBeNull();
+  });
 });

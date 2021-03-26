@@ -36,7 +36,8 @@ class WebpackModuleFileIterator {
       filename.indexOf('external ') === 0 ||
       filename.indexOf('container entry ') === 0 ||
       filename.indexOf('ignored|') === 0 ||
-      filename.indexOf('remote ') === 0
+      filename.indexOf('remote ') === 0 ||
+      filename.indexOf('data:') === 0
     ) {
       return null;
     }
