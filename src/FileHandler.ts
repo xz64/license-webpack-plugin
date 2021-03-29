@@ -1,7 +1,9 @@
-import { Module } from './Module';
+import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 
 interface FileHandler {
-  getModule(filename: string | null | undefined): Module | null;
+  getModule(
+    filename: string | null | undefined
+  ): LicenseIdentifiedModule | null;
 }
 
 export { FileHandler };

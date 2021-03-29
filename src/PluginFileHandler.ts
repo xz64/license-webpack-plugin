@@ -1,9 +1,10 @@
 import { FileHandler } from './FileHandler';
 import { FileSystem } from './FileSystem';
-import { Module } from './Module';
+import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { PackageJson } from './PackageJson';
 
 class PluginFileHandler implements FileHandler {
+  private cache: { [key: string]: any } = {};
   constructor(
     private fileSystem: FileSystem,
     private buildRoot: string,
@@ -13,7 +14,15 @@ class PluginFileHandler implements FileHandler {
 
   static PACKAGE_JSON: string = 'package.json';
 
-  getModule(filename: string): Module | null {
+  getModule(filename: string): LicenseIdentifiedModule | null {
+    return this.cache[filename] === undefined
+      ? (this.cache[filename] = this.getModuleInternal(filename))
+      : this.cache[filename];
+  }
+
+  private getModuleInternal(
+    filename: string
+  ): Partial<LicenseIdentifiedModule> | null {
     if (filename === null || filename === undefined) {
       return null;
     }
@@ -21,7 +30,11 @@ class PluginFileHandler implements FileHandler {
     if (this.modulesDirectories !== null) {
       let foundInModuleDirectory = false;
       for (const modulesDirectory of this.modulesDirectories) {
-        if (this.fileSystem.isFileInDirectory(filename, modulesDirectory)) {
+        if (
+          this.fileSystem
+            .resolvePath(filename)
+            .startsWith(this.fileSystem.resolvePath(modulesDirectory))
+        ) {
           foundInModuleDirectory = true;
         }
       }
@@ -30,7 +43,7 @@ class PluginFileHandler implements FileHandler {
       }
     }
 
-    const module: Module | null = this.findModuleDir(filename);
+    const module = this.findModuleDir(filename);
 
     if (module !== null && this.excludedPackageTest(module.name)) {
       return null;
@@ -39,7 +52,12 @@ class PluginFileHandler implements FileHandler {
     return module;
   }
 
-  private findModuleDir(filename: string): Module | null {
+  private findModuleDir(
+    filename: string
+  ): Pick<
+    LicenseIdentifiedModule,
+    'name' | 'packageJson' | 'directory'
+  > | null {
     const pathSeparator = this.fileSystem.pathSeparator;
     let dirOfModule = filename.substring(
       0,
@@ -67,6 +85,7 @@ class PluginFileHandler implements FileHandler {
     const packageJson: PackageJson = this.parsePackageJson(dirOfModule);
 
     return {
+      packageJson,
       name: packageJson.name,
       directory: dirOfModule
     };
