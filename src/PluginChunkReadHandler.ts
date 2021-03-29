@@ -88,7 +88,8 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
           moduleCache.registerModule(chunk.name, {
             licenseText,
             packageJson,
-            ...module,
+            name: module.name,
+            directory: module.directory,
             licenseId: licenseType
           });
         }
