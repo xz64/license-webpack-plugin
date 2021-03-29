@@ -8,24 +8,21 @@ interface ConstructedOptions {
   buildRoot: string;
   licenseInclusionTest: LicenseTest;
   unacceptableLicenseTest: LicenseTest;
-  handleUnacceptableLicense: ((
-    packageName: string,
-    licenseType: string
-  ) => void);
-  handleMissingLicenseText: ((
+  handleUnacceptableLicense: (packageName: string, licenseType: string) => void;
+  handleMissingLicenseText: (
     packageName: string,
     licenseType: string | null
-  ) => string | null);
+  ) => string | null;
   perChunkOutput: boolean;
   licenseTemplateDir?: string;
   licenseFileOverrides: { [key: string]: string };
   licenseTextOverrides: { [key: string]: string };
   licenseTypeOverrides: { [key: string]: string };
-  renderLicenses: ((modules: LicenseIdentifiedModule[]) => string);
-  renderBanner: ((
+  renderLicenses: (modules: LicenseIdentifiedModule[]) => string;
+  renderBanner: (
     filename: string,
     modules: LicenseIdentifiedModule[]
-  ) => string);
+  ) => string;
   outputFilename: string;
   addBanner: boolean;
   chunkIncludeExcludeTest: IncludeExcludeTest;
@@ -33,12 +30,12 @@ interface ConstructedOptions {
   additionalChunkModules: { [chunkName: string]: Module[] };
   additionalModules: Module[];
   preferredLicenseTypes: string[];
-  handleLicenseAmbiguity: ((
+  handleLicenseAmbiguity: (
     packageName: string,
     licenses: { type: string; url: string }[]
-  ) => string);
-  handleMissingLicenseType: ((packageName: string) => string | null);
-  excludedPackageTest: ((packageName: string) => boolean);
+  ) => string;
+  handleMissingLicenseType: (packageName: string) => string | null;
+  excludedPackageTest: (packageName: string) => boolean;
   stats: ConstructedStats;
   skipChildCompilers: boolean;
 }

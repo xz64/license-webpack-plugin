@@ -45,9 +45,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
   }
 
   private getPackageJson(directory: string): PackageJson {
-    const filename: string = `${directory}${
-      this.fileSystem.pathSeparator
-    }package.json`;
+    const filename: string = `${directory}${this.fileSystem.pathSeparator}package.json`;
     return JSON.parse(this.fileSystem.readFileAsUtf8(filename));
   }
 

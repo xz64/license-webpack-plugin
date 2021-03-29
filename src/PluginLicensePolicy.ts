@@ -5,14 +5,14 @@ class PluginLicensePolicy implements LicensePolicy {
   constructor(
     private licenseTester: LicenseTestRunner,
     private unacceptableLicenseTester: LicenseTestRunner,
-    private unacceptableLicenseHandler: ((
+    private unacceptableLicenseHandler: (
       packageName: string,
       licenseType: string
-    ) => void),
-    private missingLicenseTextHandler: ((
+    ) => void,
+    private missingLicenseTextHandler: (
       packageName: string,
       licenseType: string
-    ) => void)
+    ) => void
   ) {}
 
   isLicenseWrittenFor(licenseType: string): boolean {

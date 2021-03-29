@@ -9,11 +9,11 @@ class PluginLicenseTypeIdentifier implements LicenseTypeIdentifier {
     private logger: Logger,
     private licenseTypeOverrides: LicenseTypeOverrides,
     private preferredLicenseTypes: string[],
-    private handleLicenseAmbiguity: ((
+    private handleLicenseAmbiguity: (
       packageName: string,
       licenses: { type: string; url: string }[]
-    ) => string),
-    private handleMissingLicenseType: ((packageName: string) => string | null)
+    ) => string,
+    private handleMissingLicenseType: (packageName: string) => string | null
   ) {}
 
   findLicenseIdentifier(
