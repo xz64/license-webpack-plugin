@@ -10,7 +10,7 @@ class WebpackChunkModuleIterator {
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
     stats: WebpackStats | undefined,
-    callback: ((module: WebpackChunkModule) => void)
+    callback: (module: WebpackChunkModule) => void
   ): void {
     if (
       typeof compilation.chunkGraph !== 'undefined' &&

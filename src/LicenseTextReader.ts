@@ -12,10 +12,10 @@ class LicenseTextReader {
     private fileOverrides: LicenseFileOverrides,
     private textOverrides: LicenseTextOverrides,
     private templateDir: string | undefined,
-    private handleMissingLicenseText: ((
+    private handleMissingLicenseText: (
       packageName: string,
       licenseType: string | null
-    ) => string | null)
+    ) => string | null
   ) {}
 
   readLicense(
@@ -68,9 +68,7 @@ class LicenseTextReader {
 
     this.logger.warn(
       compilation,
-      `could not find any license file for ${
-        module.name
-      }. Use the licenseTextOverrides option to add the license text if desired.`
+      `could not find any license file for ${module.name}. Use the licenseTextOverrides option to add the license text if desired.`
     );
     return this.handleMissingLicenseText(module.name, licenseType);
   }

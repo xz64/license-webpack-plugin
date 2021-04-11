@@ -57,7 +57,7 @@ class PluginOptionsReader {
       options.handleMissingLicenseType || (() => null);
     const licenseFileOverrides: { [key: string]: string } =
       options.licenseFileOverrides || {};
-    const excludedPackageTest: ((packageName: string) => boolean) =
+    const excludedPackageTest: (packageName: string) => boolean =
       options.excludedPackageTest || (() => false);
     const stats = {
       warnings:

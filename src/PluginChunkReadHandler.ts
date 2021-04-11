@@ -10,6 +10,7 @@ import { LicenseTextReader } from './LicenseTextReader';
 import { ModuleCache } from './ModuleCache';
 import { LicensePolicy } from './LicensePolicy';
 import { Module } from './Module';
+import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { WebpackCompilation } from './WebpackCompilation';
 import { Logger } from './Logger';
 import { WebpackStats } from './WebpackStats';
@@ -45,9 +46,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
   }
 
   private getPackageJson(directory: string): PackageJson {
-    const filename: string = `${directory}${
-      this.fileSystem.pathSeparator
-    }package.json`;
+    const filename: string = `${directory}${this.fileSystem.pathSeparator}package.json`;
     return JSON.parse(this.fileSystem.readFileAsUtf8(filename));
   }
 
@@ -55,7 +54,7 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
     moduleCache: ModuleCache,
-    module: Module | null
+    module: Module | LicenseIdentifiedModule | null
   ) {
     if (module && !moduleCache.alreadySeenForChunk(chunk.name, module.name)) {
       const alreadyIncludedModule = moduleCache.getModule(module.name);
@@ -63,7 +62,9 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
         moduleCache.registerModule(chunk.name, alreadyIncludedModule);
       } else {
         // module not yet in cache
-        const packageJson: PackageJson = this.getPackageJson(module.directory);
+        const packageJson: PackageJson =
+          (<LicenseIdentifiedModule>module).packageJson ??
+          this.getPackageJson(module.directory);
         const licenseType:
           | string
           | null = this.licenseTypeIdentifier.findLicenseIdentifier(
@@ -90,7 +91,8 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
           moduleCache.registerModule(chunk.name, {
             licenseText,
             packageJson,
-            ...module,
+            name: module.name,
+            directory: module.directory,
             licenseId: licenseType
           });
         }

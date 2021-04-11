@@ -27,7 +27,10 @@ class WebpackModuleFileIterator {
     callback: (filename: string | null | undefined) => void,
     filename: string | null | undefined
   ): void {
-    callback(this.getActualFilename(filename));
+    const actualFileName = this.getActualFilename(filename);
+    if (actualFileName) {
+      callback(actualFileName);
+    }
   }
 
   getActualFilename(filename: string | null | undefined): string | null {
