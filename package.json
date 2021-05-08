@@ -51,5 +51,10 @@
   "dependencies": {
     "@types/webpack-sources": "^0.1.5",
     "webpack-sources": "^1.2.0"
+  },
+  "peerDependenciesMeta": {
+    "webpack": {
+      "optional": true
+    }
   }
 }
