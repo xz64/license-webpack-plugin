@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.19] - 2021-05-31
+### Changed
+- Optimized calls to compilation.getStats() by filtering out unnecessary stats information
+
+### Fixed
+- Fixed banners not working on webpack v5. Check the [documentation](DOCUMENTATION.md) for important configuration changes required for banners to work on webpack v5.
+
 ## [2.3.18] - 2021-05-07
 ### Changed
 - Register webpack as optional peer dependency
