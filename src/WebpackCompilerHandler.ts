@@ -42,7 +42,12 @@ class WebpackCompilerHandler {
               () => {
                 // the chunk graph does not contain ES modules
                 // use stats instead to find the ES module imports
-                const stats: WebpackStats = compilation.getStats().toJson();
+                const stats: WebpackStats = compilation.getStats().toJson({
+                  all: false,
+                  chunks: true,
+                  chunkModules: true,
+                  nestedModules: true
+                });
                 this.iterateChunks(compilation, compilation.chunks, stats);
               }
             );
