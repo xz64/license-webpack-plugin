@@ -31,7 +31,9 @@ class WebpackAssetManager implements AssetManager {
     const filename = compilation.getPath(this.outputFilename, { chunk });
     const text = this.licensesRenderer.renderBanner(filename, modules);
     if (text && text.trim()) {
-      chunk.files
+      const files =
+        chunk.files instanceof Set ? Array.from(chunk.files) : chunk.files;
+      files
         .filter((file: string) => /\.js$/.test(file))
         .forEach((file: string) => {
           compilation.assets[file] = new ConcatSource(

@@ -99,6 +99,8 @@ new LicenseWebpackPlugin({
 
 * **`addBanner`** - write a banner to the top of each js file (default: `false`)
 
+⚠️ **Webpack V5 Users**: Please read the notes on the `renderBanner` option as some special configuration is required when using banners on webpack v5.
+
 Example:
 ```javascript
 new LicenseWebpackPlugin({
@@ -154,6 +156,31 @@ new LicenseWebpackPlugin({
 ```
 
 * **`renderBanner`** - change the format / contents of the banner written to the top of each js file (default: print message indicating license filename)
+
+⚠️ **Webpack V5 Users**: The `modules` parameter to `renderBanner` will be empty in webpack v5 due to technical limitations. In addition, TerserPlugin (which is automatically enabled on production builds to minify code and extract licenses) will interfere with the banner. In order to turn off the license handling feature of TerserPlugin, it needs to be reconfigured in webpack configuration like this:
+
+```javascript
+const TerserPlugin = require('terser-webpack-plugin');
+
+module.exports = {
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false, // prevents TerserPlugin from extracting a [chunkName].js.LICENSE.txt file
+        terserOptions: {
+          format: {
+            // Tell terser to remove all comments except for the banner added via LicenseWebpackPlugin.
+            // This can be customized further to allow other types of comments to show up in the final js file as well.
+            // See the terser documentation for format.comments options for more details.
+            comments: (astNode, comment) => (comment.value.startsWith('! licenses are at '))
+          }
+        }
+      })
+    ]
+  }
+}
+```
 
 Example:
 ```javascript

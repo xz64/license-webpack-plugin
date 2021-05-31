@@ -60,6 +60,10 @@ class WebpackCompilerHandler {
               }
             );
           }
+
+          if (this.addBanner) {
+            this.iterateChunksForBanner(compilation);
+          }
         }
       );
       if (!this.perChunkOutput) {
@@ -114,6 +118,35 @@ class WebpackCompilerHandler {
     }
   }
 
+  private iterateChunksForBanner(compilation: WebpackCompilation) {
+    // for webpack v4 we write banners in iterateChunks.
+    // because of plugin hook ordering issues, it is done separately here for webpack v5.
+    // it is important to note that renderBanner will not receive any modules in the second
+    // argument due to plugin hook ordering issues in webpack v5.
+    // For the banner to work in webpack v5 production mode, TerserPlugin must be configured in a specific way.
+    // Please check the documentation of License Webpack Plugin for more details.
+    if (typeof compilation.hooks.processAssets !== 'undefined') {
+      // webpack v5
+      compilation.hooks.processAssets.tap(
+        {
+          name: 'LicenseWebpackPlugin',
+          stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONS
+        },
+        () => {
+          for (const chunk of compilation.chunks) {
+            if (this.chunkIncludeTester.isIncluded(chunk.name)) {
+              this.assetManager.writeChunkBanners(
+                this.moduleCache.getAllModulesForChunk(chunk.name),
+                compilation,
+                chunk
+              );
+            }
+          }
+        }
+      );
+    }
+  }
+
   private iterateChunks(
     compilation: WebpackCompilation,
     chunks: IterableIterator<WebpackChunk>,
@@ -154,30 +187,16 @@ class WebpackCompilerHandler {
             chunk
           );
         }
-        if (this.addBanner) {
-          if (typeof compilation.hooks.processAssets !== 'undefined') {
-            // webpack v5
-            compilation.hooks.processAssets.tap(
-              {
-                name: 'LicenseWebpackPlugin',
-                stage: WebpackCompilerHandler.PROCESS_ASSETS_STAGE_ADDITIONS
-              },
-              () => {
-                this.assetManager.writeChunkBanners(
-                  this.moduleCache.getAllModulesForChunk(chunk.name),
-                  compilation,
-                  chunk
-                );
-              }
-            );
-          } else {
-            // webpack v4
-            this.assetManager.writeChunkBanners(
-              this.moduleCache.getAllModulesForChunk(chunk.name),
-              compilation,
-              chunk
-            );
-          }
+        if (
+          this.addBanner &&
+          typeof compilation.hooks.processAssets === 'undefined'
+        ) {
+          // webpack v4
+          this.assetManager.writeChunkBanners(
+            this.moduleCache.getAllModulesForChunk(chunk.name),
+            compilation,
+            chunk
+          );
         }
       }
     }

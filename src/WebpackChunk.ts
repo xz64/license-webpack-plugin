@@ -6,5 +6,5 @@ export interface WebpackChunk {
   forEachModule?: (callback: (module: WebpackChunkModule) => void) => void;
   modules?: WebpackChunkModule[];
   entryModule?: WebpackChunkModule;
-  files: string[];
+  files: string[] | Set<string>;
 }

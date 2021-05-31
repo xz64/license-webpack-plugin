@@ -6,7 +6,13 @@ const readFile = promisify(require('fs').readFile);
 const LicenseWebpackPlugin = require('../../dist/index.js')
   .LicenseWebpackPlugin;
 
-async function build(plugin, licenseFilename, expectedOutputFilename) {
+async function build(
+  plugin,
+  licenseFilename,
+  expectedOutputFilename,
+  jsFilename,
+  expectedJsFilename
+) {
   await rimraf(`${__dirname}/dist`);
   const stuff = await webpack({
     context: __dirname,
@@ -17,17 +23,28 @@ async function build(plugin, licenseFilename, expectedOutputFilename) {
     mode: 'development',
     plugins: [plugin]
   });
-  const [actual, expected] = await Promise.all([
+  let [actual, expected] = await Promise.all([
     readFile(`${__dirname}/dist/${licenseFilename}`, 'utf8'),
     readFile(`${__dirname}/${expectedOutputFilename}`, 'utf8')
   ]);
   expect(actual).toEqual(expected);
+
+  [actual, expected] = await Promise.all([
+    readFile(`${__dirname}/dist/${jsFilename}`, 'utf8'),
+    readFile(`${__dirname}/${expectedJsFilename}`, 'utf8')
+  ]);
+  expect(actual).toEqual(expected);
 }
 
-test('default config works', async () => {
+test('plugin works', async () => {
   await build(
-    new LicenseWebpackPlugin(),
+    new LicenseWebpackPlugin({
+      addBanner: true,
+      renderBanner: filename => `/*! see licenses at ${filename} */`
+    }),
     'main.licenses.txt',
-    'expected_output_01.txt'
+    'expected_output_01.txt',
+    'main.js',
+    'expected_output_01.js.txt'
   );
 });
