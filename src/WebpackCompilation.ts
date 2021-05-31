@@ -37,5 +37,12 @@ export interface WebpackCompilation {
   plugin?: (phase: string, callback: Function) => void;
   chunkGraph?: ChunkGraph;
   compiler: WebpackCompiler;
-  getStats: () => { toJson: () => WebpackStats };
+  getStats: () => { toJson: (options?: WebpackStatsOptions) => WebpackStats };
+}
+
+export interface WebpackStatsOptions {
+  all?: boolean;
+  chunks?: boolean;
+  chunkModules?: boolean;
+  nestedModules?: boolean;
 }
