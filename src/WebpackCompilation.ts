@@ -45,4 +45,6 @@ export interface WebpackStatsOptions {
   chunks?: boolean;
   chunkModules?: boolean;
   nestedModules?: boolean;
+  dependentModules?: boolean;
+  cachedModules?: boolean;
 }
