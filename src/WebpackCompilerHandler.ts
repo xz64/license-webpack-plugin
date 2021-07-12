@@ -46,7 +46,9 @@ class WebpackCompilerHandler {
                   all: false,
                   chunks: true,
                   chunkModules: true,
-                  nestedModules: true
+                  nestedModules: true,
+                  dependentModules: true,
+                  cachedModules: true,
                 });
                 this.iterateChunks(compilation, compilation.chunks, stats);
               }
