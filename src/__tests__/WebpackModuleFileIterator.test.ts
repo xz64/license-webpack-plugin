@@ -80,4 +80,8 @@ describe('WebpackModuleFileIterator', () => {
       iterator.getActualFilename('data:text/javascript,console.log("Test");')
     ).toBeNull();
   });
+
+  test('returns null for delegated module', () => {
+    expect(iterator.getActualFilename('delegated /foo.js')).toBeNull();
+  });
 });
