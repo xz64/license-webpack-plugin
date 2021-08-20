@@ -36,6 +36,7 @@ class WebpackModuleFileIterator {
   getActualFilename(filename: string | null | undefined): string | null {
     if (
       !filename ||
+      filename.indexOf('delegated ') === 0 ||
       filename.indexOf('external ') === 0 ||
       filename.indexOf('container entry ') === 0 ||
       filename.indexOf('ignored|') === 0 ||
