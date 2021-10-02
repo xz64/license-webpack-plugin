@@ -1,5 +1,9 @@
 # Migration Guide
 
+## 2.x to 3.x
+* Most builds can upgrade directly from 2.x to 3.x without having to change anything.
+* The `webpack-sources` package is no longer bundled with the plugin nor listed as a peerDependency of the plugin. This allows the plugin to use the same version of `webpack-sources` that comes with the `webpack` installation.
+
 ## 1.x to 2.x
 * The plugin no longer requires any explicit configuration. By default it will pick up all license types.
 * The plugin no longer writes warnings/errors directly to console and instead reports warnings/errors to webpack.
