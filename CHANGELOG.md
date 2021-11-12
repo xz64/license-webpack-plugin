@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2021-11-11
+### Fixed
+- Fix `TypeError: item.node is not a function` errors by including `webpack-sources@^3.0.0` as direct dependency.
+
+### Removed
+- Remove support for webpack versions less than 5. Only webpack 5 is supported as of this version.
+
+
 ## [3.0.0] - 2021-10-02
 ### Fixed
 - Fix `TypeError: item.node is not a function` errors from webpack 5.47.0 and later

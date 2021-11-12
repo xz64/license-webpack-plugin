@@ -1,5 +1,8 @@
 # Migration Guide
 
+## 3.x to 4.x
+* Support for webpack 4 and below are now removed. Please use an older version of the plugin if you need it to work with webpack 4 or below.
+
 ## 2.x to 3.x
 * Most builds can upgrade directly from 2.x to 3.x without having to change anything.
 * The `webpack-sources` package is no longer bundled with the plugin nor listed as a peerDependency of the plugin. This allows the plugin to use the same version of `webpack-sources` that comes with the `webpack` installation.
