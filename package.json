@@ -47,8 +47,10 @@
     "tslint": "^5.9.1",
     "tslint-config-airbnb": "^5.8.0",
     "tslint-config-prettier": "^1.10.0",
-    "typescript": "^3.8.0",
-    "webpack-sources": "^1.2.0"
+    "typescript": "^3.8.0"
+  },
+  "dependencies": {
+    "webpack-sources": "^3.0.0"
   },
   "peerDependenciesMeta": {
     "webpack": {
