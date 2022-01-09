@@ -275,7 +275,7 @@ Example:
 new LicenseWebpackPlugin({
   additionalModules: [
     {
-      name: 'somepkg'
+      name: 'somepkg',
       directory: path.join(__dirname, 'node_modules', 'somepkg')
     }
   ]
