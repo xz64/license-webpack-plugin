@@ -260,7 +260,7 @@ new LicenseWebpackPlugin({
   additionalChunkModules: {
     main: [
       {
-        name: 'somepkg'
+        name: 'somepkg',
         directory: path.join(__dirname, 'node_modules', 'somepkg')
       }
     ]
