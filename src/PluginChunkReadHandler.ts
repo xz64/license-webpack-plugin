@@ -1,7 +1,8 @@
 import { WebpackChunkHandler } from './WebpackChunkHandler';
 import { WebpackChunk } from './WebpackChunk';
+import { WebpackChunkModule } from './WebpackChunkModule';
 import { WebpackChunkModuleIterator } from './WebpackChunkModuleIterator';
-import { WebpackModuleFileIterator } from './WebpackModuleFileIterator';
+import { WebpackInnerModuleIterator } from './WebpackInnerModuleIterator';
 import { FileHandler } from './FileHandler';
 import { LicenseTypeIdentifier } from './LicenseTypeIdentifier';
 import { FileSystem } from './FileSystem';
@@ -9,7 +10,6 @@ import { PackageJson } from './PackageJson';
 import { LicenseTextReader } from './LicenseTextReader';
 import { ModuleCache } from './ModuleCache';
 import { LicensePolicy } from './LicensePolicy';
-import { Module } from './Module';
 import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { WebpackCompilation } from './WebpackCompilation';
 import { Logger } from './Logger';
@@ -17,7 +17,7 @@ import { WebpackStats } from './WebpackStats';
 
 class PluginChunkReadHandler implements WebpackChunkHandler {
   private moduleIterator = new WebpackChunkModuleIterator();
-  private fileIterator = new WebpackModuleFileIterator(require.resolve);
+  private innerModuleIterator = new WebpackInnerModuleIterator(require.resolve);
 
   constructor(
     private logger: Logger,
@@ -34,15 +34,52 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
     moduleCache: ModuleCache,
     stats: WebpackStats | undefined
   ) {
-    this.moduleIterator.iterateModules(compilation, chunk, stats, module => {
-      this.fileIterator.iterateFiles(
-        module,
-        (filename: string | null | undefined) => {
-          const module = this.fileHandler.getModule(filename);
-          this.processModule(compilation, chunk, moduleCache, module);
-        }
-      );
-    });
+    this.moduleIterator.iterateModules(
+      compilation,
+      chunk,
+      stats,
+      chunkModule => {
+        this.innerModuleIterator.iterateModules(
+          chunkModule,
+          (module: WebpackChunkModule) => {
+            const identifiedModule =
+              this.extractIdentifiedModule(module) ||
+              this.fileHandler.getModule(module.resource);
+            if (identifiedModule) {
+              this.processModule(
+                compilation,
+                chunk,
+                moduleCache,
+                identifiedModule
+              );
+            }
+          }
+        );
+      }
+    );
+  }
+
+  private extractIdentifiedModule(
+    module: WebpackChunkModule
+  ): LicenseIdentifiedModule | undefined {
+    const resolved = module.resourceResolveData;
+    if (!resolved) return undefined;
+    const {
+      descriptionFileRoot: directory,
+      descriptionFileData: packageJson
+    } = resolved;
+    if (
+      resolved &&
+      this.fileHandler.isInModuleDirectory(directory) &&
+      !this.fileHandler.isBuildRoot(directory)
+    ) {
+      return {
+        directory,
+        packageJson,
+        name: packageJson.name
+      };
+    }
+    return undefined;
   }
 
   private getPackageJson(directory: string): PackageJson {
@@ -54,20 +91,17 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
     moduleCache: ModuleCache,
-    module: Module | LicenseIdentifiedModule | null
+    module: LicenseIdentifiedModule
   ) {
-    if (module && !moduleCache.alreadySeenForChunk(chunk.name, module.name)) {
+    if (!moduleCache.alreadySeenForChunk(chunk.name, module.name)) {
       const alreadyIncludedModule = moduleCache.getModule(module.name);
       if (alreadyIncludedModule !== null) {
         moduleCache.registerModule(chunk.name, alreadyIncludedModule);
       } else {
         // module not yet in cache
-        const packageJson: PackageJson =
-          (<LicenseIdentifiedModule>module).packageJson ??
-          this.getPackageJson(module.directory);
-        const licenseType:
-          | string
-          | null = this.licenseTypeIdentifier.findLicenseIdentifier(
+        const packageJson =
+          module.packageJson ?? this.getPackageJson(module.directory);
+        const licenseType = this.licenseTypeIdentifier.findLicenseIdentifier(
           compilation,
           module.name,
           packageJson

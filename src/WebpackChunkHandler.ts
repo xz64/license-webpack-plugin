@@ -1,6 +1,6 @@
 import { WebpackChunk } from './WebpackChunk';
 import { ModuleCache } from './ModuleCache';
-import { Module } from './Module';
+import { LicenseIdentifiedModule } from './LicenseIdentifiedModule';
 import { WebpackCompilation } from './WebpackCompilation';
 import { WebpackStats } from './WebpackStats';
 
@@ -15,7 +15,7 @@ interface WebpackChunkHandler {
     compilation: WebpackCompilation,
     chunk: WebpackChunk,
     moduleCache: ModuleCache,
-    module: Module
+    module: LicenseIdentifiedModule
   ): void;
 }
 

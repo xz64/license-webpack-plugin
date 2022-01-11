@@ -20,28 +20,30 @@ class PluginFileHandler implements FileHandler {
       : this.cache[filename];
   }
 
+  isInModuleDirectory(filename: string) {
+    if (this.modulesDirectories === null) return true;
+    if (filename === null || filename === undefined) return false;
+    let foundInModuleDirectory = false;
+    const resolvedPath = this.fileSystem.resolvePath(filename);
+    for (const modulesDirectory of this.modulesDirectories) {
+      if (
+        resolvedPath.startsWith(this.fileSystem.resolvePath(modulesDirectory))
+      ) {
+        foundInModuleDirectory = true;
+      }
+    }
+    return foundInModuleDirectory;
+  }
+
+  isBuildRoot(filename: string) {
+    return this.buildRoot === filename;
+  }
+
   private getModuleInternal(
     filename: string
   ): Partial<LicenseIdentifiedModule> | null {
-    if (filename === null || filename === undefined) {
-      return null;
-    }
-
-    if (this.modulesDirectories !== null) {
-      let foundInModuleDirectory = false;
-      for (const modulesDirectory of this.modulesDirectories) {
-        if (
-          this.fileSystem
-            .resolvePath(filename)
-            .startsWith(this.fileSystem.resolvePath(modulesDirectory))
-        ) {
-          foundInModuleDirectory = true;
-        }
-      }
-      if (!foundInModuleDirectory) {
-        return null;
-      }
-    }
+    if (filename === null || filename === undefined) return null;
+    if (!this.isInModuleDirectory(filename)) return null;
 
     const module = this.findModuleDir(filename);
 
@@ -78,7 +80,7 @@ class PluginFileHandler implements FileHandler {
       }
     }
 
-    if (this.buildRoot === dirOfModule) {
+    if (this.isBuildRoot(dirOfModule)) {
       return null;
     }
 

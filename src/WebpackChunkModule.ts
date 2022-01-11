@@ -1,5 +1,7 @@
+import { PackageJson } from './PackageJson';
+
 export interface WebpackChunkModule {
-  resource: string;
+  resource?: string;
   rootModule?: {
     resource?: string;
   };
@@ -8,4 +10,8 @@ export interface WebpackChunkModule {
   };
   fileDependencies?: string[];
   dependencies?: WebpackChunkModule[];
+  resourceResolveData?: {
+    descriptionFileRoot: string;
+    descriptionFileData: PackageJson;
+  };
 }
