@@ -69,7 +69,6 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
       descriptionFileData: packageJson
     } = resolved;
     if (
-      resolved &&
       this.fileHandler.isInModuleDirectory(directory) &&
       !this.fileHandler.isBuildRoot(directory)
     ) {
