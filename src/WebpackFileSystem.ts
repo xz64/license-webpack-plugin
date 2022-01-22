@@ -18,8 +18,8 @@ class WebpackFileSystem implements FileSystem {
 
   pathExists(filename: string): boolean {
     try {
-      this.fs.statSync(filename);
-      return true;
+      const stat = this.fs.statSync(filename, { throwIfNoEntry: false });
+      return !!stat;
     } catch (e) {
       return false;
     }
@@ -44,7 +44,7 @@ class WebpackFileSystem implements FileSystem {
   isDirectory(dir: string): boolean {
     let isDir = false;
     try {
-      isDir = this.fs.statSync(dir).isDirectory();
+      isDir = this.fs.statSync(dir, { throwIfNoEntry: false }).isDirectory();
     } catch (e) {}
     return isDir;
   }

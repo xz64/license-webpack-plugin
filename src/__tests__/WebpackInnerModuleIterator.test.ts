@@ -1,12 +1,12 @@
-import { WebpackModuleFileIterator } from '../WebpackModuleFileIterator';
+import { WebpackInnerModuleIterator } from '../WebpackInnerModuleIterator';
 import {
   fakeRequireResolve,
   FAKE_REQUIRE_RESOLVE_OUTPUT
 } from './FakeRequireResolve';
 
-const iterator = new WebpackModuleFileIterator(fakeRequireResolve);
+const iterator = new WebpackInnerModuleIterator(fakeRequireResolve);
 
-describe('WebpackModuleFileIterator', () => {
+describe('WebpackInnerModuleIterator', () => {
   it('returns null for falsy filename', () => {
     expect(iterator.getActualFilename('')).toBeNull();
     expect(iterator.getActualFilename(null)).toBeNull();

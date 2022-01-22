@@ -1,35 +1,37 @@
 import { WebpackChunkModule } from './WebpackChunkModule';
 
-class WebpackModuleFileIterator {
+class WebpackInnerModuleIterator {
   constructor(private requireResolve: RequireResolve) {}
 
-  iterateFiles(
+  iterateModules(
     chunkModule: WebpackChunkModule,
-    callback: (filename: string | null | undefined) => void
+    callback: (module: WebpackChunkModule) => void
   ) {
     const internalCallback = this.internalCallback.bind(this, callback);
     internalCallback(
-      chunkModule.resource ||
-        (chunkModule.rootModule && chunkModule.rootModule.resource)
+      chunkModule.resource ? chunkModule : chunkModule.rootModule
     );
     if (Array.isArray(chunkModule.fileDependencies)) {
       const fileDependencies: string[] = chunkModule.fileDependencies;
-      fileDependencies.forEach(internalCallback);
+      fileDependencies.forEach(fileDependency =>
+        internalCallback({ resource: fileDependency })
+      );
     }
     if (Array.isArray(chunkModule.dependencies)) {
       chunkModule.dependencies.forEach(module =>
-        internalCallback(module.originModule && module.originModule.resource)
+        internalCallback(module.originModule)
       );
     }
   }
 
   private internalCallback(
-    callback: (filename: string | null | undefined) => void,
-    filename: string | null | undefined
+    callback: (module: WebpackChunkModule) => void,
+    module: WebpackChunkModule | undefined
   ): void {
-    const actualFileName = this.getActualFilename(filename);
+    if (!module) return;
+    const actualFileName = this.getActualFilename(module.resource);
     if (actualFileName) {
-      callback(actualFileName);
+      callback({ ...module, resource: actualFileName });
     }
   }
 
@@ -69,4 +71,4 @@ class WebpackModuleFileIterator {
   }
 }
 
-export { WebpackModuleFileIterator };
+export { WebpackInnerModuleIterator };
