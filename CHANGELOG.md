@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2022-01-27
+### Changed
+- Performance improvement: use resolve data already present in most modules
+- Performance improvement: use throwIfNoEntry option on filesystem operations to improve performance
+
 ## [4.0.0] - 2021-11-11
 ### Fixed
 - Fix `TypeError: item.node is not a function` errors by including `webpack-sources@^3.0.0` as direct dependency.
