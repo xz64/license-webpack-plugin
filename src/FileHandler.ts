@@ -6,6 +6,7 @@ interface FileHandler {
   ): LicenseIdentifiedModule | null;
   isBuildRoot(filename: string): boolean;
   isInModuleDirectory(filename: string): boolean;
+  excludedPackageTest(filename: string): boolean;
 }
 
 export { FileHandler };

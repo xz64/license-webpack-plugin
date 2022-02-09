@@ -9,7 +9,7 @@ class PluginFileHandler implements FileHandler {
     private fileSystem: FileSystem,
     private buildRoot: string,
     private modulesDirectories: string[] | null,
-    private excludedPackageTest: (packageName: string) => boolean
+    public excludedPackageTest: (packageName: string) => boolean
   ) {}
 
   static PACKAGE_JSON: string = 'package.json';
