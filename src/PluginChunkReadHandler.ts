@@ -69,6 +69,11 @@ class PluginChunkReadHandler implements WebpackChunkHandler {
       descriptionFileData: packageJson
     } = resolved;
     if (
+      // if missing data, fall back to fs module hunting
+      directory &&
+      packageJson &&
+      packageJson.name &&
+      // user checks to decide if we should include the module
       this.fileHandler.isInModuleDirectory(directory) &&
       !this.fileHandler.isBuildRoot(directory) &&
       !this.fileHandler.excludedPackageTest(packageJson.name)
