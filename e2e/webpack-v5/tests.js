@@ -40,7 +40,8 @@ test('plugin works', async () => {
   await build(
     new LicenseWebpackPlugin({
       addBanner: true,
-      renderBanner: filename => `/*! see licenses at ${filename} */`
+      renderBanner: filename => `/*! see licenses at ${filename} */`,
+      excludedPackageTest: name => name === 'is-array'
     }),
     'main.licenses.txt',
     'expected_output_01.txt',

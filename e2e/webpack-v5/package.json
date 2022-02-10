@@ -1,12 +1,13 @@
 {
-  "name": "webpack-v5",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "jquery": "^3.4.1"
-  },
-  "devDependencies": {
-    "webpack": "^5.56.0"
-  }
+    "name": "webpack-v5",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "jquery": "^3.4.1",
+        "is-array": "1.0.1"
+    },
+    "devDependencies": {
+        "webpack": "^5.56.0"
+    }
 }

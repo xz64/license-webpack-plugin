@@ -9,6 +9,16 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/is-array/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/is-array/index.js ***!
+  \****************************************/
+/***/ ((module) => {
+
+eval("\n/**\n * isArray\n */\n\nvar isArray = Array.isArray;\n\n/**\n * toString\n */\n\nvar str = Object.prototype.toString;\n\n/**\n * Whether or not the given `val`\n * is an array.\n *\n * example:\n *\n *        isArray([]);\n *        // > true\n *        isArray(arguments);\n *        // > false\n *        isArray('');\n *        // > false\n *\n * @param {mixed} val\n * @return {bool}\n */\n\nmodule.exports = isArray || function (val) {\n  return !! val && '[object Array]' == str.call(val);\n};\n\n\n//# sourceURL=webpack://webpack-v5/./node_modules/is-array/index.js?");
+
+/***/ }),
+
 /***/ "./node_modules/jquery/dist/jquery.js":
 /*!********************************************!*\
   !*** ./node_modules/jquery/dist/jquery.js ***!
@@ -25,7 +35,7 @@ eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!\n * jQ
   \**********************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("__webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n\n\n//# sourceURL=webpack://webpack-v5/./src/index.js?");
+eval("__webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\");\n__webpack_require__(/*! is-array */ \"./node_modules/is-array/index.js\");\n\n\n//# sourceURL=webpack://webpack-v5/./src/index.js?");
 
 /***/ })
 
