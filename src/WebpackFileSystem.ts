@@ -8,7 +8,7 @@ class WebpackFileSystem implements FileSystem {
   constructor(private fs: any) {}
 
   isFileInDirectory(filename: string, directory: string): boolean {
-    const normalizedFile = this.resolvePath(filename);
+    const normalizedFile = this.resolvePath(this.join(directory, filename));
     const normalizedDirectory = this.resolvePath(directory);
     return (
       !this.isDirectory(normalizedFile) &&
