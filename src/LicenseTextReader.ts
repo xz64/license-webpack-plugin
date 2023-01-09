@@ -85,10 +85,7 @@ class LicenseTextReader {
   ): string | null {
     for (const path of paths) {
       const filePath = this.fileSystem.join(modulePath, path);
-      if (
-        /\blicen[cs]e\b/i.test(path) &&
-        !this.fileSystem.isDirectory(filePath)
-      ) {
+      if (/^licen[cs]e/i.test(path) && !this.fileSystem.isDirectory(filePath)) {
         return path;
       }
     }
