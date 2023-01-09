@@ -88,7 +88,7 @@ class LicenseTextReader {
       if (this.fileSystem.isDirectory(filePath)) {
         continue;
       }
-      if (/^licen[cs]e/i.test(path)) {
+      if (/^licen[cs]e/i.test(path) || /\blicen[cs]e\b/i.test(path)) {
         return path;
       }
     }
