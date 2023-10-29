@@ -128,6 +128,26 @@ describe('the license text reader', () => {
     expect(licenseText).toBe('LICENSE-/project/license.txt');
   });
 
+  test('license files with a prefix are detected', () => {
+    const reader: LicenseTextReader = new LicenseTextReader(
+      logger,
+      new FakeFileSystem(['MIT-LICENSE.txt']),
+      {},
+      {},
+      null,
+      () => null
+    );
+    const licenseText = reader.readLicense(
+      new FakeCompilation(),
+      {
+        name: 'foo',
+        directory: '/project'
+      },
+      ''
+    );
+    expect(licenseText).toBe('LICENSE-/project/MIT-LICENSE.txt');
+  });
+
   test('license files with a suffix are detected', () => {
     const reader: LicenseTextReader = new LicenseTextReader(
       logger,
